@@ -14,8 +14,10 @@ CREATE TABLE [User] (
     full_name NVARCHAR(100),
     email NVARCHAR(100),
     phone NVARCHAR(20),
+    status BIT DEFAULT 1,
     role_id INT,
     created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME NULL,
     FOREIGN KEY (role_id) REFERENCES Role(role_id)
 );
 CREATE TABLE Category (
@@ -30,7 +32,6 @@ CREATE TABLE Unit (
 
 CREATE TABLE Product (
     product_id INT PRIMARY KEY IDENTITY(1,1),
-	product_code NVARCHAR(50) NOT NULL UNIQUE,
     name NVARCHAR(100) NOT NULL,
     category_id INT,
     unit_id INT,
@@ -39,7 +40,7 @@ CREATE TABLE Product (
     stock_quantity INT DEFAULT 0,
     min_stock INT DEFAULT 0,
     max_stock INT DEFAULT 0,
-    status BIT DEFAULT 1,  
+    status BIT DEFAULT 1,
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (category_id) REFERENCES Category(category_id),
     FOREIGN KEY (unit_id) REFERENCES Unit(unit_id)
@@ -64,11 +65,11 @@ CREATE TABLE Customer (
 CREATE TABLE Supplier (
     supplier_id INT PRIMARY KEY IDENTITY(1,1),
     supplier_name NVARCHAR(100) NOT NULL,
-    note NVARCHAR(100),
+    contact_name NVARCHAR(100),
     phone NVARCHAR(20),
     email NVARCHAR(100),
     address NVARCHAR(255),
-    tax_code NVARCHAR(50) NOT NULL,
+    tax_code NVARCHAR(50),
     status BIT DEFAULT 1,
     created_at DATETIME DEFAULT GETDATE()
 );
@@ -155,8 +156,3 @@ CREATE TABLE ExportNote (
     FOREIGN KEY (warehouse_id) REFERENCES Warehouse(warehouse_id),
     FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
-
-
-
-
-
