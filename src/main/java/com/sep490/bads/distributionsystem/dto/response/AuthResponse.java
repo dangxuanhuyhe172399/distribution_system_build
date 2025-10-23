@@ -1,4 +1,4 @@
-package com.tal.recruitment.system.dto.response;
+package com.sep490.bads.distributionsystem.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

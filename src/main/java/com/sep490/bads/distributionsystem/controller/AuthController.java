@@ -1,26 +1,34 @@
-package com.tal.recruitment.system.controller;
+package com.sep490.bads.distributionsystem.controller;
 
-import com.tal.recruitment.system.dto.request.AuthRequest;
-import com.tal.recruitment.system.dto.response.AuthResponse;
-import com.tal.recruitment.system.service.AuthService;
-import lombok.RequiredArgsConstructor;
+import com.sep490.bads.distributionsystem.dto.LoginDto;
+import com.sep490.bads.distributionsystem.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
-@RequiredArgsConstructor
+@RequestMapping("v1/public/portal/auth")
+@Tag(name = "Authentication", description = "")
 public class AuthController {
+    @Autowired
+    private AuthService authService;
 
-    private final AuthService authService;
-
+    @Operation(summary = "Đăng nhập")
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest req) {
-        return ResponseEntity.ok(authService.login(req));
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginDto dto) {
+        return ResponseEntity.ok(authService.signIn(dto));
     }
 
-    @GetMapping("/ping")
-    public String ping() {
-        return "pong";
+    @Operation(summary = "Quên mật khẩu (gửi link(có otp) reset qua mail)")
+    @GetMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        authService.forgotPassword(email);
+        return ResponseEntity.ok("Please check your email. If email existed, you will receive a link to reset your password.");
     }
+
 }
+

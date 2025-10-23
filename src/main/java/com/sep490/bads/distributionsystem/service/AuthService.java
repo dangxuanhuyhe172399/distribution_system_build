@@ -1,8 +1,14 @@
-package com.tal.recruitment.system.service;
+package com.sep490.bads.distributionsystem.service;
 
-import com.tal.recruitment.system.dto.request.AuthRequest;
-import com.tal.recruitment.system.dto.response.AuthResponse;
+
+import com.sep490.bads.distributionsystem.dto.LoginDto;
+import com.sep490.bads.distributionsystem.dto.response.AuthResponse;
+import org.springframework.stereotype.Service;
+
+@Service
 
 public interface AuthService {
-    AuthResponse login(AuthRequest request);
+    AuthResponse signIn(LoginDto dto);
+    void forgotPassword(String email);
 }
+

@@ -1,11 +1,11 @@
-package com.tal.recruitment.system.entity;
+package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "Role")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,9 +16,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roleId;
 
-    @Column(name = "roleName", length = 20)
+    @Column(name = "role_name", length = 50)
     private String roleName;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-    private Set<User> users = new HashSet<>();
 }

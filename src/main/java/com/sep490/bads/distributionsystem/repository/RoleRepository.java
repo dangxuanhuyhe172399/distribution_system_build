@@ -1,6 +1,7 @@
-package com.tal.recruitment.system.repository;
+package com.sep490.bads.distributionsystem.repository;
 
-import com.tal.recruitment.system.entity.Role;
+//import com.tal.recruitment.system.entity.Role;
+import com.sep490.bads.distributionsystem.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
