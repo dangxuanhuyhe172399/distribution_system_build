@@ -1,4 +1,4 @@
-CREATE DATABASE bads_db;
+﻿CREATE DATABASE bads_db;
 GO
 USE bads_db;
 GO
@@ -156,3 +156,40 @@ CREATE TABLE ExportNote (
     FOREIGN KEY (warehouse_id) REFERENCES Warehouse(warehouse_id),
     FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
+
+
+--  INSERT ROLE
+INSERT INTO Role (role_name) VALUES
+('admin'),               -- Quản trị toàn hệ thống
+('warehouseStaff'),     -- Nhân viên kho
+('saleStaff'),         -- Nhân viên bán hàng
+('accountstaff');    -- Nhân viên kế toán
+
+-- INSERT UNIT (Đơn vị tính)
+INSERT INTO Unit (unit_name) VALUES
+('Hộp'),
+('Gói'),
+('Khay'),
+('500gr'),
+('440gr'),
+('600gr'),
+('700gr'),
+('300gr'),
+('1200gr');
+
+--INSERT CUSTOMER TYPE
+INSERT INTO CustomerType (type_name) VALUES
+('Khách lẻ'),
+('Khách buôn');
+
+--INSERT CATEGORY (Danh mục sản phẩm)
+INSERT INTO Category (category_name) VALUES
+('Nem chua rán'),
+('Phô mai'),
+('Xúc xích'),
+('Đồ viên');
+
+--INSERT WAREHOUSE
+INSERT INTO Warehouse (warehouse_name, address, manager_id, status) VALUES
+('Kho Hà Nội', 'Hà Nội', NULL, 1),
+('Kho Hồ Chí Minh', 'Hồ Chí Minh', NULL, 1);
