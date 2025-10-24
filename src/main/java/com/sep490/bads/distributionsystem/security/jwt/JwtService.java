@@ -114,4 +114,18 @@ public class JwtService {
         final Claims claims = extractAllClaims(token);
         return claims.get("userId", String.class);
     }
+
+    public Long expirySeconds() {
+        return expireTime;
+    }
+
+    public String generate(User user) {
+        TokenInfo tokenInfo = new TokenInfo(
+                user.getId(),
+                user.getUsername(),
+                new String[]{user.getRole().getRoleName()}
+        );
+        return generateToken(tokenInfo);
+    }
+
 }

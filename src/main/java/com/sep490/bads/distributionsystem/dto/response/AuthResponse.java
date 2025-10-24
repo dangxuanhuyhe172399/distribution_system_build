@@ -19,4 +19,9 @@ public class AuthResponse {
     private String role;
     private String fullname;
     private Instant previousLastLoginAt;
+
+    public AuthResponse(String token, Long aLong) {
+        this.token = token;
+        this.tokenType = "Bearer";
+    }
 }

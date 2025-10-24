@@ -1,6 +1,7 @@
 package com.sep490.bads.distributionsystem.security;
 
 import com.sep490.bads.distributionsystem.security.jwt.AuthedEntryPoint;
+import com.sep490.bads.distributionsystem.security.jwt.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(
+        securedEnabled = true,
+        jsr250Enabled = true,
+        prePostEnabled = true
+)
 public class SecurityConfig {
 
     private final GlobalExceptionHandler globalExceptionHandler;
@@ -41,11 +46,11 @@ public class SecurityConfig {
     public JwtAuthFilter authFilter() {
         return new JwtAuthFilter();
     }
-
     // User Creation
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserSecurityService();
+        return null;
+//                new UserSecurityService();
     }
 
 

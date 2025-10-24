@@ -1,10 +1,14 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "User")
@@ -39,4 +43,24 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<SalesOrder> salesOrders = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Invoice> invoicesCreated = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<ExportNote> exportNotesCreated = new HashSet<>();
+}
 }

@@ -5,20 +5,20 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "SalesOrderDetail")
+@Table(name = "PurchaseOrderDetail")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class SalesOrderDetail {
+public class PurchaseOrderDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderDetailId;
+    private Long poDetailId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private SalesOrder salesOrder;
+    @JoinColumn(name = "po_id")
+    private PurchaseOrder purchaseOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -29,15 +29,8 @@ public class SalesOrderDetail {
     @Column(name = "unit_price", precision = 18, scale = 2)
     private BigDecimal unitPrice;
 
-    @Column(precision = 5, scale = 2)
-    private BigDecimal discount = BigDecimal.ZERO;
-
-    // No persisted column for total_price here; calculation provided by getter
     public BigDecimal getTotalPrice() {
         if (quantity == null || unitPrice == null) return BigDecimal.ZERO;
-        BigDecimal qty = BigDecimal.valueOf(quantity);
-        BigDecimal line = unitPrice.multiply(qty);
-        BigDecimal disc = line.multiply(discount).divide(BigDecimal.valueOf(100));
-        return line.subtract(disc);
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
 }

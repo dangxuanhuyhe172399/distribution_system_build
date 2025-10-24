@@ -6,6 +6,7 @@ import com.sep490.bads.distributionsystem.entity.User;
 import com.sep490.bads.distributionsystem.exception.NotAuthorizedException;
 import com.sep490.bads.distributionsystem.repository.UserRepository;
 import com.sep490.bads.distributionsystem.security.jwt.JwtService;
+import com.sep490.bads.distributionsystem.security.jwt.TokenInfo;
 import com.sep490.bads.distributionsystem.service.AuthService;
 import com.sep490.bads.distributionsystem.utils.Constants;
 import org.springframework.security.crypto.password.PasswordEncoder;
