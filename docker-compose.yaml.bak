@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # SQL Server
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: bads_sql_server
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "123456"
+    ports:
+      - "1433:1433" # Map cổng 1433 của container ra cổng 1433 của máy thật
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  # Dịch vụ Redis
+  redis:
+    image: redis:7-alpine
+    container_name: bads_redis
+    ports:
+      - "6379:6379" # Map cổng Redis
+
+volumes:
+  mssql_data:

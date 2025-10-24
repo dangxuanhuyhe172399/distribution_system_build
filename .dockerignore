@@ -1,0 +1,23 @@
+# Maven/Gradle output
+target/
+build/
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+*.sw?
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Env/config
+*.env
+.env

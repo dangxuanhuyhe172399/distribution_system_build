@@ -1,0 +1,64 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=bads_db;encrypt=true;trustServerCertificate=true;
+    username: SA #username
+    password: 123456 # password
+    hikari:
+      connection-timeout: 30000 # Thời gian chờ một kết nối (ms)
+      idle-timeout: 600000     # Thời gian một kết nối có thể nhàn rỗi trong pool (ms)
+      max-lifetime: 1800000      # Tuổi thọ tối đa của một kết nối (ms)
+      maximum-pool-size: 10      # Số lượng kết nối tối đa trong pool
+      minimum-idle: 2          # Số lượng kết nối rảnh tối thiểu
+      pool-name: BADS-HikariCP   # Tên của connection pool
+
+  # JPA and Hibernate
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      #set to 'none' or 'validate' because Flyway to manage
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.SQLServerDialect
+
+  # Configure Flyway to automatically run database scripts
+  flyway:
+    enabled: true # turn on Flyway
+  # 'classpath:db.migration' point to the directory 'resources/db.migration'
+    locations: classpath:db.migration
+    baseline-on-migrate: true
+
+  # Cấu hình Redis
+#  cache:
+#      type: redis # Kích hoạt Spring Cache sử dụng Redis
+#  data:
+#      redis:
+#        host: localhost
+#        port: 6379
+
+  # Cấu hình cho việc upload file
+#  servlet:
+#      multipart:
+#        max-file-size: 10MB
+#        max-request-size: 10MB
+
+#app:
+#  jwt:
+#    secret: "your-very-long-and-secure-jwt-secret-key" # << THAY CHUỖI BÍ MẬT
+#    expire-time-ms: 86400000 # 24 giờ
+#    refresh-expire-time-ms: 604800000 # 7 ngày
+
+logging:
+  level:
+    root: info
+    org.springframework.web: info
+    com.sep490.bads: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
