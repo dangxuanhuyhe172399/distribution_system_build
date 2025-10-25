@@ -4,8 +4,7 @@ import lombok.*;
 import jakarta.validation.constraints.*;
 
 @Data @NoArgsConstructor @AllArgsConstructor
-public class RoleUpdateDto {
-    @NotBlank
-    @Size(max=50)
+public class CategoryUpdateDto {
+    @NotBlank @Size(max=100)
     private String name;
 }

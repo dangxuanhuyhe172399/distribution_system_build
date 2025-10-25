@@ -1,43 +1,45 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.usertype.UserType;
 
+@Data
 @Entity
 @Table(name = "User")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class User extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "username", length = 50, nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
 
     @Column(name = "full_name", length = 100)
     private String fullName;
 
-    @Column(length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(name = "status", length = 20)
     private UserStatus status;
 
-    private Long birthday;
+   // private Long birthday;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id")
     private Role role;
 

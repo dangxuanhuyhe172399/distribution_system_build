@@ -4,18 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
+@Data
 @Entity
 @Table(name = "Role")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class Role {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roleId;
 
-    @Column(name = "role_name", length = 50)
+    @Column(name = "role_name", length = 50, unique = true, nullable = false)
     private String roleName;
 }
