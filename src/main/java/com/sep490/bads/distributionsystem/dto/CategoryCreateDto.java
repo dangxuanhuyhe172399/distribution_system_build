@@ -4,8 +4,9 @@ import lombok.*;
 import jakarta.validation.constraints.*;
 
 @Data @NoArgsConstructor @AllArgsConstructor
-public class RoleUpdateDto {
+public class CategoryCreateDto {
     @NotBlank
-    @Size(max=50)
+    @NotNull(message = "Tên không được bỏ trống")
+    @Size(max=100)
     private String name;
 }

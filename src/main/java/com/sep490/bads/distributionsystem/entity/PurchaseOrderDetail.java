@@ -6,15 +6,15 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "SalesOrderDetail")
+@Table(name = "PurchaseOrderDetail")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class SalesOrderDetail extends BaseEntity{
+public class PurchaseOrderDetail extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_detail_id")
+    @Column(name = "po_detail_id")
     private Long id;
 
-    @ManyToOne @JoinColumn(name = "order_id")
-    private SalesOrder order;
+    @ManyToOne @JoinColumn(name = "po_id")
+    private PurchaseOrder purchaseOrder;
 
     @ManyToOne @JoinColumn(name = "product_id")
     private Product product;
@@ -24,9 +24,6 @@ public class SalesOrderDetail extends BaseEntity{
 
     @Column(name = "unit_price", precision = 18)
     private Long unitPrice;
-
-    @Column(name = "discount", precision = 5)
-    private Long discount;
 
     @Column(name = "total_price", precision = 18, insertable = false, updatable = false)
     private Long totalPrice;

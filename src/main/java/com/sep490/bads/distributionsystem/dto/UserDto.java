@@ -2,7 +2,9 @@ package com.sep490.bads.distributionsystem.dto;
 
 import com.sep490.bads.distributionsystem.entity.type.UserGender;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
+import lombok.Data;
 
+@Data
 public class UserDto {
     private Long id;
     private String username;
