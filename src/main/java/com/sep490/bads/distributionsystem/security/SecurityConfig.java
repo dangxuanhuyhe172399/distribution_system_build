@@ -23,11 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(
-        securedEnabled = true,
-        jsr250Enabled = true,
-        prePostEnabled = true
-)
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final GlobalExceptionHandler globalExceptionHandler;
@@ -80,6 +76,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    //JwtAuthenticationProvider
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -88,6 +85,7 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
+    //JwtAuthenticationFilter
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

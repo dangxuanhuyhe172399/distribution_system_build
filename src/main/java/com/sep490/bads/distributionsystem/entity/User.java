@@ -45,22 +45,19 @@ public class User {
 
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<SalesOrder> salesOrders = new HashSet<>();
 
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
 
 
     @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
-    @JsonIgnore
+
     private Set<Invoice> invoicesCreated = new HashSet<>();
 
 
     @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<ExportNote> exportNotesCreated = new HashSet<>();
 }
-}
+

@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("v1/public/portal/auth")
+@RequestMapping("v1/auth")
 @Tag(name = "Authentication", description = "")
 public class AuthController {
     @Autowired
@@ -23,12 +23,8 @@ public class AuthController {
         return ResponseEntity.ok(authService.signIn(dto));
     }
 
-    @Operation(summary = "Quên mật khẩu (gửi link(có otp) reset qua mail)")
-    @GetMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
-        authService.forgotPassword(email);
-        return ResponseEntity.ok("Please check your email. If email existed, you will receive a link to reset your password.");
-    }
+//quên mật khẩu gửi mail tới Admin
+
 
 }
 

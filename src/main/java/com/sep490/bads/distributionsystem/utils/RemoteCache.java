@@ -46,7 +46,8 @@ public class RemoteCache {
     public long pfMergeCount(List<String> keys){
         try{
             if(!keys.isEmpty()){
-                RHyperLogLog<String> hp = redissonClient.getHyperLogLog(keys.getFirst());
+                // Thay keys.getFirst() bằng keys.get(0)
+                RHyperLogLog<String> hp = redissonClient.getHyperLogLog(keys.get(0));
                 for(String key : keys){
                     RHyperLogLog<String> mergeKey = redissonClient.getHyperLogLog(key);
                     hp.mergeWith(mergeKey.getName());
@@ -59,6 +60,7 @@ public class RemoteCache {
         }
         return 0;
     }
+
 
     public void rDequePutId(String key, Object value){
         try{
