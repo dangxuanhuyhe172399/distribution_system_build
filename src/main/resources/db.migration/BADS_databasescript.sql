@@ -64,7 +64,7 @@ CREATE TABLE CustomerType (
                               type_id INT PRIMARY KEY IDENTITY(1,1),
                               type_name NVARCHAR(50)
 );
---status BIT DEFAULT 1
+
 CREATE TABLE Customer (
                           customer_id INT PRIMARY KEY IDENTITY(1,1),
                           name NVARCHAR(100) NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE Customer (
                           FOREIGN KEY (created_by) REFERENCES [User](user_id),
                           FOREIGN KEY (updated_by) REFERENCES [User](user_id)
 );
---created_by, updated_by :  tracking ngày cập nhật
+
 CREATE TABLE Supplier (
                           supplier_id INT PRIMARY KEY IDENTITY(1,1),
                           supplier_name NVARCHAR(100) NOT NULL,
@@ -99,7 +99,6 @@ CREATE TABLE Supplier (
                           FOREIGN KEY (created_by) REFERENCES [User](user_id),
                           FOREIGN KEY (updated_by) REFERENCES [User](user_id)
 );
-
 CREATE TABLE Warehouse (
                            warehouse_id INT PRIMARY KEY IDENTITY(1,1),
                            warehouse_name NVARCHAR(100),
@@ -117,8 +116,6 @@ CREATE TABLE Inventory (
                            FOREIGN KEY (warehouse_id) REFERENCES Warehouse(warehouse_id),
                            FOREIGN KEY (product_id) REFERENCES Product(product_id)
 );
-
---created_by, updated_by
 CREATE TABLE SalesOrder (
                             order_id INT PRIMARY KEY IDENTITY(1,1),
                             customer_id INT,
@@ -146,7 +143,6 @@ CREATE TABLE SalesOrderDetail (
                                   FOREIGN KEY (order_id) REFERENCES SalesOrder(order_id),
                                   FOREIGN KEY (product_id) REFERENCES Product(product_id)
 );
---expected_delivery_date DATE    Kế hoạch nhập
 CREATE TABLE PurchaseOrder (
                                po_id INT PRIMARY KEY IDENTITY(1,1),
                                supplier_id INT,
@@ -173,9 +169,6 @@ CREATE TABLE PurchaseOrderDetail (
                                      FOREIGN KEY (po_id) REFERENCES PurchaseOrder(po_id),
                                      FOREIGN KEY (product_id) REFERENCES Product(product_id)
 );
-
---updated_at, updated_by	Nếu chỉnh sửa hóa đơn
---status          (Paid/Pending/Cancelled)
 CREATE TABLE Invoice (
                          invoice_id INT PRIMARY KEY IDENTITY(1,1),
                          order_id INT,
@@ -191,9 +184,6 @@ CREATE TABLE Invoice (
                          FOREIGN KEY (created_by) REFERENCES [User](user_id),
                          FOREIGN KEY (updated_by) REFERENCES [User](user_id)
 );
-
---approved_by INT	người duyệt
---updated_at, updated_by	Theo dõi chỉnh sửa
 CREATE TABLE ExportNote (
                             export_note_id INT PRIMARY KEY IDENTITY(1,1),
                             warehouse_id INT,
