@@ -119,6 +119,7 @@ CREATE TABLE Inventory (
 CREATE TABLE SalesOrder (
                             order_id INT PRIMARY KEY IDENTITY(1,1),
                             customer_id INT,
+                            user_id INT,
                             status NVARCHAR(20) DEFAULT 'Pending',
                             payment_method NVARCHAR(50),
                             note NVARCHAR(255),
@@ -200,42 +201,41 @@ CREATE TABLE ExportNote (
                             FOREIGN KEY (updated_by) REFERENCES [User](user_id)
 );
 
-
 --  INSERT ROLE
 INSERT INTO Role (role_name) VALUES
-                                 ('admin'),               -- Quản trị toàn hệ thống
-                                 ('warehouseStaff'),     -- Nhân viên kho
-                                 ('saleStaff'),         -- Nhân viên bán hàng
-                                 ('accountstaff');    -- Nhân viên kế toán
+                                 (N'admin'),               -- Quản trị toàn hệ thống
+                                 (N'warehouseStaff'),     -- Nhân viên kho
+                                 (N'saleStaff'),         -- Nhân viên bán hàng
+                                 (N'accountstaff');    -- Nhân viên kế toán
 
 -- INSERT UNIT (Đơn vị tính)
 INSERT INTO Unit (unit_name) VALUES
-                                 ('Hộp'),
-                                 ('Gói'),
-                                 ('Khay'),
-                                 ('500gr'),
-                                 ('440gr'),
-                                 ('600gr'),
-                                 ('700gr'),
-                                 ('300gr'),
-                                 ('1200gr');
+                                 (N'Hộp'),
+                                 (N'Gói'),
+                                 (N'Khay'),
+                                 (N'500gr'),
+                                 (N'440gr'),
+                                 (N'600gr'),
+                                 (N'700gr'),
+                                 (N'300gr'),
+                                 (N'1200gr');
 
 --INSERT CUSTOMER TYPE
 INSERT INTO CustomerType (type_name) VALUES
-                                         ('Khách lẻ'),
-                                         ('Khách buôn');
+                                         (N'Khách lẻ'),
+                                         (N'Khách buôn');
 
 --INSERT CATEGORY (Danh mục sản phẩm)
 INSERT INTO Category (category_name) VALUES
-                                         ('Nem chua rán'),
-                                         ('Phô mai'),
-                                         ('Xúc xích'),
-                                         ('Đồ viên');
+                                         (N'Nem chua rán'),
+                                         (N'Phô mai'),
+                                         (N'Xúc xích'),
+                                         (N'Đồ viên');
 
 --INSERT WAREHOUSE
 INSERT INTO Warehouse (warehouse_name, address, manager_id, status) VALUES
-                                                                        ('Kho Hà Nội', 'Hà Nội', NULL, 1),
-                                                                        ('Kho Hồ Chí Minh', 'Hồ Chí Minh', NULL, 1);
+                                                                        (N'Kho Hà Nội', N'Hà Nội', NULL, 1),
+                                                                        (N'Kho Hồ Chí Minh', N'Hồ Chí Minh', NULL, 1);
 
 -----------------------------------------------------
 -- TRIGGER FOR Product
