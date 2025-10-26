@@ -13,22 +13,22 @@ CREATE TABLE Role (
 --user_code  NVARCHAR(50) NOT NULL UNIQUE hoac là tự động tạo
 CREATE TABLE [User] (
                         user_id INT PRIMARY KEY IDENTITY(1,1),
-    user_code NVARCHAR(50) NOT NULL UNIQUE,
-    username NVARCHAR(50) NOT NULL UNIQUE,
-    password NVARCHAR(255) NOT NULL,
-    date_of_birth DATE NULL,
-    avatar NVARCHAR(255) NULL,
-    full_name NVARCHAR(100),
-    email NVARCHAR(100),
-    phone NVARCHAR(20),
-    status BIT DEFAULT 1,
-    role_id INT,
-    gender NVARCHAR(16) NULL,
-    address NVARCHAR(255) NULL,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME NULL,
-    FOREIGN KEY (role_id) REFERENCES Role(role_id)
-    );
+                        user_code NVARCHAR(50) NOT NULL UNIQUE,
+                        username NVARCHAR(50) NOT NULL UNIQUE,
+                        password NVARCHAR(255) NOT NULL,
+                        date_of_birth DATE NULL,
+                        avatar NVARCHAR(255) NULL,
+                        full_name NVARCHAR(100),
+                        email NVARCHAR(100),
+                        phone NVARCHAR(20),
+                        status BIT DEFAULT 1,
+                        role_id INT,
+                        gender NVARCHAR(16) NULL,
+                        address NVARCHAR(255) NULL,
+                        created_at DATETIME DEFAULT GETDATE(),
+                        updated_at DATETIME NULL,
+                        FOREIGN KEY (role_id) REFERENCES Role(role_id)
+);
 CREATE TABLE Category (
                           category_id INT PRIMARY KEY IDENTITY(1,1),
                           category_name NVARCHAR(100) NOT NULL
@@ -243,13 +243,13 @@ INSERT INTO Warehouse (warehouse_name, address, manager_id, status) VALUES
 CREATE TRIGGER trg_Product_UpdateTime
     ON Product
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE p
-SET updated_at = GETDATE()
+    UPDATE p
+    SET updated_at = GETDATE()
     FROM Product p
-    INNER JOIN inserted i ON p.product_id = i.product_id;
+             INNER JOIN inserted i ON p.product_id = i.product_id;
 END;
 GO
 
@@ -259,13 +259,13 @@ GO
 CREATE TRIGGER trg_Customer_UpdateTime
     ON Customer
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE c
-SET updated_at = GETDATE()
+    UPDATE c
+    SET updated_at = GETDATE()
     FROM Customer c
-    INNER JOIN inserted i ON c.customer_id = i.customer_id;
+             INNER JOIN inserted i ON c.customer_id = i.customer_id;
 END;
 GO
 
@@ -275,13 +275,13 @@ GO
 CREATE TRIGGER trg_Supplier_UpdateTime
     ON Supplier
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE s
-SET updated_at = GETDATE()
+    UPDATE s
+    SET updated_at = GETDATE()
     FROM Supplier s
-    INNER JOIN inserted i ON s.supplier_id = i.supplier_id;
+             INNER JOIN inserted i ON s.supplier_id = i.supplier_id;
 END;
 GO
 
@@ -291,13 +291,13 @@ GO
 CREATE TRIGGER trg_SalesOrder_UpdateTime
     ON SalesOrder
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE so
-SET updated_at = GETDATE()
+    UPDATE so
+    SET updated_at = GETDATE()
     FROM SalesOrder so
-    INNER JOIN inserted i ON so.order_id = i.order_id;
+             INNER JOIN inserted i ON so.order_id = i.order_id;
 END;
 GO
 
@@ -307,13 +307,13 @@ GO
 CREATE TRIGGER trg_PurchaseOrder_UpdateTime
     ON PurchaseOrder
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE po
-SET updated_at = GETDATE()
+    UPDATE po
+    SET updated_at = GETDATE()
     FROM PurchaseOrder po
-    INNER JOIN inserted i ON po.po_id = i.po_id;
+             INNER JOIN inserted i ON po.po_id = i.po_id;
 END;
 GO
 
@@ -323,13 +323,13 @@ GO
 CREATE TRIGGER trg_Invoice_UpdateTime
     ON Invoice
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE inv
-SET updated_at = GETDATE()
+    UPDATE inv
+    SET updated_at = GETDATE()
     FROM Invoice inv
-    INNER JOIN inserted i ON inv.invoice_id = i.invoice_id;
+             INNER JOIN inserted i ON inv.invoice_id = i.invoice_id;
 END;
 GO
 
@@ -339,12 +339,12 @@ GO
 CREATE TRIGGER trg_ExportNote_UpdateTime
     ON ExportNote
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE en
-SET updated_at = GETDATE()
+    UPDATE en
+    SET updated_at = GETDATE()
     FROM ExportNote en
-    INNER JOIN inserted i ON en.export_note_id = i.export_note_id;
+             INNER JOIN inserted i ON en.export_note_id = i.export_note_id;
 END;
 GO
