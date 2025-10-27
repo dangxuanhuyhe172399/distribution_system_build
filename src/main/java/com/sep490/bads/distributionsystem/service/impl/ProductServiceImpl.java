@@ -97,4 +97,13 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> page = productRepository.findAll(spec, pageable);
         return page.map(productMapper::toDto);
     }
+
+    @Override
+    public List<ProductDto> getAllProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(productMapper::toDto)
+                .toList();
+    }
+
 }

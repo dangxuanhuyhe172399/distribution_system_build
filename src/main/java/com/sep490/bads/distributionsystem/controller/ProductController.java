@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -61,4 +63,12 @@ public class ProductController {
                 ApiResponse.success(productService.filterProducts(filterDto))
         );
     }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ProductDto>>> getAllProducts() {
+        return ResponseEntity.ok(
+                ApiResponse.success(productService.getAllProducts())
+        );
+    }
+
 }
