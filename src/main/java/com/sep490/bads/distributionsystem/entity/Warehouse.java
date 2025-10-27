@@ -19,7 +19,7 @@ public class Warehouse extends BaseEntity{
     @Column(name = "warehouse_name", length = 100)
     private String name;
 
-    @Column(length = 255)
+    @Column(name = "address", length = 255)
     private String address;
 
     @ManyToOne @JoinColumn(name = "manager_id")

@@ -14,4 +14,5 @@ public class UserDto {
     private String email;
     private UserStatus status;
     private Long birthday;
+    private String userCode;
 }

@@ -21,13 +21,15 @@ public class Supplier extends BaseEntity {
     @Column(name = "contact_name", length = 100)
     private String contactName;
 
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(length = 100)
+
+    @Column(name = "email", length = 100)
     private String email;
 
-    @Column(length = 255)
+
+    @Column(name = "address", length = 255)
     private String address;
 
     @Column(name = "tax_code", length = 50)

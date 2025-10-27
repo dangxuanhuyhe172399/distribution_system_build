@@ -348,3 +348,4 @@ BEGIN
              INNER JOIN inserted i ON en.export_note_id = i.export_note_id;
 END;
 GO
+

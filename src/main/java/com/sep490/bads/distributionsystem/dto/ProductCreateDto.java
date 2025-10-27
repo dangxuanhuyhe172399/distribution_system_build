@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class ProductCreateDto {
     @NotBlank @Size(max=100) private String name;
+    @NotBlank
+    @Size(max = 50)
+    private String sku; // FE nhập
     @NotNull(message = "Tên không được bỏ trống") //vidu
     private Long categoryId;
     @NotNull

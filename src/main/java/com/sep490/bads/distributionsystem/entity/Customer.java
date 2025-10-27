@@ -18,20 +18,23 @@ public class Customer extends BaseEntity {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(length = 255)
+    @Column(name = "address", length = 255)
     private String address;
 
     @ManyToOne @JoinColumn(name = "type_id")
     private CustomerType type;
 
-    @Column(length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
 
     @Column(name = "tax_code", length = 50)
     private String taxCode;
+
+    @Column(name = "status")
+    private Boolean status = true;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

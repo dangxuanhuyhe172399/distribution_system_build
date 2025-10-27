@@ -20,4 +20,7 @@ public class ProductUpdateDto {
     @PositiveOrZero
     private Long maxStock;
     private Boolean status;
+    @NotBlank
+    @Size(max = 50)
+    private String sku;
 }

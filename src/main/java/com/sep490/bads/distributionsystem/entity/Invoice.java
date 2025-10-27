@@ -31,6 +31,9 @@ public class Invoice extends BaseEntity {
     @Column(name = "grand_total", precision = 18)
     private Long grandTotal;
 
+    @Column(name = "status", length = 20)
+    private String status = "Pending";
+
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;

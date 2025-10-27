@@ -20,14 +20,15 @@ public class PurchaseOrder extends BaseEntity {
     @ManyToOne @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "po_date")
-    private LocalDateTime poDate;
 
     @Column(name = "status", length = 50)
     private String status;
 
     @Column(name = "note", length = 255)
     private String note;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "purchaseOrder")
     private List<PurchaseOrderDetail> details;

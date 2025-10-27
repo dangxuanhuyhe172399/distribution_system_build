@@ -25,6 +25,9 @@ public class ExportNote {
     @Column(name = "total_quantity")
     private Long totalQuantity;
 
+    @Column(name = "status", length = 20)
+    private String status;
+
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "created_by")
     private User createdBy;
 

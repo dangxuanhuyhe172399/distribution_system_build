@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.usertype.UserType;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 @Table(name = "User")
@@ -37,10 +39,24 @@ public class User extends BaseEntity {
     @Column(name = "status", length = 20)
     private UserStatus status;
 
-   // private Long birthday;
+    // private Long birthday;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @Column(name = "gender", length = 16)
+    private String gender;
+
+    @Column(name = "user_code", length = 50, nullable = false, unique = true)
+    private String userCode;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(name = "avatar", length = 255)
+    private String avatar;
+
+    @Column(name = "address", length = 255)
+    private String address;
 }
