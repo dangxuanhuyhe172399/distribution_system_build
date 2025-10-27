@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Getter @Setter
 @Table(name = "ExportNote")
 @NoArgsConstructor @AllArgsConstructor
 public class ExportNote {

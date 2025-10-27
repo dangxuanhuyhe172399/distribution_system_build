@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
-@Data
 @Entity
+@Getter
+@Setter
 @Table(name = "Role")
 @AllArgsConstructor
 @NoArgsConstructor

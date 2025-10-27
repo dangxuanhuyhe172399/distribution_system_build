@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.usertype.UserType;
 
 import java.time.LocalDate;
 
-@Data
 @Entity
 @Table(name = "User")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,8 +38,6 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
     private UserStatus status;
-
-    // private Long birthday;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id")

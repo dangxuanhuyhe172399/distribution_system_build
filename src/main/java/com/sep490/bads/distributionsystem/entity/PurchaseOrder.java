@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "PurchaseOrder")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @SuperBuilder

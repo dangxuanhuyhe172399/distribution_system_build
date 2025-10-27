@@ -1,12 +1,12 @@
 package com.sep490.bads.distributionsystem.dto;
 
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDto {
-
     private Long id;
     private String sku;
     private String name;
@@ -24,5 +24,5 @@ public class ProductDto {
     private Long minStock;
     private Long maxStock;
 
-    private Boolean status;
+    private CommonStatus status;
 }

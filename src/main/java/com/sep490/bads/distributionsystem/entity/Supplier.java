@@ -6,9 +6,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Data
 @Entity
 @Table(name = "Supplier")
+@Getter
+@Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
 public class Supplier extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

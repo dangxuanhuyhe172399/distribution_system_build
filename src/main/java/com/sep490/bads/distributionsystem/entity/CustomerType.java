@@ -5,7 +5,6 @@ import lombok.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Data
 @Entity
 @Table(name = "CustomerType")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder

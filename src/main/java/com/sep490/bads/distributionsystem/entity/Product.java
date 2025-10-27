@@ -1,10 +1,9 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,14 +44,12 @@ public class Product extends BaseEntity {
     @Column(name = "max_stock")
     private Long maxStock;
 
-    @Column(name = "status")
-    private Boolean status;
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    private CommonStatus status;
 
     @Column(name = "sku", length = 50, nullable = false, unique = true)
     private String sku;
-
-
 
     @OneToMany(mappedBy = "product") @JsonIgnore
     private List<SalesOrderDetail> salesDetails;
