@@ -38,8 +38,6 @@ public class Supplier extends BaseEntity {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "supplier") @JsonIgnore
     private List<PurchaseOrder> purchaseOrders;

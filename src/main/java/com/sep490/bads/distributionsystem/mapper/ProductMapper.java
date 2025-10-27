@@ -14,8 +14,6 @@ public interface ProductMapper {
     @Mapping(target = "category.id", source = "categoryId")
     @Mapping(target = "unit.id", source = "unitId")
     @Mapping(target = "stockQuantity", constant = "0L") // default
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Product toEntity(ProductCreateDto dto);
@@ -24,8 +22,7 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "category.id", source = "categoryId")
     @Mapping(target = "unit.id", source = "unitId")
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
+
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     void updateEntityFromDto(ProductUpdateDto dto, @MappingTarget Product product);

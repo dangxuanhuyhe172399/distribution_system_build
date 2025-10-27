@@ -2,13 +2,15 @@ package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Entity
 @Table(name = "PurchaseOrder")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @SuperBuilder
 public class PurchaseOrder extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "po_id")
@@ -27,8 +29,7 @@ public class PurchaseOrder extends BaseEntity {
     @Column(name = "note", length = 255)
     private String note;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+
 
     @OneToMany(mappedBy = "purchaseOrder")
     private List<PurchaseOrderDetail> details;

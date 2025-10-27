@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=bads_db;encrypt=true;trustServerCertificate=true;
-    username: SA #username
-    password: 123456 # password
+    username: sa #username
+    password: 123 # password
     hikari:
       connection-timeout: 30000 # Thời gian chờ một kết nối (ms)
       idle-timeout: 600000     # Thời gian một kết nối có thể nhàn rỗi trong pool (ms)

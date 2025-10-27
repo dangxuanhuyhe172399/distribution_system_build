@@ -36,8 +36,7 @@ public class Customer extends BaseEntity {
     @Column(name = "status")
     private Boolean status = true;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+
 
     @OneToMany(mappedBy = "customer") @JsonIgnore
     private List<SalesOrder> salesOrders;

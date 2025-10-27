@@ -3,6 +3,7 @@ package com.sep490.bads.distributionsystem.controller;
 import com.sep490.bads.distributionsystem.dto.ProductCreateDto;
 import com.sep490.bads.distributionsystem.dto.ProductDto;
 import com.sep490.bads.distributionsystem.dto.ProductFilterDto;
+import com.sep490.bads.distributionsystem.dto.ProductUpdateDto;
 import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
 import com.sep490.bads.distributionsystem.service.ProductService;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-//     Create product
+    //     Create product
     @PostMapping
     public ResponseEntity<ApiResponse<ProductDto>> createProduct(
             @Valid @RequestBody ProductCreateDto productCreateDto) {
@@ -35,17 +36,17 @@ public class ProductController {
         );
     }
 
-//   Update (tạm dùng lại ProductCreateDto — nếu cần, mình có thể tạo ProductUpdateDto)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductDto>> updateProduct(
             @PathVariable Long id,
-            @Valid @RequestBody ProductCreateDto productUpdateDto) {
+            @Valid @RequestBody ProductUpdateDto productUpdateDto) {
         return ResponseEntity.ok(
                 ApiResponse.success(productService.updateProduct(id, productUpdateDto))
         );
     }
 
-//    Soft delete (status = false)
+
+    //    Soft delete (status = false)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
         productService.softDeleteProduct(id);
