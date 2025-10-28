@@ -3,7 +3,6 @@ package com.sep490.bads.distributionsystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
 @Entity
 @Table(name = "Inventory")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder

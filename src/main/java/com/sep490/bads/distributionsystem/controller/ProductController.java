@@ -1,15 +1,18 @@
 package com.sep490.bads.distributionsystem.controller;
 
 import com.sep490.bads.distributionsystem.dto.ProductCreateDto;
+import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.dto.ProductDto;
 import com.sep490.bads.distributionsystem.dto.ProductFilterDto;
 import com.sep490.bads.distributionsystem.dto.ProductUpdateDto;
 import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
 import com.sep490.bads.distributionsystem.service.ProductService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,51 +20,35 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
+@Validated
 public class ProductController {
-
     private final ProductService productService;
 
-    //     Create product
     @PostMapping
-    public ResponseEntity<ApiResponse<ProductDto>> createProduct(
-            @Valid @RequestBody ProductCreateDto productCreateDto) {
-        return ResponseEntity.ok(
-                ApiResponse.success(productService.createProduct(productCreateDto))
-        );
+    public ResultResponse<ProductDto> create(@Valid @RequestBody ProductCreateDto body) {
+        return ResultResponse.created(productService.createProduct(body));
     }
 
-    //Get detail by ID
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductDto>> getProduct(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                ApiResponse.success(productService.getProductById(id))
-        );
+    public ResultResponse<ProductDto> get(@PathVariable @Positive Long id) {
+        return ResultResponse.success(productService.getProductById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductDto>> updateProduct(
-            @PathVariable Long id,
-            @Valid @RequestBody ProductUpdateDto productUpdateDto) {
-        return ResponseEntity.ok(
-                ApiResponse.success(productService.updateProduct(id, productUpdateDto))
-        );
+    public ResultResponse<ProductDto> update(@PathVariable @Positive Long id,
+                                             @Valid @RequestBody ProductUpdateDto body) {
+        return ResultResponse.success(productService.updateProduct(id, body));
     }
 
-
-    //    Soft delete (status = false)
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
+    public ResultResponse<Object> delete(@PathVariable @Positive Long id) {
         productService.softDeleteProduct(id);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResultResponse.success(null);
     }
 
-    // Filter + Pagination (POST vì nhận object phức tạp + body)
     @PostMapping("/filter")
-    public ResponseEntity<ApiResponse<Page<ProductDto>>> filterProducts(
-            @RequestBody ProductFilterDto filterDto) {
-        return ResponseEntity.ok(
-                ApiResponse.success(productService.filterProducts(filterDto))
-        );
+    public ResultResponse<Page<ProductDto>> filter(@Valid @RequestBody ProductFilterDto f) {
+        return ResultResponse.success(productService.filterProducts(f));
     }
 
     @GetMapping
@@ -72,3 +59,4 @@ public class ProductController {
     }
 
 }
+

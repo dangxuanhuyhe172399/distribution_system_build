@@ -1,5 +1,6 @@
 package com.sep490.bads.distributionsystem.dto;
 
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import lombok.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -22,5 +23,5 @@ public class ProductCreateDto {
     private Long minStock;
     @PositiveOrZero
     private Long maxStock;
-    private Boolean status = true;
+    private CommonStatus status;
 }

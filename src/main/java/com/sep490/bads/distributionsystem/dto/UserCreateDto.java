@@ -17,15 +17,4 @@ public class UserCreateDto {
     @NotNull
     private UserType type;
 
-    public static User toUser(UserCreateDto userCreateDto) {
-        User user = new User();
-        user.setUsername(userCreateDto.getUsername());
-        user.setFullName(userCreateDto.getFullName());
-      //  user.setGender(userCreateDto.getGender());
-        user.setEmail(userCreateDto.getEmail());
-        //user.setBirthday(userCreateDto.getBirthday());
-       // user.setType(userCreateDto.getType());
-        user.setStatus(UserStatus.ACTIVE);
-        return user;
-    }
 }

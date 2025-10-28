@@ -37,9 +37,9 @@ public class UserServiceImpl implements UserService {
     public boolean existsByUsername(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
-    public boolean existsByEmail(String email) {
-        return userRepository.findAll().stream().anyMatch(u -> u.getEmail() != null && u.getEmail().equals(email));
-    }
+//    public boolean existsByEmail(String email) {
+//        return userRepository.findAll().stream().anyMatch(u -> u.getEmail() != null && u.getEmail().equals(email));
+//    }
 
     @Override
     public List<UserDto> getAllUser() {

@@ -1,7 +1,6 @@
 package com.sep490.bads.distributionsystem.repository;
 
 import com.sep490.bads.distributionsystem.entity.Role;
-import com.sep490.bads.distributionsystem.entity.type.RoleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +13,6 @@ import java.util.Set;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-//    Optional<Role> findByRoleName(String roleName);
 @Query("select r from Role r join User u on u.role = r where u.id = :userId")
 Optional<Role> findRoleByUserId(@Param("userId") Long userId);
 //

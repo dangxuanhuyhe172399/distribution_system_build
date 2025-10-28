@@ -28,5 +28,4 @@ public class BadRequestException extends BaseException {
                 .status(ex.getCode() == ErrorCode.NOT_FOUND ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getCode(), ex.getMessage()));
     }
-
 }
