@@ -50,13 +50,27 @@ public class JwtService {
                 .setSubject(id)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expireTime * 1000))
-                .signWith(SignatureAlgorithm.HS256, getSignKey()).compact();
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     private Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        String s = secret.trim().replace("\"", "");
+        byte[] keyBytes;
+        if (s.matches("^[A-Za-z0-9_-]+$")) {               // base64url
+            keyBytes = io.jsonwebtoken.io.Decoders.BASE64URL.decode(s);
+        } else if (s.matches("^[A-Za-z0-9+/=\\r\\n]+$")) { // base64 chuẩn
+            // thêm padding nếu thiếu
+            int m = s.length() % 4;
+            if (m != 0) s = s + "====".substring(m);
+            keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(s);
+        } else {                                           // plaintext
+            keyBytes = s.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        }
+        if (keyBytes.length < 32) throw new IllegalArgumentException("JWT secret too short");
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
 
 //    public void saveTokenWithExpireTime(String token, String userId) {
 //        String hashToken = Helper.md5Token(token);

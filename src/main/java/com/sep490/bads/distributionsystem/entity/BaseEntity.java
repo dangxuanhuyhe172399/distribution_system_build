@@ -1,6 +1,5 @@
 package com.sep490.bads.distributionsystem.entity;
 
-import com.sep490.bads.distributionsystem.utils.DateUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
@@ -10,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @MappedSuperclass
@@ -17,20 +18,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public abstract class BaseEntity {
 
-    @Column(name = "created_at")
-    private Long createdAt;
+    @Column(name="created_at") private LocalDateTime createdAt;
+    @Column(name="updated_at") private LocalDateTime updatedAt;
 
-    @Column(name = "updated_at")
-    private Long updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        updatedAt = createdAt = DateUtils.getNowMillisAtUtc();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = DateUtils.getNowMillisAtUtc();
-    }
+    @PrePersist void prePersist() { createdAt = LocalDateTime.now(); updatedAt = createdAt; }
+    @PreUpdate  void preUpdate()  { updatedAt = LocalDateTime.now(); }
 
 }

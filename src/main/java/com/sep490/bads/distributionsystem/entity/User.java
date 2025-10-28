@@ -8,7 +8,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "User")
+@Table(name = "\"User\"", schema = "dbo")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -36,7 +36,7 @@ public class User extends BaseEntity {
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 20)
+    @Column(name = "status", length = 20, nullable = false)
     private UserStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

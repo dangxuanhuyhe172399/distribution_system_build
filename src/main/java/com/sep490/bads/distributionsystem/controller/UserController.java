@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("bads/user")
+@RequestMapping("v1/public/user")
 @Tag(name = "User", description = "User management")
 public class UserController extends BaseController {
     @Autowired
