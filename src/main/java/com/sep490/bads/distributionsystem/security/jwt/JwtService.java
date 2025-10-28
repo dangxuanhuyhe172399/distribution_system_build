@@ -33,8 +33,8 @@ public class JwtService {
     @Value(value = "${jwt.expire-time-refreshToken}")
     private Integer jwtRefreshExpirationMs;
 
-    @Autowired
-    private CacheKey cacheKey;
+//    @Autowired
+//    private CacheKey cacheKey;
 
     public String generateToken(TokenInfo tokenInfo) {
         Map<String, Object> claims = Map.of(

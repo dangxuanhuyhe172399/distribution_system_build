@@ -1,39 +1,77 @@
-//package com.sep490.bads.distributionsystem.utils;
-//
-//import lombok.extern.slf4j.Slf4j;
-//import org.redisson.api.RAtomicLong;
-//import org.redisson.api.RDeque;
-//import org.redisson.api.RHyperLogLog;
-//import org.redisson.api.RedissonClient;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.beans.factory.annotation.Qualifier;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.redis.core.RedisTemplate;
-//import org.springframework.data.redis.core.ZSetOperations;
-//import org.springframework.stereotype.Component;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.Set;
-//import java.util.concurrent.TimeUnit;
-//
-//@Component
-//@Slf4j
-//public class RemoteCache {
-//
-//    public static final int CACHE_DURATION_DEFAULT = 3600; // 1 tieng
-//    public static final int CACHE_6H_DURATION = 3600 * 6; // 6 tieng
-//    public static final int CACHE_5MIN_DURATION = 60 * 5; // 5 min
-//    public static final int CACHE_1W_DURATION = 3600 * 24 * 7; // 1 week
-//    public static final int CACHE_3M_DURATION = 3600 * 24 * 90; // 3 month
-//    public static final int CACHE_1DAY_DURATION = 3600 * 24; // 1 day
-//
+package com.sep490.bads.distributionsystem.utils;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+@Component
+@Slf4j
+public class RemoteCache {
+
+    public static final int CACHE_DURATION_DEFAULT = 3600; // 1 tieng
+    public static final int CACHE_6H_DURATION = 3600 * 6; // 6 tieng
+    public static final int CACHE_5MIN_DURATION = 60 * 5; // 5 min
+    public static final int CACHE_1W_DURATION = 3600 * 24 * 7; // 1 week
+    public static final int CACHE_3M_DURATION = 3600 * 24 * 90; // 3 month
+    public static final int CACHE_1DAY_DURATION = 3600 * 24; // 1 day
+
+    @Autowired(required = false) @Lazy
+    private RedisTemplate<String, String> redisTemplate;
+
+    private final Map<String, Entry> local = new ConcurrentHashMap<>();
+
+    public void put(String key, String value, int expireSec) {
+        if (redisTemplate != null) {
+            redisTemplate.opsForValue().set(key, value, expireSec, TimeUnit.SECONDS);
+        } else {
+            local.put(key, new Entry(value, Instant.now().plusSeconds(expireSec)));
+        }
+    }
+    public void put(String key, Object value, int expireSec) { put(key, JsonParser.toJson(value), expireSec); }
+    public void put(String key, String value) { put(key, value, CACHE_DURATION_DEFAULT); }
+
+    public String get(String key) {
+        if (redisTemplate != null) return redisTemplate.opsForValue().get(key);
+        Entry e = local.get(key);
+        if (e == null || Instant.now().isAfter(e.exp)) return null;
+        return e.val;
+    }
+    public <T> T get(String key, Class<T> t) {
+        String s = get(key);
+        return s == null ? null : JsonParser.entity(s, t);
+    }
+    public void del(String key) {
+        if (redisTemplate != null) redisTemplate.delete(key);
+        local.remove(key);
+    }
+
+    @Scheduled(fixedRate = 60_000)
+    void sweep() {
+        Instant now = Instant.now();
+        local.entrySet().removeIf(en -> now.isAfter(en.getValue().exp));
+    }
+
+    @Data @AllArgsConstructor
+    static class Entry { String val; Instant exp; }
+
+
 //    @Autowired
 //    private RedisTemplate<String, String> redisTemplate;
-//
+
 //    @Autowired
 //    private RedissonClient redissonClient;
-//
+
 //    public long pfCount(String key){
 //        try{
 //            RHyperLogLog<String> hp = redissonClient.getHyperLogLog(key);
@@ -43,7 +81,7 @@
 //            return 0;
 //        }
 //    }
-//
+
 //    public long pfMergeCount(List<String> keys){
 //        try{
 //            if(!keys.isEmpty()){
@@ -60,7 +98,7 @@
 //        }
 //        return 0;
 //    }
-//
+
 //    public void rDequePutId(String key, Object value){
 //        try{
 //            RDeque<Object> queue = redissonClient.getDeque(key);
@@ -69,7 +107,7 @@
 //            log.error(e.getMessage());
 //        }
 //    }
-//
+
 //    public void deleteKey(String key){
 //        try{
 //            RDeque<Object> queue = redissonClient.getDeque(key);
@@ -277,5 +315,5 @@
 //
 //        return redisTemplate.boundZSetOps(key).reverseRangeWithScores(to, topUser);
 //    }
-//}
-//
+}
+

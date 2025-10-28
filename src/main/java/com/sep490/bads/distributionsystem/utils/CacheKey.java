@@ -1,14 +1,12 @@
 package com.sep490.bads.distributionsystem.utils;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 @Component
 public class CacheKey {
+    public String genOtpKey(Long userId) { return "otp:" + userId; }
+    public String genSessionKey(String hash) { return "session:" + hash; }
+    public String genAccountSessionKey(String userId) { return "acctsession:" + userId; }
 
 //    @Value("${redis.prefix-key}")
 //    public String redisPrefixKey;
