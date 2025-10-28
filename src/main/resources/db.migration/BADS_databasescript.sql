@@ -206,7 +206,7 @@ INSERT INTO Role (role_name) VALUES
                                  (N'admin'),               -- Quản trị toàn hệ thống
                                  (N'warehouseStaff'),     -- Nhân viên kho
                                  (N'saleStaff'),         -- Nhân viên bán hàng
-                                 (N'accountstaff');    -- Nhân viên kế toán
+                                 (N'accountStaff');    -- Nhân viên kế toán
 
 -- INSERT UNIT (Đơn vị tính)
 INSERT INTO Unit (unit_name) VALUES

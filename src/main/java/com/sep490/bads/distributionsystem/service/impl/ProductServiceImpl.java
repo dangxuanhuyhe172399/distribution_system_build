@@ -12,6 +12,8 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -78,10 +80,32 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void softDeleteProduct(Long id) {
-        if (productRepo.softDelete(id) == 0) {
-            throw new RuntimeException("Không tìm thấy sản phẩm ID: " + id);
-        }
+        Product p = productRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
+
+        // Chuyển trạng thái về INACTIVE (ẩn)
+        p.setStatus(CommonStatus.INACTIVE);
+        productRepo.save(p);
+
+        log.info("Đã ẩn sản phẩm ID={} (soft delete)", id);
     }
+
+    @Override
+    public ProductDto recoverProduct(Long id) {
+        Product p = productRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
+
+        if (p.getStatus() == CommonStatus.ACTIVE) {
+            throw new RuntimeException("Sản phẩm này đã đang ở trạng thái ACTIVE");
+        }
+
+        p.setStatus(CommonStatus.ACTIVE);
+        productRepo.save(p);
+
+        log.info("Khôi phục sản phẩm ID={} về trạng thái ACTIVE", id);
+        return productMapper.toDto(p);
+    }
+
 
     @Override
     public Page<ProductDto> filterProducts(ProductFilterDto f) {
@@ -93,10 +117,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getAllProducts() {
-        return productRepository.findAll()
+        return productRepo.findAll()
                 .stream()
                 .map(productMapper::toDto)
                 .toList();
     }
+
+
 
 }

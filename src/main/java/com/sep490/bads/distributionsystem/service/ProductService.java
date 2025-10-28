@@ -20,4 +20,6 @@ public interface ProductService {
     List<ProductDto> getAllProducts();
 
     Page<ProductDto> filterProducts(ProductFilterDto filterDto);
+
+    public ProductDto recoverProduct(Long id) ;
 }

@@ -57,6 +57,11 @@ public class ProductController {
                 ApiResponse.success(productService.getAllProducts())
         );
     }
+    @PutMapping("/{id}/recover")
+    public ResultResponse<ProductDto> recover(@PathVariable @Positive Long id) {
+        return ResultResponse.success(productService.recoverProduct(id));
+    }
+
 
 }
 
