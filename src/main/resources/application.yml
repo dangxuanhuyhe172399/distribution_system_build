@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=bads_db;encrypt=true;trustServerCertificate=true;
     username: sa #username
-    password: 123 # password
+    password: 123456 # password
     hikari:
       connection-timeout: 30000 # Thời gian chờ một kết nối (ms)
       idle-timeout: 600000     # Thời gian một kết nối có thể nhàn rỗi trong pool (ms)
@@ -48,10 +48,10 @@ spring:
 #        max-request-size: 10MB
 
 #app:
-#  jwt:
-#    secret: "your-very-long-and-secure-jwt-secret-key" # << THAY CHUỖI BÍ MẬT
-#    expire-time-ms: 86400000 # 24 giờ
-#    refresh-expire-time-ms: 604800000 # 7 ngày
+jwt:
+  secret: ${JWT_SECRET}                 # base64
+  expire-time: ${JWT_EXPIRE_TIME:86400} # GIÂY
+  expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
 
 logging:
   level:

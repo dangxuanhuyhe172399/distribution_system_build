@@ -29,5 +29,11 @@ public interface UserRepository  extends JpaRepository<User, Long>, JpaSpecifica
     @Query(value = "UPDATE [User] SET status = :status WHERE user_id = :id", nativeQuery = true)
     int updateStatus(@Param("id") Long id, @Param("status") String status);
 
+    @Query("""
+           select u from User u
+           left join fetch u.role r
+           where u.username = :username
+           """)
+    Optional<User> findByUsernameWithRole(@Param("username") String username);
 }
 

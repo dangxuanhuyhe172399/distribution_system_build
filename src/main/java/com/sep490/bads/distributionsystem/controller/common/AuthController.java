@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("v1/public/portal/auth")
+@RequestMapping("v1/public/auth")
 @Tag(name = "Authentication", description = "")
 public class AuthController extends BaseController {
     @Autowired

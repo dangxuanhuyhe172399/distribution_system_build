@@ -1,13 +1,18 @@
 package com.sep490.bads.distributionsystem.utils;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 @Component
 public class CacheKey {
 
 //    @Value("${redis.prefix-key}")
 //    public String redisPrefixKey;
-
+//
 //    public String genConfigKey(String key) {
 //        return redisPrefixKey.trim() + ":config:" + key;
 //    }
