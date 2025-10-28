@@ -1,5 +1,6 @@
 package com.sep490.bads.distributionsystem.dto;
 
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import lombok.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -7,6 +8,9 @@ import java.math.BigDecimal;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class ProductCreateDto {
     @NotBlank @Size(max=100) private String name;
+    @NotBlank
+    @Size(max = 50)
+    private String sku; // FE nhập
     @NotNull(message = "Tên không được bỏ trống") //vidu
     private Long categoryId;
     @NotNull
@@ -19,5 +23,5 @@ public class ProductCreateDto {
     private Long minStock;
     @PositiveOrZero
     private Long maxStock;
-    private Boolean status = true;
+    private CommonStatus status;
 }

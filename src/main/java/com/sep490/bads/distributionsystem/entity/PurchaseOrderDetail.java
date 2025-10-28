@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 
-@Data
 @Entity
 @Table(name = "PurchaseOrderDetail")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
