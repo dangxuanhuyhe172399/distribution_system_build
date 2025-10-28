@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -48,5 +50,18 @@ public class ProductController {
     public ResultResponse<Page<ProductDto>> filter(@Valid @RequestBody ProductFilterDto f) {
         return ResultResponse.success(productService.filterProducts(f));
     }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ProductDto>>> getAllProducts() {
+        return ResponseEntity.ok(
+                ApiResponse.success(productService.getAllProducts())
+        );
+    }
+    @PutMapping("/{id}/recover")
+    public ResultResponse<ProductDto> recover(@PathVariable @Positive Long id) {
+        return ResultResponse.success(productService.recoverProduct(id));
+    }
+
+
 }
 
