@@ -14,9 +14,9 @@ import java.util.List;
 @Service
 public interface SalesOrderService {
     List<SalesOrderDto> getAllOrders();
-    Page<SalesOrder> getAllOrders(Pageable pageable);
     SalesOrder findById(Long id);
     SalesOrderDto createOrder(SalesOrderCreateDto dto);
     void updateOrder(Long id, SalesOrderUpdateDto dto);
     void softDeleteOrder(Long id);
+    Page<SalesOrderDto> filterOrders(SalesOrderFilterDto filter, Pageable pageable);
 }

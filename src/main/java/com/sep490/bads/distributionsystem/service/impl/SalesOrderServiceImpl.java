@@ -2,6 +2,7 @@ package com.sep490.bads.distributionsystem.service.impl;
 
 import com.sep490.bads.distributionsystem.dto.SalesOrderDto;
 import com.sep490.bads.distributionsystem.dto.SalesOrderCreateDto;
+import com.sep490.bads.distributionsystem.dto.SalesOrderFilterDto;
 import com.sep490.bads.distributionsystem.dto.SalesOrderUpdateDto;
 import com.sep490.bads.distributionsystem.entity.SalesOrder;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
@@ -35,10 +36,6 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         return salesOrderMapper.toDto(entities);
     }
 
-    @Override
-    public Page<SalesOrder> getAllOrders(Pageable pageable) {
-        return salesOrderRepository.findAll(pageable);
-    }
 
     @Override
     public SalesOrder findById(Long id) {
@@ -95,4 +92,24 @@ public class SalesOrderServiceImpl implements SalesOrderService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+    @Override
+    public Page<SalesOrderDto> filterOrders(SalesOrderFilterDto filter, Pageable pageable) {
+        return salesOrderRepository.findAll((root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (filter.getKeyword() != null && !filter.getKeyword().isBlank()) {
+                String like = "%" + filter.getKeyword().toLowerCase() + "%";
+                predicates.add(cb.like(cb.lower(root.get("customer").get("name")), like));
+            }
+            if (filter.getStatus() != null && !filter.getStatus().isBlank()) {
+                predicates.add(cb.equal(root.get("status"), filter.getStatus()));
+            }
+            if (filter.getPaymentMethod() != null && !filter.getPaymentMethod().isBlank()) {
+                predicates.add(cb.equal(root.get("paymentMethod"), filter.getPaymentMethod()));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        }, pageable).map(salesOrderMapper::toDto);
+    }
+
 }

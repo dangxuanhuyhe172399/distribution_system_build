@@ -3,6 +3,7 @@ package com.sep490.bads.distributionsystem.controller;
 import com.sep490.bads.distributionsystem.dto.*;
 import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
 import com.sep490.bads.distributionsystem.entity.SalesOrder;
+import com.sep490.bads.distributionsystem.repository.SalesOrderRepository;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.SalesOrderService;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -56,16 +58,15 @@ public class SalesOrderController {
         salesOrderService.softDeleteOrder(id);
         return ResultResponse.success("Đơn hàng đã được ẩn");
     }
-
-    /** Lấy danh sách phân trang */
-    @GetMapping("/page")
-    public ResultResponse<Page<SalesOrder>> getAllPage(Pageable pageable) {
-        return ResultResponse.success(salesOrderService.getAllOrders(pageable));
-    }
-
     /** Lấy toàn bộ danh sách */
     @GetMapping
     public ResponseEntity<ApiResponse<List<SalesOrderDto>>> getAllOrders() {
         return ResponseEntity.ok(ApiResponse.success(salesOrderService.getAllOrders()));
     }
+    @PostMapping("/filter")
+    public ResultResponse<Page<SalesOrderDto>> filterOrders(
+            @Valid @RequestBody SalesOrderFilterDto filter, Pageable pageable) {
+        return ResultResponse.success(salesOrderService.filterOrders(filter, pageable));
+    }
+
 }
