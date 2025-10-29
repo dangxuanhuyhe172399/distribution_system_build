@@ -1,17 +1,29 @@
 package com.sep490.bads.distributionsystem.dto;
 
-import com.sep490.bads.distributionsystem.entity.type.UserGender;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
-import lombok.Data;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserDto {
     private Long id;
     private String username;
     private String fullName;
-    private UserGender gender;
-    private String imageUrl;
     private String email;
+    private String phone;
     private UserStatus status;
-    private Long birthday;
+    private Long roleId;
+    private String roleName;
+    private String gender;
+    private String userCode;
+    private Date dateOfBirth;
+    private String avatar;
+    private String address;
+    private LocalDateTime createdAt;
+    private LocalDateTime  updatedAt;
 }

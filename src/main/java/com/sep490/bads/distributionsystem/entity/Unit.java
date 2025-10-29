@@ -13,13 +13,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AllArgsConstructor
 @Builder
 public class Unit extends BaseEntity{
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "unit_id")
     private Long id;
 
     @Column(name = "unit_name", nullable = false, length = 50)
     private String name;
 
-    @OneToMany(mappedBy = "unit") @JsonIgnore
-    private List<Product> products;
 }

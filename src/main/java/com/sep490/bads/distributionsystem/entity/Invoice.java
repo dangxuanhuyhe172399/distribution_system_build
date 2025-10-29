@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Invoice")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,6 +32,10 @@ public class Invoice extends BaseEntity {
 
     @Column(name = "grand_total", precision = 18)
     private Long grandTotal;
+
+    @Builder.Default
+    @Column(name = "status", length = 20)
+    private String status = "Pending";
 
     @ManyToOne
     @JoinColumn(name = "created_by")

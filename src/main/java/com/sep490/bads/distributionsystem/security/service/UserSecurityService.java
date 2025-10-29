@@ -24,8 +24,6 @@ public class UserSecurityService implements UserDetailsService {
     @Autowired
     protected RoleServiceImpl roleServiceImpl;
 
-
-
     @Override
     public UserDetails loadUserByUsername(String subject) throws UsernameNotFoundException {
         final Long userId;

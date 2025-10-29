@@ -6,9 +6,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Data
 @Entity
 @Table(name = "Supplier")
+@Getter
+@Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
 public class Supplier extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,13 +22,15 @@ public class Supplier extends BaseEntity {
     @Column(name = "contact_name", length = 100)
     private String contactName;
 
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(length = 100)
+
+    @Column(name = "email", length = 100)
     private String email;
 
-    @Column(length = 255)
+
+    @Column(name = "address", length = 255)
     private String address;
 
     @Column(name = "tax_code", length = 50)
@@ -36,8 +39,6 @@ public class Supplier extends BaseEntity {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "supplier") @JsonIgnore
     private List<PurchaseOrder> purchaseOrders;

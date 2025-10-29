@@ -1,16 +1,23 @@
 package com.sep490.bads.distributionsystem.security.jwt;
 
 import com.sep490.bads.distributionsystem.entity.User;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TokenInfo {
     private Long userId;
+    private String username;
+    private String role;
 
-    public static TokenInfo createFrom(User user) {
-        TokenInfo tokenInfo = new TokenInfo();
-        tokenInfo.setUserId(user.getId());
-        return tokenInfo;
+    public static TokenInfo createFrom(User u) {
+        return TokenInfo.builder()
+                .userId(u.getId())
+                .username(u.getUsername())
+                .role(u.getRole() != null ? u.getRole().getRoleName() : null)
+                .build();
     }
 
 }

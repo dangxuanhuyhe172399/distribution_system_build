@@ -4,10 +4,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CacheKey {
+    public String genOtpKey(Long userId) { return "otp:" + userId; }
+    public String genSessionKey(String hash) { return "session:" + hash; }
+    public String genAccountSessionKey(String userId) { return "acctsession:" + userId; }
 
 //    @Value("${redis.prefix-key}")
 //    public String redisPrefixKey;
-
+//
 //    public String genConfigKey(String key) {
 //        return redisPrefixKey.trim() + ":config:" + key;
 //    }
