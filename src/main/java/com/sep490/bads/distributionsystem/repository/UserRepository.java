@@ -23,11 +23,26 @@ public interface UserRepository  extends JpaRepository<User, Long>, JpaSpecifica
 
     List<User> findByEmailIn(List<String> validEmails);
 
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "UPDATE [User] SET status = :status WHERE user_id = :id", nativeQuery = true)
-    int updateStatus(@Param("id") Long id, @Param("status") String status);
+    @Query("""
+        select u from User u
+        left join fetch u.role r
+        where u.username = :username
+    """)
+    Optional<User> findByUsernameWithRole(@Param("username") String username);
 
+    @Query("""
+  select u from User u
+  left join fetch u.role
+  where u.username = :username and u.status = com.sep490.bads.distributionsystem.entity.type.UserStatus.ACTIVE
+""")
+    Optional<User> findActiveByUsernameWithRole(@Param("username") String username);
+
+
+//    @Query("""
+//        select u from User u
+//        where u.email = :email
+//          and u.status = com.sep490.bads.distributionsystem.entity.type.UserStatus.ACTIVE
+//    """)
+//    Optional<User> findActiveByEmail(@Param("email") String email);
 }
 
