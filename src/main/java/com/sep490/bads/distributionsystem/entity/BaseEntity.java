@@ -23,12 +23,5 @@ public abstract class BaseEntity {
     @PreUpdate  void preUpdate()  { updatedAt = LocalDateTime.now(); }
 
 
-    @ManyToOne
-    @JoinColumn(name = "created_by")
-    private User createdBy;
-
-    @ManyToOne
-    @JoinColumn(name = "updated_by")
-    private User updatedBy;
 
 }
