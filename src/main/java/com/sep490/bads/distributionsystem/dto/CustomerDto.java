@@ -24,6 +24,6 @@ public class CustomerDto {
 
     private CommonStatus status;
 
-    private Long createdAt;
-    private Long updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
