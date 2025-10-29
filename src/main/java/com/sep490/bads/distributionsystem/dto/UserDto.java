@@ -24,6 +24,6 @@ public class UserDto {
     private Date dateOfBirth;
     private String avatar;
     private String address;
-    private LocalDateTime createdAt;
-    private LocalDateTime  updatedAt;
+    private Long createdAt;
+    private Long updatedAt;
 }
