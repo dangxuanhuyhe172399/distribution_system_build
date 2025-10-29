@@ -1,16 +1,19 @@
 package com.sep490.bads.distributionsystem.controller;
 
 import com.sep490.bads.distributionsystem.dto.*;
-import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
+import com.sep490.bads.distributionsystem.entity.SalesOrder;
+import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.SalesOrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -21,51 +24,46 @@ public class SalesOrderController {
 
     private final SalesOrderService salesOrderService;
 
-    /**
-     * 🟢 1. Tạo mới đơn hàng
-     */
+    /** Tạo đơn hàng mới */
     @PostMapping
     public ResultResponse<SalesOrderDto> create(@Valid @RequestBody SalesOrderCreateDto body) {
         return ResultResponse.created(salesOrderService.createOrder(body));
     }
 
-    /**
-     * 🟢 2. Lấy chi tiết đơn hàng theo ID
-     */
+    /** Lấy chi tiết đơn hàng */
     @GetMapping("/{id}")
     public ResultResponse<SalesOrderDto> getById(@PathVariable @Positive Long id) {
-        return ResultResponse.success(salesOrderService.getOrderById(id));
+        SalesOrder order = salesOrderService.findById(id);
+        SalesOrderDto dto = new SalesOrderDto();
+        dto.setId(order.getId());
+        dto.setStatus(order.getStatus());
+        dto.setPaymentMethod(order.getPaymentMethod());
+        dto.setNote(order.getNote());
+        return ResultResponse.success(dto);
     }
 
-    /**
-     * 🟢 3. Cập nhật trạng thái đơn hàng (CONFIRMED, CANCELED, COMPLETED)
-     */
-    @PutMapping("/{id}/status")
-    public ResultResponse<SalesOrderDto> updateStatus(@PathVariable @Positive Long id,
-                                                      @Valid @RequestBody SalesOrderStatusUpdateDto dto) {
-        return ResultResponse.success(salesOrderService.updateStatus(id, dto));
+    /** Cập nhật thông tin đơn hàng */
+    @PutMapping("/{id}")
+    public ResultResponse<Object> update(@PathVariable @Positive Long id,
+                                         @Valid @RequestBody SalesOrderUpdateDto dto) {
+        salesOrderService.updateOrder(id, dto);
+        return ResultResponse.success("Cập nhật đơn hàng thành công");
     }
 
-    /**
-     * 🟢 4. Xóa mềm đơn hàng (ẩn khỏi danh sách)
-     */
+    /** Xoá mềm đơn hàng */
     @DeleteMapping("/{id}")
     public ResultResponse<Object> softDelete(@PathVariable @Positive Long id) {
         salesOrderService.softDeleteOrder(id);
-        return ResultResponse.success(null);
+        return ResultResponse.success("Đơn hàng đã được ẩn");
     }
 
-    /**
-     * 🟢 5. Lấy danh sách đơn hàng có tìm kiếm / lọc / phân trang
-     */
-    @PostMapping("/filter")
-    public ResultResponse<Page<SalesOrderDto>> filter(@Valid @RequestBody SalesOrderFilterDto f) {
-        return ResultResponse.success(salesOrderService.filterOrders(f));
+    /** Lấy danh sách phân trang */
+    @GetMapping("/page")
+    public ResultResponse<Page<SalesOrder>> getAllPage(Pageable pageable) {
+        return ResultResponse.success(salesOrderService.getAllOrders(pageable));
     }
 
-    /**
-     * 🟢 6. Lấy tất cả đơn hàng (không phân trang)
-     */
+    /** Lấy toàn bộ danh sách */
     @GetMapping
     public ResponseEntity<ApiResponse<List<SalesOrderDto>>> getAllOrders() {
         return ResponseEntity.ok(ApiResponse.success(salesOrderService.getAllOrders()));

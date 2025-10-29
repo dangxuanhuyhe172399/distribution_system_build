@@ -3,17 +3,20 @@ package com.sep490.bads.distributionsystem.service;
 import com.sep490.bads.distributionsystem.dto.SalesOrderCreateDto;
 import com.sep490.bads.distributionsystem.dto.SalesOrderDto;
 import com.sep490.bads.distributionsystem.dto.SalesOrderFilterDto;
-import com.sep490.bads.distributionsystem.dto.SalesOrderStatusUpdateDto;
+import com.sep490.bads.distributionsystem.dto.SalesOrderUpdateDto;
+import com.sep490.bads.distributionsystem.entity.SalesOrder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface SalesOrderService {
-    SalesOrderDto createOrder(SalesOrderCreateDto dto);
-    SalesOrderDto getOrderById(Long id);
-    SalesOrderDto updateStatus(Long id, SalesOrderStatusUpdateDto dto);
-    void softDeleteOrder(Long id);
-    Page<SalesOrderDto> filterOrders(SalesOrderFilterDto f);
     List<SalesOrderDto> getAllOrders();
-
+    Page<SalesOrder> getAllOrders(Pageable pageable);
+    SalesOrder findById(Long id);
+    SalesOrderDto createOrder(SalesOrderCreateDto dto);
+    void updateOrder(Long id, SalesOrderUpdateDto dto);
+    void softDeleteOrder(Long id);
 }
