@@ -251,6 +251,25 @@ public class UserServiceImpl implements UserService {
         return "\"" + s + "\"";          // chuẩn RFC4180
     }
 
+    @Override
+    @Transactional
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (passwordEncoder == null)
+            throw new BadRequestException("Password encoder not configured");
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BadRequestException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+
+
     public static Specification<User> buildUserSpecification(Long id) {
         return (root, query, cb) -> {
             var predicates = new java.util.ArrayList<Predicate>();
