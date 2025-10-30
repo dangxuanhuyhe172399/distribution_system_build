@@ -2,6 +2,7 @@ package com.sep490.bads.distributionsystem.service;
 
 import com.sep490.bads.distributionsystem.dto.UserCreateDto;
 import com.sep490.bads.distributionsystem.dto.UserDto;
+import com.sep490.bads.distributionsystem.dto.UserProfileUpdateDto;
 import com.sep490.bads.distributionsystem.dto.UserUpdateDto;
 import com.sep490.bads.distributionsystem.entity.User;
 import com.sep490.bads.distributionsystem.entity.type.UserGender;
@@ -19,7 +20,7 @@ import java.util.List;
 public interface UserService {
     List<UserDto> getAllUser();
 
-    User findById(Long id);
+    UserDto findDtoById(Long id);
 
     UserDto createUser(@Valid UserCreateDto dto);
 
@@ -27,11 +28,13 @@ public interface UserService {
 
     void updateUserStatus(Long id, UserStatus status);
 
-    Page<User> getAllUsers(Pageable pageable);
+    Page<UserDto> getAllUsers(Pageable pageable);
 
     void softDeleteUser(Long id);
 
-    Object getProfile(Long userId);
+    UserDto getProfile(Long userId);
 
-    void updateUserProfile(UserDetailsImpl userDetails, MultipartFile file, String birthday, UserGender gender);
+    void updateUserProfile(UserDetailsImpl userDetails, UserProfileUpdateDto dto);
+    void updateUserAvatar(UserDetailsImpl userDetails, MultipartFile file);
+
 }
