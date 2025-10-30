@@ -38,4 +38,7 @@ public interface UserService {
     void updateUserProfile(UserDetailsImpl userDetails, UserProfileUpdateDto dto);
     void updateUserAvatar(UserDetailsImpl userDetails, MultipartFile file);
 
+    void changePassword(Long userId, String oldPassword, String newPassword);
+
+
 }
