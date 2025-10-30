@@ -113,6 +113,17 @@ public class UserController extends BaseController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(file);
     }
+    @Operation(summary = "Đổi mật khẩu (trong profile)")
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            Authentication authentication,
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword) {
+        var user = getUserDetails(authentication);
+        userService.changePassword(user.getUserId(), oldPassword, newPassword);
+        return ResponseEntity.ok("Password changed successfully");
+    }
+
     @PatchMapping("/{id}/activate")
     public ResponseEntity<Void> activate(@PathVariable Long id){
         userService.updateUserStatus(id, UserStatus.ACTIVE);
@@ -124,4 +135,5 @@ public class UserController extends BaseController {
         userService.updateUserStatus(id, UserStatus.INACTIVE);
         return ResponseEntity.noContent().build();
     }
+
 }
