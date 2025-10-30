@@ -3,8 +3,8 @@ package com.sep490.bads.distributionsystem.dto;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +21,7 @@ public class UserDto {
     private String roleName;
     private String gender;
     private String userCode;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String avatar;
     private String address;
     private LocalDateTime createdAt;

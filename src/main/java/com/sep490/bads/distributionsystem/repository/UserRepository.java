@@ -1,6 +1,7 @@
 package com.sep490.bads.distributionsystem.repository;
 
 import com.sep490.bads.distributionsystem.entity.User;
+import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,6 +24,10 @@ public interface UserRepository  extends JpaRepository<User, Long>, JpaSpecifica
 
     List<User> findByEmailIn(List<String> validEmails);
 
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
     @Query("""
         select u from User u
         left join fetch u.role r
@@ -37,12 +42,8 @@ public interface UserRepository  extends JpaRepository<User, Long>, JpaSpecifica
 """)
     Optional<User> findActiveByUsernameWithRole(@Param("username") String username);
 
-
-//    @Query("""
-//        select u from User u
-//        where u.email = :email
-//          and u.status = com.sep490.bads.distributionsystem.entity.type.UserStatus.ACTIVE
-//    """)
-//    Optional<User> findActiveByEmail(@Param("email") String email);
+    @Query("select count(u) from User u where u.status <> com.sep490.bads.distributionsystem.entity.type.UserStatus.DELETED")
+    long countExcludeDeleted();
+    long countByStatus(UserStatus status);
 }
 
