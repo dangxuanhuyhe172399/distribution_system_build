@@ -1,31 +1,22 @@
 package com.sep490.bads.distributionsystem.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashSet;
-import java.util.Set;
 
+import java.util.List;
 
 @Entity
 @Table(name = "CustomerType")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class CustomerType {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long typeId;
-
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class CustomerType extends BaseEntity {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "type_id")
+    private Long id;
 
     @Column(name = "type_name", length = 50)
-    private String typeName;
+    private String name;
 
-
-    @OneToMany(mappedBy = "customerType", fetch = FetchType.LAZY)
-    private Set<Customer> customers = new HashSet<>();
+    @OneToMany(mappedBy = "type") @JsonIgnore
+    private List<Customer> customers;
 }

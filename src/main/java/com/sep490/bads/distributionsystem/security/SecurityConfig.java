@@ -1,7 +1,9 @@
 package com.sep490.bads.distributionsystem.security;
 
+import com.sep490.bads.distributionsystem.exception.GlobalExceptionHandler;
 import com.sep490.bads.distributionsystem.security.jwt.AuthedEntryPoint;
 import com.sep490.bads.distributionsystem.security.jwt.JwtAuthFilter;
+import com.sep490.bads.distributionsystem.security.service.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,11 +44,11 @@ public class SecurityConfig {
     public JwtAuthFilter authFilter() {
         return new JwtAuthFilter();
     }
+
     // User Creation
     @Bean
     public UserDetailsService userDetailsService() {
-        return null;
-//                new UserSecurityService();
+        return new UserSecurityService();
     }
 
 
@@ -76,7 +78,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    //JwtAuthenticationProvider
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -85,7 +86,6 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
-    //JwtAuthenticationFilter
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

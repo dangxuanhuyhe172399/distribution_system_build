@@ -1,39 +1,38 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.List;
 
 @Entity
 @Table(name = "Warehouse")
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class Warehouse {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long warehouseId;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Warehouse extends BaseEntity{
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "warehouse_id")
+    private Long id;
 
     @Column(name = "warehouse_name", length = 100)
-    private String warehouseName;
+    private String name;
 
-    @Column(length = 255)
+    @Column(name = "address", length = 255)
     private String address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
+    @ManyToOne @JoinColumn(name = "manager_id")
     private User manager;
 
-    @Column(columnDefinition = "bit default 1")
-    private Boolean status = true;
+    @Column(name = "status")
+    private Boolean status;
 
-    @OneToMany(mappedBy = "warehouse", fetch = FetchType.LAZY)
-    private Set<Inventory> inventories = new HashSet<>();
+    @OneToMany(mappedBy = "warehouse") @JsonIgnore
+    private List<Inventory> inventories;
 
-    @OneToMany(mappedBy = "warehouse", fetch = FetchType.LAZY)
-    private Set<ExportNote> exportNotes = new HashSet<>();
+    @OneToMany(mappedBy = "warehouse") @JsonIgnore
+    private List<ExportNote> exportNotes;
 }

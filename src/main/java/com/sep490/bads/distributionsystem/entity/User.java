@@ -1,63 +1,63 @@
 package com.sep490.bads.distributionsystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "User")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "\"User\"", schema = "dbo")
 @Getter
 @Setter
-public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class User extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "username", length = 50, nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
 
     @Column(name = "full_name", length = 100)
     private String fullName;
 
-    @Column(length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(nullable = false)
-    private Boolean status = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    private UserStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @Column(name = "gender", length = 16)
+    private String gender;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<SalesOrder> salesOrders = new HashSet<>();
+    @Column(name = "user_code", length = 50, nullable = false, unique = true)
+    private String userCode;
 
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
+    @Column(name = "avatar", length = 255)
+    private String avatar;
 
-
-    @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
-
-    private Set<Invoice> invoicesCreated = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
-    private Set<ExportNote> exportNotesCreated = new HashSet<>();
+    @Column(name = "address", length = 255)
+    private String address;
 }
-

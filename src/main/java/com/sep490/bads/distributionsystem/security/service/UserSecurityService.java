@@ -1,38 +1,52 @@
-// java
 package com.sep490.bads.distributionsystem.security.service;
 
 import com.sep490.bads.distributionsystem.entity.Role;
 import com.sep490.bads.distributionsystem.entity.User;
-import com.sep490.bads.distributionsystem.repository.UserRepository;
+import com.sep490.bads.distributionsystem.service.impl.RoleServiceImpl;
+import com.sep490.bads.distributionsystem.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 @Service
 public class UserSecurityService implements UserDetailsService {
 
-    private final UserRepository userRepository;
-
     @Autowired
-    public UserSecurityService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    protected UserServiceImpl userServiceImpl;
+    @Autowired
+    protected RoleServiceImpl roleServiceImpl;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (username == null || username.isBlank()) {
-            throw new UsernameNotFoundException("User not found: " + username);
+    public UserDetails loadUserByUsername(String subject) throws UsernameNotFoundException {
+        final Long userId;
+        try {
+            userId = Long.parseLong(subject); // subject = userId từ JWT
+        } catch (NumberFormatException e) {
+            throw new UsernameNotFoundException("Invalid token subject: " + subject);
         }
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        User u = userServiceImpl.findById(userId);
+        if (u == null) throw new UsernameNotFoundException("User not found " + subject);
 
-        Set<Role> roles = user.getRole() == null ? Collections.emptySet() : Collections.singleton(user.getRole());
-        return new UserDetailsImpl(user, roles);
+        // Lấy role
+        String roleName = (u.getRole() != null)
+                ? u.getRole().getRoleName()
+                : roleServiceImpl.findRoleByUserId(userId).map(Role::getRoleName).orElse("USER");
+
+        List<GrantedAuthority> auths = List.of(new SimpleGrantedAuthority("ROLE_" + roleName));
+
+        return new org.springframework.security.core.userdetails.User(
+                u.getUsername(),
+                u.getPassword(),
+                Boolean.TRUE.equals(u.getStatus()),  // enabled
+                true, true, true,
+                auths
+        );
     }
 }

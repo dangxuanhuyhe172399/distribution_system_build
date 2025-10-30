@@ -1,47 +1,42 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "SalesOrder")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class SalesOrder {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class SalesOrder extends BaseEntity{
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")
+    private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
+    @ManyToOne @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
-    @Column(length = 50)
+    @Column(name = "status", length = 50)
     private String status;
 
     @Column(name = "payment_method", length = 50)
     private String paymentMethod;
 
-    @Column(length = 255)
+    @Column(name = "note", length = 255)
     private String note;
 
-    @OneToMany(mappedBy = "salesOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<SalesOrderDetail> details = new HashSet<>();
+    @OneToMany(mappedBy = "order")
+    private List<SalesOrderDetail> details;
 
-    @OneToOne(mappedBy = "salesOrder", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "order")
+    @JsonIgnore
     private Invoice invoice;
 }

@@ -1,41 +1,37 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Entity
 @Table(name = "PurchaseOrder")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class PurchaseOrder {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @SuperBuilder
+public class PurchaseOrder extends BaseEntity {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "po_id")
+    private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long poId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "supplier_id")
+    @ManyToOne @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "po_date")
-    private LocalDateTime poDate;
 
-    @Column(length = 50)
+    @Column(name = "status", length = 50)
     private String status;
 
-    @Column(length = 255)
+    @Column(name = "note", length = 255)
     private String note;
 
-    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<PurchaseOrderDetail> details = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "purchaseOrder")
+    private List<PurchaseOrderDetail> details;
 }

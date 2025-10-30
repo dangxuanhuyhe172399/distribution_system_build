@@ -1,21 +1,37 @@
 package com.sep490.bads.distributionsystem.service;
 
+import com.sep490.bads.distributionsystem.dto.UserCreateDto;
 import com.sep490.bads.distributionsystem.dto.UserDto;
-import org.springframework.security.core.Authentication;
+import com.sep490.bads.distributionsystem.dto.UserUpdateDto;
+import com.sep490.bads.distributionsystem.entity.User;
+import com.sep490.bads.distributionsystem.entity.type.UserGender;
+import com.sep490.bads.distributionsystem.entity.type.UserStatus;
+import com.sep490.bads.distributionsystem.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Service
 public interface UserService {
+    List<UserDto> getAllUser();
 
-    List<UserDto> getAllUsers();
+    User findById(Long id);
 
-    UserDto getUserById(Long id);
+    UserDto createUser(@Valid UserCreateDto dto);
 
-    UserDto createUser(UserDto userDto);
+    void updateUser(Long id, @Valid UserUpdateDto updateData);
 
-    UserDto updateUser(Long id, UserDto userDto);
+    void updateUserStatus(Long id, UserStatus status);
 
-    void deleteUser(Long id);
+    Page<User> getAllUsers(Pageable pageable);
 
-    UserDto getCurrentUser(Authentication authentication);
+    void softDeleteUser(Long id);
+
+    Object getProfile(Long userId);
+
+    void updateUserProfile(UserDetailsImpl userDetails, MultipartFile file, String birthday, UserGender gender);
 }

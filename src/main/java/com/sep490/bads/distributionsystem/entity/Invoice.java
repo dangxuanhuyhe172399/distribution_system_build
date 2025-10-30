@@ -2,38 +2,42 @@ package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Invoice")
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class Invoice {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Invoice extends BaseEntity {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "invoice_id")
+    private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long invoiceId;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private SalesOrder salesOrder;
+    @OneToOne
+    @JoinColumn(name = "order_id", unique = true)
+    private SalesOrder order;
 
     @Column(name = "invoice_date")
     private LocalDateTime invoiceDate;
 
-    @Column(name = "vat_rate", precision = 5, scale = 2)
-    private BigDecimal vatRate;
+    @Column(name = "vat_rate", precision = 5)
+    private Long vatRate;
 
-    @Column(name = "vat_amount", precision = 18, scale = 2)
-    private BigDecimal vatAmount;
+    @Column(name = "vat_amount", precision = 18)
+    private Long vatAmount;
 
-    @Column(name = "grand_total", precision = 18, scale = 2)
-    private BigDecimal grandTotal;
+    @Column(name = "grand_total", precision = 18)
+    private Long grandTotal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Builder.Default
+    @Column(name = "status", length = 20)
+    private String status = "Pending";
+
+    @ManyToOne
     @JoinColumn(name = "created_by")
-    private User createdByUser;
+    private User createdBy;
 }

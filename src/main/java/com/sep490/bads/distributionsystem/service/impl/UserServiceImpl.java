@@ -1,121 +1,101 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
+import com.sep490.bads.distributionsystem.dto.UserCreateDto;
 import com.sep490.bads.distributionsystem.dto.UserDto;
-import com.sep490.bads.distributionsystem.entity.Role;
+import com.sep490.bads.distributionsystem.dto.UserUpdateDto;
 import com.sep490.bads.distributionsystem.entity.User;
-import com.sep490.bads.distributionsystem.repository.RoleRepository;
+import com.sep490.bads.distributionsystem.entity.type.UserGender;
+import com.sep490.bads.distributionsystem.entity.type.UserStatus;
+import com.sep490.bads.distributionsystem.mapper.UserMapper;
 import com.sep490.bads.distributionsystem.repository.UserRepository;
+import com.sep490.bads.distributionsystem.security.service.UserDetailsImpl;
 import com.sep490.bads.distributionsystem.service.UserService;
+import jakarta.persistence.criteria.Predicate;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
-    private RoleRepository roleRepository;
+    UserMapper userMapper;
+
+    public User findByUsername(String username) {
+        return userRepository.findActiveByUsername(username).orElse(null);
+    }
+    public boolean existsByUsername(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
+//    public boolean existsByEmail(String email) {
+//        return userRepository.findAll().stream().anyMatch(u -> u.getEmail() != null && u.getEmail().equals(email));
+//    }
 
     @Override
-    public List<UserDto> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<UserDto> getAllUser() {
+        List<User> userEntities = new ArrayList<>();
+    //    userEntities.add(userRepository.findById().get());
+        return userMapper.toDto(userEntities);
     }
 
-    @Override
-    public UserDto getUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy user với ID: " + id));
-        return convertToDto(user);
-    }
-
-    @Override
-    public UserDto createUser(UserDto userDto) {
-        if (userRepository.findByUsername(userDto.getUsername()).isPresent()) {
-            throw new RuntimeException("Username đã tồn tại!");
-        }
-
-        User user = convertToEntity(userDto);
-        return convertToDto(userRepository.save(user));
+    public User findById(Long id) {
+        return userRepository.findOne(buildUserSpecification(id)).orElse(null);
     }
 
     @Override
-    public UserDto updateUser(Long id, UserDto userDto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy user để cập nhật"));
-
-        user.setFullName(userDto.getFullName());
-        user.setEmail(userDto.getEmail());
-        user.setPhone(userDto.getPhoneNumber());
-        user.setStatus(true); // hoặc userDto.getStatusId() == 1
-
-        if (userDto.getRoleId() != null) {
-            Role role = roleRepository.findById(userDto.getRoleId())
-                    .orElseThrow(() -> new RuntimeException("Role không tồn tại!"));
-            user.setRole(role);
-        }
-
-        return convertToDto(userRepository.save(user));
+    public UserDto createUser(UserCreateDto dto) {
+        return null;
     }
 
     @Override
-    public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
-        user.setStatus(false); // xóa mềm
-        userRepository.save(user);
+    public void updateUser(Long id, UserUpdateDto updateData) {
+
     }
 
     @Override
-    public UserDto getCurrentUser(Authentication authentication) {
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy user đang đăng nhập"));
-        return convertToDto(user);
+    public void updateUserStatus(Long id, UserStatus status) {
+
     }
 
-    //  Entity -> DTO
-    private UserDto convertToDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setFullName(user.getFullName());
-        dto.setEmail(user.getEmail());
-        dto.setPhoneNumber(user.getPhone());
-        dto.setStatusId(user.getStatus());
-        if (user.getRole() != null) {
-            dto.setRoleId(user.getRole().getRoleId());
-        }
-        return dto;
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll((root, query, cb) -> cb.notEqual(root.get("status"), UserStatus.DELETED), pageable);
     }
 
+    @Override
+    public void softDeleteUser(Long id) {
 
-    private User convertToEntity(UserDto dto) {
-        User user = new User();
-        user.setUsername(dto.getUsername());
+    }
 
-        // TODO: mã hóa sau
+    @Override
+    public Object getProfile(Long userId) {
+        return null;
+    }
 
-        user.setPassword("123456");
-        user.setFullName(dto.getFullName());
-        user.setEmail(dto.getEmail());
-        user.setPhone(dto.getPhoneNumber());
-        user.setStatus(true);
+    @Override
+    public void updateUserProfile(UserDetailsImpl userDetails, MultipartFile file, String birthday, UserGender gender) {
 
-        if (dto.getRoleId() != null) {
-            Role role = roleRepository.findById(dto.getRoleId())
-                    .orElseThrow(() -> new RuntimeException("Role không tồn tại!"));
-            user.setRole(role);
-        }
+    }
 
-        return user;
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    public static Specification<User> buildUserSpecification(Long id) {
+        return (root, query, cb) -> {
+            var predicates = new ArrayList<Predicate>();
+            if (id != null) predicates.add(cb.equal(root.get("id"), id));
+            else predicates.add(cb.notEqual(root.get("status"), UserStatus.DELETED));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 }

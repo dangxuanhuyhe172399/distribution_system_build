@@ -2,42 +2,30 @@ package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "SalesOrderDetail")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class SalesOrderDetail {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class SalesOrderDetail extends BaseEntity{
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_detail_id")
+    private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderDetailId;
+    @ManyToOne @JoinColumn(name = "order_id")
+    private SalesOrder order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private SalesOrder salesOrder;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @ManyToOne @JoinColumn(name = "product_id")
     private Product product;
 
-    private Integer quantity;
+    @Column(name = "quantity")
+    private Long quantity;
 
-    @Column(name = "unit_price", precision = 18, scale = 2)
-    private BigDecimal unitPrice;
+    @Column(name = "unit_price", precision = 18)
+    private Long unitPrice;
 
-    @Column(precision = 5, scale = 2)
-    private BigDecimal discount = BigDecimal.ZERO;
+    @Column(name = "discount", precision = 5)
+    private Long discount;
 
-    // No persisted column for total_price here; calculation provided by getter
-    public BigDecimal getTotalPrice() {
-        if (quantity == null || unitPrice == null) return BigDecimal.ZERO;
-        BigDecimal qty = BigDecimal.valueOf(quantity);
-        BigDecimal line = unitPrice.multiply(qty);
-        BigDecimal disc = line.multiply(discount).divide(BigDecimal.valueOf(100));
-        return line.subtract(disc);
-    }
+    @Column(name = "total_price", precision = 18, insertable = false, updatable = false)
+    private Long totalPrice;
 }

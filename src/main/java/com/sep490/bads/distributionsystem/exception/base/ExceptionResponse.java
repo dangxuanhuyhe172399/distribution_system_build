@@ -1,33 +1,32 @@
 package com.sep490.bads.distributionsystem.exception.base;
 
-import com.sep490.bads.distributionsystem.exception.BaseException;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Data
+@Log4j2
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExceptionResponse {
-    private String message;
     private int code;
+    private String message;
 
-    // Constructor
-    public ExceptionResponse(String message, int code) {
-        this.message = message;
-        this.code = code;
+    public static ExceptionResponse createFrom(BaseException e) {
+        ExceptionResponse response = new ExceptionResponse();
+        response.setMessage(e.getMessage());
+        response.setCode(e.getCode());
+        // log.error(e);
+        return response;
     }
 
-    public static Object createFrom(BaseException e) {
-
-        return null;
-    }
-
-    // Factory method để tạo nhanh
-//    public static ExceptionResponse createFrom(BaseException ex) {
-//        return new ExceptionResponse(ex.getMessage(), ex.getStatusCode());
-//    }
-
-    // Getters
-    public String getMessage() {
-        return message;
-    }
-
-    public int getCode() {
-        return code;
+    public static ExceptionResponse createFrom(Exception e) {
+        ExceptionResponse response = new ExceptionResponse();
+        response.setMessage(e.getMessage());
+        response.setCode(500);
+        // log.error(e);
+        return response;
     }
 }
+

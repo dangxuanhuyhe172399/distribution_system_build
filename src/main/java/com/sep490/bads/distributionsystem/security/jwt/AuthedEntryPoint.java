@@ -1,7 +1,7 @@
 package com.sep490.bads.distributionsystem.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sep490.bads.distributionsystem.exception.BaseException;
+import com.sep490.bads.distributionsystem.exception.base.BaseException;
 import com.sep490.bads.distributionsystem.exception.base.ExceptionResponse;
 import com.sep490.bads.distributionsystem.utils.Constants;
 import jakarta.servlet.ServletException;

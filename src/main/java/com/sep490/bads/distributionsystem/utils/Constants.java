@@ -13,6 +13,5 @@ public class Constants {
     public static final String COMMENT_NOT_FOUND = "Comment not found";
     public static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
     public static final String COMPONENT_VIEW_COUNT_KEY = "component_view_count";
-    public static final String INACTIVE_USER = "User is inactive";
-
+    public static final String INACTIVE_USER = "Inactive User";
 }

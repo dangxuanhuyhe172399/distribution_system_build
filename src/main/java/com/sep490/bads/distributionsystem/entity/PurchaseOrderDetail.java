@@ -2,35 +2,27 @@ package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "PurchaseOrderDetail")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class PurchaseOrderDetail {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class PurchaseOrderDetail extends BaseEntity {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "po_detail_id")
+    private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long poDetailId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "po_id")
+    @ManyToOne @JoinColumn(name = "po_id")
     private PurchaseOrder purchaseOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @ManyToOne @JoinColumn(name = "product_id")
     private Product product;
 
-    private Integer quantity;
+    @Column(name = "quantity")
+    private Long quantity;
 
-    @Column(name = "unit_price", precision = 18, scale = 2)
-    private BigDecimal unitPrice;
+    @Column(name = "unit_price", precision = 18)
+    private Long unitPrice;
 
-    public BigDecimal getTotalPrice() {
-        if (quantity == null || unitPrice == null) return BigDecimal.ZERO;
-        return unitPrice.multiply(BigDecimal.valueOf(quantity));
-    }
+    @Column(name = "total_price", precision = 18, insertable = false, updatable = false)
+    private Long totalPrice;
 }

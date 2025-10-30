@@ -1,38 +1,40 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
+@Getter @Setter
 @Table(name = "ExportNote")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@NoArgsConstructor @AllArgsConstructor
 public class ExportNote {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long exportNoteId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "export_note_id")
+    private Long id;
 
     @Column(name = "export_date")
     private LocalDateTime exportDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "warehouse_id")
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
-    @Column(length = 255)
+    @Column(name = "reason", length = 255)
     private String reason;
 
     @Column(name = "total_quantity")
-    private Integer totalQuantity;
+    private Long totalQuantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private User createdByUser;
+    @Column(name = "status", length = 20)
+    private String status;
 
-    @Column(length = 255)
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @Column(name = "note", length = 255)
     private String note;
 }

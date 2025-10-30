@@ -1,57 +1,43 @@
 package com.sep490.bads.distributionsystem.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
+import java.util.List;
 
 @Entity
 @Table(name = "Customer")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class Customer {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class Customer extends BaseEntity {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "customer_id")
+    private Long id;
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long customerId;
-
-
-    @Column(nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-
-    @Column(length = 255)
+    @Column(name = "address", length = 255)
     private String address;
 
+    @ManyToOne @JoinColumn(name = "type_id")
+    private CustomerType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id")
-    private CustomerType customerType;
-
-
-    @Column(length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
-
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
-
 
     @Column(name = "tax_code", length = 50)
     private String taxCode;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    @Builder.Default
+    private CommonStatus status = CommonStatus.ACTIVE;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-    private Set<SalesOrder> salesOrders = new HashSet<>();
+    @OneToMany(mappedBy = "customer") @JsonIgnore
+    private List<SalesOrder> salesOrders;
 }

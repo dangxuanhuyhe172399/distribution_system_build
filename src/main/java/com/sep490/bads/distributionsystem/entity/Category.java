@@ -1,31 +1,21 @@
 package com.sep490.bads.distributionsystem.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashSet;
-import java.util.Set;
-
 
 @Entity
-@Table(name = "Category")
+@Table(name = "User")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class Category {
+@Getter @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+public class Category extends BaseEntity{
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
+    private Long id;
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
-
-
-    @Column(name = "category_name", length = 100, nullable = false)
-    private String categoryName;
-
-
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-    private Set<Product> products = new HashSet<>();
+    @Column(name = "category_name", nullable = false, length = 100)
+    private String name;
 }
