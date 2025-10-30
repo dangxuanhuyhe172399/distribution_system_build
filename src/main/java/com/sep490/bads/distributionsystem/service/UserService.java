@@ -1,18 +1,24 @@
 package com.sep490.bads.distributionsystem.service;
 
-import com.sep490.bads.distributionsystem.dto.*;
+import com.sep490.bads.distributionsystem.dto.UserCreateDto;
+import com.sep490.bads.distributionsystem.dto.UserDto;
+import com.sep490.bads.distributionsystem.dto.UserProfileUpdateDto;
+import com.sep490.bads.distributionsystem.dto.UserUpdateDto;
+import com.sep490.bads.distributionsystem.entity.User;
+import com.sep490.bads.distributionsystem.entity.type.UserGender;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
-import com.sep490.bads.distributionsystem.config.security.service.UserDetailsImpl;
+import com.sep490.bads.distributionsystem.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 public interface UserService {
-    Page<UserDto> search(Pageable pageable, UserFilterDto filter);
+    List<UserDto> getAllUser();
 
     UserDto findDtoById(Long id);
 
@@ -28,13 +34,7 @@ public interface UserService {
 
     UserDto getProfile(Long userId);
 
-    //Export excel
-    ByteArrayResource exportFile(UserFilterDto filter);
-
     void updateUserProfile(UserDetailsImpl userDetails, UserProfileUpdateDto dto);
     void updateUserAvatar(UserDetailsImpl userDetails, MultipartFile file);
-
-    void changePassword(Long userId, String oldPassword, String newPassword);
-
 
 }
