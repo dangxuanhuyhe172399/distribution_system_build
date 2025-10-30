@@ -1,14 +1,12 @@
 package com.sep490.bads.distributionsystem.service;
 
-import com.sep490.bads.distributionsystem.dto.UserCreateDto;
-import com.sep490.bads.distributionsystem.dto.UserDto;
-import com.sep490.bads.distributionsystem.dto.UserProfileUpdateDto;
-import com.sep490.bads.distributionsystem.dto.UserUpdateDto;
+import com.sep490.bads.distributionsystem.dto.*;
 import com.sep490.bads.distributionsystem.entity.User;
 import com.sep490.bads.distributionsystem.entity.type.UserGender;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import com.sep490.bads.distributionsystem.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,7 @@ import java.util.List;
 
 @Service
 public interface UserService {
-    List<UserDto> getAllUser();
+    Page<UserDto> search(Pageable pageable, UserFilterDto filter);
 
     UserDto findDtoById(Long id);
 
@@ -33,6 +31,9 @@ public interface UserService {
     void softDeleteUser(Long id);
 
     UserDto getProfile(Long userId);
+
+    //Export excel
+    ByteArrayResource exportFile(UserFilterDto filter);
 
     void updateUserProfile(UserDetailsImpl userDetails, UserProfileUpdateDto dto);
     void updateUserAvatar(UserDetailsImpl userDetails, MultipartFile file);
