@@ -1,6 +1,9 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.dto.*;
+import com.sep490.bads.distributionsystem.dto.UserCreateDto;
+import com.sep490.bads.distributionsystem.dto.UserDto;
+import com.sep490.bads.distributionsystem.dto.UserProfileUpdateDto;
+import com.sep490.bads.distributionsystem.dto.UserUpdateDto;
 import com.sep490.bads.distributionsystem.entity.Role;
 import com.sep490.bads.distributionsystem.entity.User;
 import com.sep490.bads.distributionsystem.entity.type.UserGender;
@@ -16,10 +19,8 @@ import com.sep490.bads.distributionsystem.utils.Constants;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -62,35 +62,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> search(Pageable pageable, UserFilterDto f) {
-        return userRepository.findAll(buildSpec(f, true), pageable)
-                .map(this::toDtoWithRole);
+    public List<UserDto> getAllUser() {
+        return List.of();
     }
-    private Specification<User> buildSpec(UserFilterDto f, boolean includeStatus) {
-        return (root, q, cb) -> {
-            List<Predicate> ps = new ArrayList<>();
-            ps.add(cb.notEqual(root.get("status"), UserStatus.DELETED));
-            if (includeStatus && f.getStatus()!=null)
-                ps.add(cb.equal(root.get("status"), f.getStatus()));
-            if (f.getRoleId()!=null)
-                ps.add(cb.equal(root.join("role").get("roleId"), f.getRoleId()));
-            if (StringUtils.hasText(f.getQ())) {
-                String kw = "%" + f.getQ().trim().toLowerCase() + "%";
-                ps.add(cb.or(
-                        cb.like(cb.lower(root.get("userCode")), kw),
-                        cb.like(cb.lower(root.get("username")), kw),
-                        cb.like(cb.lower(root.get("fullName")), kw),
-                        cb.like(cb.lower(root.get("email")), kw)
-                ));
-            }
-            if (f.getFrom()!=null)
-                ps.add(cb.greaterThanOrEqualTo(root.get("createdAt"), f.getFrom().atStartOfDay()));
-            if (f.getTo()!=null)
-                ps.add(cb.lessThan(root.get("createdAt"), f.getTo().plusDays(1).atStartOfDay()));
-            return cb.and(ps.toArray(new Predicate[0]));
-        };
-    }
-
 
     @Override
     public UserDto findDtoById(Long id) {
@@ -100,10 +74,6 @@ public class UserServiceImpl implements UserService {
     private User findByIdAlive(Long id) {
         return userRepository.findOne(buildUserSpecification(id))
                 .orElseThrow(() -> new NotFoundException(Constants.USER_NOT_FOUND));
-    }
-
-    public User findByIdWithRole(Long id) {
-        return userRepository.findByIdFetchRole(id).orElse(null);
     }
 
     private UserDto toDtoWithRole(User u) {
@@ -226,53 +196,6 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         return userRepository.save(user);
     }
-
-    //Export
-    @Override
-    @Transactional(readOnly = true)
-    public ByteArrayResource exportFile(UserFilterDto f) {
-        List<User> rows = userRepository.findAll(
-                buildSpec(f, true),
-                Sort.by(Sort.Direction.DESC, "createdAt")
-        );
-
-        StringBuilder sb = new StringBuilder("UserCode,FullName,Email,Role,Status,CreatedAt\n");
-        for (User u : rows) {
-            sb.append(csv(u.getUserCode())).append(',')
-                    .append(csv(u.getFullName())).append(',')
-                    .append(csv(u.getEmail())).append(',')
-                    .append(csv(u.getRole()!=null?u.getRole().getRoleName():null)).append(',')
-                    .append(csv(u.getStatus()!=null?u.getStatus().name():null)).append(',')
-                    .append(csv(u.getCreatedAt()!=null?u.getCreatedAt().toString():null))
-                    .append('\n');
-        }
-        return new ByteArrayResource(sb.toString().getBytes(StandardCharsets.UTF_8));
-    }
-
-    private String csv(String v) {
-        if (v == null) return "";
-        String s = v.replace("\"", "\"\"");
-        return "\"" + s + "\"";          // chuẩn RFC4180
-    }
-
-    @Override
-    @Transactional
-    public void changePassword(Long userId, String oldPassword, String newPassword) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        if (passwordEncoder == null)
-            throw new BadRequestException("Password encoder not configured");
-
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new BadRequestException("Old password is incorrect");
-        }
-
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-    }
-
-
 
     public static Specification<User> buildUserSpecification(Long id) {
         return (root, query, cb) -> {
