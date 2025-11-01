@@ -10,9 +10,9 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=bads_db;encrypt=true;trustServerCertificate=true;
-    username: sa #username
-    password: 123456 # password
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     hikari:
       connection-timeout: 30000 # Thời gian chờ một kết nối (ms)
       idle-timeout: 600000     # Thời gian một kết nối có thể nhàn rỗi trong pool (ms)
@@ -26,9 +26,7 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+      #set to 'none' or 'validate' because Flyway to manage
       ddl-auto: none
     properties:
       hibernate:
@@ -78,11 +76,11 @@ jwt:
   expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
 
 zalo:
-  app-id: ${ZALO_APP_ID:}
-  oa-secret: ${ZALO_OA_SECRET:}
+  app-id: ${ZALO_APP_ID}
+  oa-secret: ${ZALO_OA_SECRET}
   verify: ${ZALO_VERIFY:true}
   signature-mode: ${ZALO_SIGNATURE_MODE:APP_BODY_TS}
-  webhook-path: /v1/public/zalo/webhook
+  webhook-path: ${ZALO_WEBHOOK_PATH:/v1/public/zalo/webhook}
 
 logging:
   level:
@@ -93,16 +91,3 @@ logging:
     org.hibernate.type.descriptor.sql: trace
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  health:
-#    chưa dung mail
-    mail:
-      enabled: false
-    redis:
-      enabled: false
-
