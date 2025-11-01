@@ -7,8 +7,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "ZaloCustomerLink", schema = "dbo")
+@Entity @Table(name = "ZaloCustomerLink")
 @Getter @Setter @NoArgsConstructor
 public class ZaloCustomerLink extends BaseEntity {
     @Id
@@ -16,7 +15,7 @@ public class ZaloCustomerLink extends BaseEntity {
     private String zaloUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = true)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @Column(name = "follow_status", length = 20)

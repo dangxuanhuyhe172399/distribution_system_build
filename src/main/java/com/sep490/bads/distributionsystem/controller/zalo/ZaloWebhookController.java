@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.controller.zalo;
 
-import com.sep490.bads.distributionsystem.config.zalo.ZaloProperties;
+import com.sep490.bads.distributionsystem.config.ZaloProperties;
 import com.sep490.bads.distributionsystem.controller.BaseController;
 import com.sep490.bads.distributionsystem.service.zalo.ZaloWebhookService;
 import com.sep490.bads.distributionsystem.utils.HmacUtils;
