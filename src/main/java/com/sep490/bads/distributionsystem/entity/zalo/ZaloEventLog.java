@@ -10,25 +10,11 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "ZaloEventLog", schema = "dbo")
+@Entity @Table(name = "ZaloEventLog")
 @Getter @Setter @NoArgsConstructor
-@AttributeOverrides({
-        @AttributeOverride(
-                name = "createdAt",
-                column = @Column(name = "created_at", updatable = false, nullable = false)
-        ),
-        @AttributeOverride(
-                name = "updatedAt",
-                column = @Column(name = "updated_at", updatable = false, nullable = false)
-        )
-})
 public class ZaloEventLog extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "uniqueidentifier", updatable = false, nullable = false)
-    private UUID id;
+    @Id @Column(columnDefinition = "uniqueidentifier")
+    private UUID id = UUID.randomUUID();
 
     @Column(name = "event_id", length = 190, unique = true)
     private String eventId;
@@ -40,7 +26,7 @@ public class ZaloEventLog extends BaseEntity {
     private String signature;
 
 
-    @Column(name = "received_at", insertable = false, updatable = false)
+    @Column(name = "received_at", columnDefinition = "datetime")
     private LocalDateTime receivedAt;
 
     @Column(name = "processed_at", columnDefinition = "datetime")
