@@ -26,7 +26,9 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      #set to 'none' or 'validate' because Flyway to manage
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
       ddl-auto: none
     properties:
       hibernate:
@@ -76,11 +78,11 @@ jwt:
   expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
 
 zalo:
-  app-id: ${ZALO_APP_ID}
-  oa-secret: ${ZALO_OA_SECRET}
+  app-id: ${ZALO_APP_ID:}
+  oa-secret: ${ZALO_OA_SECRET:}
   verify: ${ZALO_VERIFY:true}
   signature-mode: ${ZALO_SIGNATURE_MODE:APP_BODY_TS}
-  webhook-path: ${ZALO_WEBHOOK_PATH:/v1/public/zalo/webhook}
+  webhook-path: /v1/public/zalo/webhook
 
 logging:
   level:
@@ -91,3 +93,16 @@ logging:
     org.hibernate.type.descriptor.sql: trace
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+#    chưa dung mail
+    mail:
+      enabled: false
+    redis:
+      enabled: false
+
