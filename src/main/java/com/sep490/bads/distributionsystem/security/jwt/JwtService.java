@@ -41,7 +41,7 @@ public class JwtService {
                 "userId", tokenInfo.getUserId(),
                 "role", tokenInfo.getRole()
         );
-        return createToken(claims, tokenInfo.getUsername()); // subject = username
+        return createToken(claims, String.valueOf(tokenInfo.getUserId()));
     }
 
     private String createToken(Map<String, Object> claims, String id) {

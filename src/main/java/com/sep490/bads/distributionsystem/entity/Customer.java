@@ -8,7 +8,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "Customer")
+@Table(name = "Customer", schema = "dbo")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Customer extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
