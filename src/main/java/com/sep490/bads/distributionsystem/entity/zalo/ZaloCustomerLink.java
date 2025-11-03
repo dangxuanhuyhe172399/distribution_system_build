@@ -7,7 +7,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity @Table(name = "ZaloCustomerLink")
+@Entity
+@Table(name = "ZaloCustomerLink", schema = "dbo")
 @Getter @Setter @NoArgsConstructor
 public class ZaloCustomerLink extends BaseEntity {
     @Id
