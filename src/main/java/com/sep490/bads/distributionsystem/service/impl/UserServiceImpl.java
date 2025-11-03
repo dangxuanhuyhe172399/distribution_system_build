@@ -102,6 +102,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(Constants.USER_NOT_FOUND));
     }
 
+    public User findByIdWithRole(Long id) {
+        return userRepository.findByIdFetchRole(id).orElse(null);
+    }
+
     private UserDto toDtoWithRole(User u) {
         var dto = userMapper.toDto(u);
         if (u.getRole() != null) {
