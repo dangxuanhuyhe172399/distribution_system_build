@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "PurchaseOrder")
+@Table(name = "PurchaseOrder", schema = "dbo")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @SuperBuilder
 public class PurchaseOrder extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

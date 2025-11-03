@@ -5,7 +5,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "PurchaseOrderDetail")
+@Table(name = "PurchaseOrderDetail", schema = "dbo")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class PurchaseOrderDetail extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

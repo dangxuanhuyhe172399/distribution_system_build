@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
-@Table(name = "ExportNote")
+@Table(name = "ExportNote", schema = "dbo")
 @NoArgsConstructor @AllArgsConstructor
 public class ExportNote {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

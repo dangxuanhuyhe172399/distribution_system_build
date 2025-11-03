@@ -1,6 +1,7 @@
 package com.sep490.bads.distributionsystem.security.jwt;
 
 import com.sep490.bads.distributionsystem.security.service.UserDetailsImpl;
+import org.springframework.security.core.userdetails.UserDetails;
 import com.sep490.bads.distributionsystem.security.service.UserSecurityService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,7 +24,7 @@ import java.util.List;
 @Log4j2
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final List<String> PERMIT_ALL_PATHS = List.of("/v1/public");
+    private static final List<String> PERMIT_ALL_PATHS =  List.of("/v1/public", "/actuator", "/error");
 
     @Autowired @Lazy private JwtService jwtService;
     @Autowired @Lazy private UserSecurityService userDetailsService;
@@ -51,9 +52,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (token != null && jwtService.validateToken(token)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            String username = jwtService.extractSubject(token); // subject = username
-            UserDetailsImpl userDetails =
-                    (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+            String subject = jwtService.extractSubject(token); // subject = userId (string)
+            UserDetails userDetails =
+                    userDetailsService.loadUserByUsername(subject);
 
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(

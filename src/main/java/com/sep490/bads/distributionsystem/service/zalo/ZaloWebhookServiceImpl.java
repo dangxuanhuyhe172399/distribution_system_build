@@ -2,8 +2,11 @@ package com.sep490.bads.distributionsystem.service.zalo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep490.bads.distributionsystem.entity.type.ZaloEventLogStatus;
+import com.sep490.bads.distributionsystem.entity.zalo.ZaloCustomerLink;
 import com.sep490.bads.distributionsystem.entity.zalo.ZaloEventLog;
 import com.sep490.bads.distributionsystem.repository.zalo.ZaloEventLogRepository;
+import com.sep490.bads.distributionsystem.service.InventoryService;
+import com.sep490.bads.distributionsystem.service.SalesOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,8 @@ import java.time.LocalDateTime;
 public class ZaloWebhookServiceImpl implements ZaloWebhookService {
     private final ZaloEventLogRepository eventLogRepo;
     private final ObjectMapper om = new ObjectMapper();
+    private final SalesOrderService salesOrderService;
+    private final InventoryService inventoryService;
 
     @Override
     @Transactional
@@ -27,14 +32,15 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
             String eventName = root.path("event_name").asText("");
             String eventId   = root.path("event_id").asText("");
 
-            if (eventId != null && !eventId.isBlank()
-                    && eventLogRepo.findByEventId(eventId).isPresent()) {
-                logRow.setEventId(eventId);
-                logRow.setEventName(eventName);
-                logRow.setPayload(body);
-                logRow.setStatus(ZaloEventLogStatus.DUPLICATE);
-                logRow.setProcessedAt(LocalDateTime.now());
-                eventLogRepo.save(logRow);
+            var existed = (eventId != null && !eventId.isBlank())
+                    ? eventLogRepo.findByEventId(eventId) : java.util.Optional.<ZaloEventLog>empty();
+
+            if (existed.isPresent()) {
+                ZaloEventLog dup = existed.get();
+                dup.setEventName(eventName);
+                dup.setPayload(body);
+                dup.setStatus(ZaloEventLogStatus.DUPLICATE);
+                dup.setProcessedAt(LocalDateTime.now());
                 return;
             }
 
@@ -42,12 +48,14 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
             logRow.setEventName(eventName);
             logRow.setPayload(body);
             logRow.setStatus(ZaloEventLogStatus.RECEIVED);
+            logRow.setReceivedAt(LocalDateTime.now());
             eventLogRepo.save(logRow);
 
             switch (eventName) {
                 case "follow"         -> onFollow(root);
                 case "unfollow"       -> onUnfollow(root);
-                case "user_share_info"-> onUserShareInfo(root);
+                case "user_share_info",
+                     "user_submit_info"  -> onUserShareInfo(root);
                 case "order_created"  -> onOrderCreated(root);
                 case "order_updated"  -> onOrderUpdated(root);
                 default               -> log.info("Unhandled event {}", eventName);
@@ -55,16 +63,15 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
 
             logRow.setStatus(ZaloEventLogStatus.PROCESSED);
             logRow.setProcessedAt(LocalDateTime.now());
-            eventLogRepo.save(logRow);
 
         } catch (Exception ex) {
-            logRow.setStatus(ZaloEventLogStatus.FAILED);
-            logRow.setProcessedAt(LocalDateTime.now());
-            if (logRow.getId() == null) {
-                logRow.setPayload(body);
-                logRow.setEventName("unknown");
-            }
-            eventLogRepo.save(logRow);
+            ZaloEventLog failed = new ZaloEventLog();
+            failed.setEventName("unknown");
+            failed.setPayload(body);
+            failed.setStatus(ZaloEventLogStatus.FAILED);
+            failed.setReceivedAt(LocalDateTime.now());
+            failed.setProcessedAt(LocalDateTime.now());
+            eventLogRepo.save(failed);
             log.error("Handle webhook error", ex);
         }
     }

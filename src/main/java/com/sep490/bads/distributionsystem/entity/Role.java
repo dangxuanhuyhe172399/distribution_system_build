@@ -7,7 +7,7 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "Role")
+@Table(name = "Role", schema = "dbo")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role {

@@ -33,7 +33,7 @@ public class UserSecurityService implements UserDetailsService {
             throw new UsernameNotFoundException("Invalid token subject: " + subject);
         }
 
-        User u = userServiceImpl.findById(userId);
+        User u = userServiceImpl.findByIdWithRole(userId);
         if (u == null) throw new UsernameNotFoundException("User not found " + subject);
 
         // Lấy role
@@ -42,13 +42,9 @@ public class UserSecurityService implements UserDetailsService {
                 : roleServiceImpl.findRoleByUserId(userId).map(Role::getRoleName).orElse("USER");
 
         List<GrantedAuthority> auths = List.of(new SimpleGrantedAuthority("ROLE_" + roleName));
-
         return new org.springframework.security.core.userdetails.User(
-                u.getUsername(),
-                u.getPassword(),
-                Boolean.TRUE.equals(u.getStatus()),  // enabled
-                true, true, true,
-                auths
+                u.getUsername(), u.getPassword(),
+                Boolean.TRUE.equals(u.getStatus()), true, true, true, auths
         );
     }
 }
