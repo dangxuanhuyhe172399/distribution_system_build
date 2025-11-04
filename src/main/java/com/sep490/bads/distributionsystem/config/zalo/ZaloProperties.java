@@ -1,4 +1,4 @@
-package com.sep490.bads.distributionsystem.config;
+package com.sep490.bads.distributionsystem.config.zalo;
 
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;

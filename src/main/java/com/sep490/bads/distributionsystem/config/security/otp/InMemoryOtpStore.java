@@ -1,4 +1,4 @@
-package com.sep490.bads.distributionsystem.security.otp;
+package com.sep490.bads.distributionsystem.config.security.otp;
 
 import lombok.Data;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -1,4 +1,4 @@
-package com.sep490.bads.distributionsystem.security.jwt;
+package com.sep490.bads.distributionsystem.config.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep490.bads.distributionsystem.exception.base.BaseException;

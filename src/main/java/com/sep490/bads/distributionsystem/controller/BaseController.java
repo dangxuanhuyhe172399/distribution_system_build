@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.controller;
 
-import com.sep490.bads.distributionsystem.security.service.UserDetailsImpl;
+import com.sep490.bads.distributionsystem.config.security.service.UserDetailsImpl;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 

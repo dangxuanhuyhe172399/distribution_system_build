@@ -1,25 +1,18 @@
-package com.sep490.bads.distributionsystem.security.jwt;
+package com.sep490.bads.distributionsystem.config.security.jwt;
 
-import com.sep490.bads.distributionsystem.utils.CacheKey;
-import com.sep490.bads.distributionsystem.utils.Helper;
-import com.sep490.bads.distributionsystem.dto.LoginDto;
-import com.sep490.bads.distributionsystem.utils.JsonParser;
 //import com.sep490.bads.distributionsystem.utils.TokenInfo;
 //import com.sep490.bads.distributionsystem.utils.RemoteCache;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+        import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+        import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
-import java.util.function.Function;
+        import java.util.function.Function;
 
 @Component
 @Log4j2

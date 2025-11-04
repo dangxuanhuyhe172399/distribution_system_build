@@ -6,11 +6,10 @@ import com.sep490.bads.distributionsystem.entity.User;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import com.sep490.bads.distributionsystem.exception.NotAuthorizedException;
 import com.sep490.bads.distributionsystem.exception.WrongAccountOrPasswordException;
-import com.sep490.bads.distributionsystem.mapper.AuthMapper;
 import com.sep490.bads.distributionsystem.repository.UserRepository;
-import com.sep490.bads.distributionsystem.security.jwt.JwtService;
-import com.sep490.bads.distributionsystem.security.jwt.TokenInfo;
-import com.sep490.bads.distributionsystem.security.otp.InMemoryOtpStore;
+import com.sep490.bads.distributionsystem.config.security.jwt.JwtService;
+import com.sep490.bads.distributionsystem.config.security.jwt.TokenInfo;
+import com.sep490.bads.distributionsystem.config.security.otp.InMemoryOtpStore;
 import com.sep490.bads.distributionsystem.service.AuthService;
 import com.sep490.bads.distributionsystem.service.MailService;
 import com.sep490.bads.distributionsystem.utils.CacheKey;
@@ -24,8 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
