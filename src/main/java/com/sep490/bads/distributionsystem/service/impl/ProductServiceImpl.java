@@ -35,7 +35,6 @@ public class ProductServiceImpl implements ProductService {
         p.setCostPrice(dto.getCostPrice());
         p.setSellingPrice(dto.getSellingPrice());
         p.setStatus(CommonStatus.ACTIVE);
-        p.setStockQuantity(0L);
 
         Product saved = productRepo.save(p);
         productRepo.updateRelations(saved.getId(), dto.getCategoryId(), dto.getUnitId());

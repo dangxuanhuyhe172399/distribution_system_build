@@ -6,21 +6,23 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "Unit", schema = "dbo")
+@Table(name = "ProductCategory", schema = "dbo")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Unit extends BaseEntity{
+public class ProductCategory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "unit_id")
+    @Column(name = "category_id")
     private Long id;
 
-    @Column(name = "unit_name", nullable = false, length = 50)
+    @Column(name = "category", length = 100, nullable = false)
     private String name;
-    @OneToMany(mappedBy = "unit", fetch = FetchType.LAZY)
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Product> products;
 }

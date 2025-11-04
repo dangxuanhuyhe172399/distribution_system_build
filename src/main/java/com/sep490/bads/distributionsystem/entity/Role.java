@@ -1,5 +1,6 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
@@ -18,4 +19,7 @@ public class Role {
 
     @Column(name = "role_name", length = 50, unique = true, nullable = false)
     private String roleName;
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<User> users;
 }

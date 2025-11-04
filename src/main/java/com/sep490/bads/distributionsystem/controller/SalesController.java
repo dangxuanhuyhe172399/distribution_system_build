@@ -34,7 +34,7 @@ public class SalesController {
         SalesOrder order = salesOrderService.findById(id);
         SalesOrderDto dto = new SalesOrderDto();
         dto.setId(order.getId());
-        dto.setStatus(order.getStatus());
+        dto.setStatus(String.valueOf(order.getStatus()));
         dto.setPaymentMethod(order.getPaymentMethod());
         dto.setNote(order.getNote());
         return ResultResponse.success(dto);

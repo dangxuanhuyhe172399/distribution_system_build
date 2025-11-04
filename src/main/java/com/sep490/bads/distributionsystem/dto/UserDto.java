@@ -1,10 +1,11 @@
 package com.sep490.bads.distributionsystem.dto;
 
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
+import com.sep490.bads.distributionsystem.entity.type.UserGender;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -12,18 +13,20 @@ import java.time.LocalDateTime;
 @Builder
 public class UserDto {
     private Long id;
+    private String userCode;
     private String username;
     private String fullName;
     private String email;
     private String phone;
+    private String address;
+    private String avatar;
+
+    private UserGender gender;
     private UserStatus status;
+
     private Long roleId;
     private String roleName;
-    private String gender;
-    private String userCode;
+
     private LocalDate dateOfBirth;
-    private String avatar;
-    private String address;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

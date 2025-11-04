@@ -6,6 +6,7 @@ import com.sep490.bads.distributionsystem.dto.SalesOrderFilterDto;
 import com.sep490.bads.distributionsystem.dto.SalesOrderUpdateDto;
 import com.sep490.bads.distributionsystem.entity.SalesOrder;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import com.sep490.bads.distributionsystem.mapper.SalesOrderMapper;
 import com.sep490.bads.distributionsystem.repository.SalesOrderRepository;
 import com.sep490.bads.distributionsystem.service.SalesOrderService;
@@ -47,7 +48,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         SalesOrder entity = new SalesOrder();
         entity.setPaymentMethod(dto.getPaymentMethod());
         entity.setNote(dto.getNote());
-        entity.setStatus("PENDING");
+        entity.setStatus(SaleOderStatus.NEW);
         SalesOrder saved = salesOrderRepository.save(entity);
         return salesOrderMapper.toDto(saved);
     }
@@ -60,7 +61,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         }
 
         // cập nhật dữ liệu cơ bản
-        existing.setStatus(dto.getStatus());
+        existing.setStatus(SaleOderStatus.valueOf(dto.getStatus()));
         existing.setPaymentMethod(dto.getPaymentMethod());
         existing.setNote(dto.getNote());
 
@@ -75,7 +76,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
             throw new RuntimeException("Không tìm thấy đơn hàng ID=" + id);
         }
 
-        existing.setStatus(CommonStatus.INACTIVE.name());
+        existing.setStatus(SaleOderStatus.valueOf(SaleOderStatus.NEW.name()));
         salesOrderRepository.save(existing);
         log.info("Đã ẩn (soft delete) đơn hàng ID={}", id);
     }
