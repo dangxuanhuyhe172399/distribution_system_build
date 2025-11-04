@@ -1,6 +1,5 @@
 package com.sep490.bads.distributionsystem.repository.zalo;
 
-import com.sep490.bads.distributionsystem.entity.zalo.ZaloCustomerLink;
 import com.sep490.bads.distributionsystem.entity.zalo.ZaloEventLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
