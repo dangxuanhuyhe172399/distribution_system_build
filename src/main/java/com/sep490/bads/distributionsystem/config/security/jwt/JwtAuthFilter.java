@@ -1,8 +1,7 @@
-package com.sep490.bads.distributionsystem.security.jwt;
+package com.sep490.bads.distributionsystem.config.security.jwt;
 
-import com.sep490.bads.distributionsystem.security.service.UserDetailsImpl;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.sep490.bads.distributionsystem.security.service.UserSecurityService;
+import com.sep490.bads.distributionsystem.config.security.service.UserSecurityService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

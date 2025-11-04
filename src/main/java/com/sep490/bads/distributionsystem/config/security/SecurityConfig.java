@@ -1,9 +1,9 @@
-package com.sep490.bads.distributionsystem.security;
+package com.sep490.bads.distributionsystem.config.security;
 
 import com.sep490.bads.distributionsystem.exception.GlobalExceptionHandler;
-import com.sep490.bads.distributionsystem.security.jwt.AuthedEntryPoint;
-import com.sep490.bads.distributionsystem.security.jwt.JwtAuthFilter;
-import com.sep490.bads.distributionsystem.security.service.UserSecurityService;
+import com.sep490.bads.distributionsystem.config.security.jwt.AuthedEntryPoint;
+import com.sep490.bads.distributionsystem.config.security.jwt.JwtAuthFilter;
+import com.sep490.bads.distributionsystem.config.security.service.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
