@@ -1,7 +1,7 @@
 ﻿USE bads_db;
 GO
 
--- 1️⃣ Nhập kho: cập nhật hoặc thêm vào Inventory
+-- 1️Nhập kho: cập nhật hoặc thêm vào Inventory
 CREATE OR ALTER PROCEDURE sp_PostGoodsReceipt
     @receipt_id BIGINT
 AS
@@ -30,7 +30,7 @@ BEGIN
 END;
 GO
 
--- 2️⃣ Xuất kho: giảm tồn kho
+-- 2️Xuất kho: giảm tồn kho
 CREATE OR ALTER PROCEDURE sp_PostGoodsIssue
     @issue_id BIGINT
 AS

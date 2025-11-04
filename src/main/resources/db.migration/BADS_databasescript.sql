@@ -68,26 +68,13 @@ CREATE TABLE [User] (
 CREATE INDEX IX_User_role ON [User](role_id);
 GO
 
-CREATE TABLE [UserDetail] (
-    user_detail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    user_id BIGINT NOT NULL UNIQUE,
-    email NVARCHAR(100) UNIQUE NULL,
-    phone NVARCHAR(20) NULL,
-    password_hint NVARCHAR(255) NULL,
-    status BIT DEFAULT 1,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME NULL,
-    CONSTRAINT FK_UserDetail_User FOREIGN KEY (user_id) REFERENCES [User](user_id)
-);
-GO
-
 /****** 3. Warehouse, Product, ProductDetail, Inventory ******/
 CREATE TABLE [Warehouse] (
     warehouse_id BIGINT IDENTITY(1,1) PRIMARY KEY,
     warehouse_name NVARCHAR(100) NULL,
     address NVARCHAR(255) NULL,
     manager_id BIGINT NULL,
-    status BIT DEFAULT 1,
+    status NVARCHAR(20) NULL,
     code NVARCHAR(20) NOT NULL UNIQUE,
     phone NVARCHAR(20) NULL,
     email NVARCHAR(100) NULL,
@@ -107,7 +94,6 @@ CREATE TABLE [Product] (
     name NVARCHAR(100) NOT NULL,
     cost_price DECIMAL(18,2) NULL,
     selling_price DECIMAL(18,2) NULL,
-    stock_quantity BIGINT DEFAULT 0,
     min_stock BIGINT DEFAULT 0,
     max_stock BIGINT DEFAULT 0,
     status NVARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
@@ -130,7 +116,6 @@ GO
 CREATE TABLE [ProductDetail] (
     productdetail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
     product_id BIGINT NOT NULL UNIQUE,
-    stock_quantity BIGINT DEFAULT 0,
     min_stock BIGINT DEFAULT 0,
     max_stock BIGINT DEFAULT 0,
     created_by BIGINT NOT NULL,
@@ -156,7 +141,6 @@ CREATE TABLE [Inventory] (
     expiry_date DATE NULL,
     last_in_at DATETIME NULL,
     last_out_at DATETIME NULL,
-    CONSTRAINT UQ_Inventory_wh_prod UNIQUE (warehouse_id, product_id),
     CONSTRAINT FK_Inventory_Warehouse FOREIGN KEY (warehouse_id) REFERENCES [Warehouse](warehouse_id),
     CONSTRAINT FK_Inventory_Product FOREIGN KEY (product_id) REFERENCES [Product](product_id),
     CONSTRAINT FK_Inventory_QR FOREIGN KEY (qr_id) REFERENCES [Qrcode](qr_id),
@@ -185,6 +169,11 @@ CREATE TABLE [Customer] (
     phone NVARCHAR(20) NULL,
     tax_code NVARCHAR(50) NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    district NVARCHAR(100) NULL,
+    province NVARCHAR(100) NULL,
+    balance_limit DECIMAL(18,2) NULL,
+    current_balance DECIMAL(18,2) DEFAULT 0,
+    note NVARCHAR(255) NULL,
     created_at DATETIME DEFAULT GETDATE(),
     created_by BIGINT NULL,
     updated_by BIGINT NULL,
@@ -194,25 +183,6 @@ CREATE TABLE [Customer] (
     CONSTRAINT FK_Customer_UpdatedBy FOREIGN KEY (updated_by) REFERENCES [User](user_id)
 );
 CREATE INDEX IX_Customer_type ON [Customer](type_id);
-GO
-
-CREATE TABLE [CustomerDetail] (
-    customerdetail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    customer_id BIGINT NOT NULL UNIQUE,
-    c_address NVARCHAR(255) NULL,
-    district NVARCHAR(100) NULL,
-    province NVARCHAR(100) NULL,
-    balance_limit DECIMAL(18,2) NULL,
-    current_balance DECIMAL(18,2) DEFAULT 0,
-    customer_note NVARCHAR(255) NULL,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME NULL,
-    created_by BIGINT NOT NULL,
-    updated_by BIGINT NULL,
-    CONSTRAINT FK_CustomerDetail_Customer FOREIGN KEY (customer_id) REFERENCES [Customer](customer_id),
-    CONSTRAINT FK_CustomerDetail_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id),
-    CONSTRAINT FK_CustomerDetail_UpdatedBy FOREIGN KEY (updated_by) REFERENCES [User](user_id)
-);
 GO
 
 /****** 5. Supplier and detail ******/
@@ -225,7 +195,7 @@ CREATE TABLE [Supplier] (
     address NVARCHAR(255) NULL,
     tax_code NVARCHAR(50) NULL,
     s_category_id BIGINT NULL,
-    status BIT DEFAULT 1,
+    status NVARCHAR(20) NULL,
     created_at DATETIME DEFAULT GETDATE(),
     created_by BIGINT NOT NULL,
     updated_by BIGINT NULL,
@@ -233,20 +203,6 @@ CREATE TABLE [Supplier] (
     CONSTRAINT FK_Supplier_Category FOREIGN KEY (s_category_id) REFERENCES [SupplierCategory](s_category_id),
     CONSTRAINT FK_Supplier_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id),
     CONSTRAINT FK_Supplier_UpdatedBy FOREIGN KEY (updated_by) REFERENCES [User](user_id)
-);
-GO
-
-CREATE TABLE [SupplierDetail] (
-    s_detail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    s_id BIGINT NOT NULL UNIQUE,
-    phone NVARCHAR(20) NULL,
-    debit_account NVARCHAR(50) NULL,
-    credit_account NVARCHAR(50) NULL,
-    status BIT DEFAULT 1,
-    due_date DATE NULL,
-    s_note NVARCHAR(255) NULL,
-    total_purchase DECIMAL(18,2) DEFAULT 0,
-    CONSTRAINT FK_SupplierDetail_Supplier FOREIGN KEY (s_id) REFERENCES [Supplier](supplier_id)
 );
 GO
 
@@ -418,12 +374,12 @@ GO
 CREATE TABLE [GoodsIssuesDetail] (
     issue_detail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
     issue_id BIGINT NOT NULL,
-    product_id BIGINT NOT NULL,
+    inventory_id BIGINT NOT NULL,
     quantity BIGINT NOT NULL,
     issue_status NVARCHAR(20) DEFAULT 'Draft',
     issue_note NVARCHAR(255) NULL,
     CONSTRAINT FK_GID_Issue FOREIGN KEY (issue_id) REFERENCES [GoodsIssues](issue_id) ON DELETE CASCADE,
-    CONSTRAINT FK_GID_Product FOREIGN KEY (product_id) REFERENCES [Product](product_id)
+    CONSTRAINT FK_GID_Inventory FOREIGN KEY (inventory_id) REFERENCES [Inventory](inventory_id)
 );
 GO
 
@@ -459,7 +415,7 @@ GO
 /****** 10. Zalo integration tables ******/
 CREATE TABLE [ZaloCustomerLink] (
     zalo_user_id NVARCHAR(64) PRIMARY KEY,
-    customer_id BIGINT NOT NULL,
+    customer_id BIGINT NULL,
     follow_status NVARCHAR(20) NOT NULL DEFAULT 'unknown',
     consent_at DATETIME NULL,
     created_at DATETIME DEFAULT GETDATE(),
