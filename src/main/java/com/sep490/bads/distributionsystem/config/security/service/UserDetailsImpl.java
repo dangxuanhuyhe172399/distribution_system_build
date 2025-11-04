@@ -1,4 +1,4 @@
-package com.sep490.bads.distributionsystem.security.service;
+package com.sep490.bads.distributionsystem.config.security.service;
 
 import com.sep490.bads.distributionsystem.entity.Role;
 import com.sep490.bads.distributionsystem.entity.User;
