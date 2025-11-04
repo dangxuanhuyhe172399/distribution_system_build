@@ -102,6 +102,7 @@ CREATE TABLE [Product] (
     updated_by BIGINT NULL,
     updated_at DATETIME NULL,
     p_category_id BIGINT NULL,
+    p_note NVARCHAR(255) NULL,
     p_unit_id BIGINT NULL,
     reorder_qty BIGINT DEFAULT 0,
     CONSTRAINT FK_Product_Category FOREIGN KEY (p_category_id) REFERENCES [ProductCategory](p_category_id),
@@ -111,22 +112,6 @@ CREATE TABLE [Product] (
 );
 CREATE INDEX IX_Product_category ON [Product](p_category_id);
 CREATE INDEX IX_Product_unit ON [Product](p_unit_id);
-GO
-
-CREATE TABLE [ProductDetail] (
-    productdetail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    product_id BIGINT NOT NULL UNIQUE,
-    min_stock BIGINT DEFAULT 0,
-    max_stock BIGINT DEFAULT 0,
-    created_by BIGINT NOT NULL,
-    updated_by BIGINT NULL,
-    updated_at DATETIME NULL,
-    p_note NVARCHAR(255) NULL,
-    status NVARCHAR(50) DEFAULT 'ACTIVE',
-    CONSTRAINT FK_ProductDetail_Product FOREIGN KEY (product_id) REFERENCES [Product](product_id),
-    CONSTRAINT FK_ProductDetail_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id),
-    CONSTRAINT FK_ProductDetail_UpdatedBy FOREIGN KEY (updated_by) REFERENCES [User](user_id)
-);
 GO
 
 CREATE TABLE [Inventory] (
@@ -267,16 +252,29 @@ GO
 
 CREATE TABLE [Request] (
     request_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    order_detail_id BIGINT NULL,
+    request_code NVARCHAR(50) UNIQUE NULL,
+    order_id BIGINT NULL,
     customer_id BIGINT NULL,
     request_status NVARCHAR(100) NULL,
+    request_type NVARCHAR(20) NOT NULL, -- 'RETURN' (Trả) hoặc 'EXCHANGE' (Đổi)
     reason NVARCHAR(255) NULL,
     reason_detail NVARCHAR(255) NULL,
     created_at DATETIME DEFAULT GETDATE(),
     created_by BIGINT NULL,
-    CONSTRAINT FK_Request_OrderDetail FOREIGN KEY (order_detail_id) REFERENCES [SalesOrderDetail](order_detail_id),
+    CONSTRAINT FK_Request_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id),
     CONSTRAINT FK_Request_Customer FOREIGN KEY (customer_id) REFERENCES [Customer](customer_id)
 );
+GO
+
+CREATE TABLE [RequestDetail] (
+    request_detail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    request_id BIGINT NOT NULL,
+    order_detail_id BIGINT NOT NULL, -- Sản phẩm nào trong đơn hàng gốc?
+    quantity BIGINT NOT NULL, -- Trả bao nhiêu?
+    reason_for_item NVARCHAR(255) NULL, -- Lý do cho riêng món này
+    CONSTRAINT FK_RequestDetail_Request FOREIGN KEY (request_id) REFERENCES [Request](request_id) ON DELETE CASCADE,
+    CONSTRAINT FK_RequestDetail_OrderDetail FOREIGN KEY (order_detail_id) REFERENCES [SalesOrderDetail](order_detail_id)
+    );
 GO
 
 /****** 7. Purchase (PO) ******/
