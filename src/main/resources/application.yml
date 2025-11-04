@@ -12,7 +12,7 @@ spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=bads_db;encrypt=true;trustServerCertificate=true;
     username: sa #username
-    password: 123 # password
+    password: 123456 # password
     hikari:
       connection-timeout: 30000 # Thời gian chờ một kết nối (ms)
       idle-timeout: 600000     # Thời gian một kết nối có thể nhàn rỗi trong pool (ms)
@@ -26,9 +26,7 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+      #set to 'none' or 'validate' because Flyway to manage
       ddl-auto: none
     properties:
       hibernate:
@@ -43,15 +41,13 @@ spring:
     baseline-on-migrate: true
 
   # Cấu hình Redis
-    cache:
-      type: redis
-    data:
+  cache:
+      type: redis # Kích hoạt Spring Cache sử dụng Redis
+  data:
       redis:
-        host: ${REDIS_HOST:localhost}
-        port: ${REDIS_PORT:6379}
-#        password: ${REDIS_PASSWORD:}
-        ssl: ${REDIS_SSL:false}
-  # cấu hình mail
+        host: localhost
+        port: 6379
+# cấu hình mail
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
@@ -77,13 +73,6 @@ jwt:
   expire-time: ${JWT_EXPIRE_TIME:86400} # GIÂY
   expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
 
-zalo:
-  app-id: ${ZALO_APP_ID:}
-  oa-secret: ${ZALO_OA_SECRET:}
-  verify: ${ZALO_VERIFY:true}
-  signature-mode: ${ZALO_SIGNATURE_MODE:APP_BODY_TS}
-  webhook-path: /v1/public/zalo/webhook
-
 logging:
   level:
     root: info
@@ -93,24 +82,3 @@ logging:
     org.hibernate.type.descriptor.sql: trace
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  health:
-#    chưa dung mail
-    mail:
-      enabled: false
-    redis:
-      enabled: false
-payment:
-  vnPay:
-    url: ${PAY_URL}
-    tmnCode: ${TMN_CODE}
-    secretKey: ${SECRET_KEY}
-    returnUrl: ${RETURN_URL}
-    version: ${VERSION}
-    command: ${COMMAND}
-    orderType: ${ORDER_TYPE}
