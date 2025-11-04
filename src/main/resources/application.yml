@@ -10,9 +10,9 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+    url: jdbc:sqlserver://localhost:1433;databaseName=bads_db;encrypt=true;trustServerCertificate=true;
+    username: sa #username
+    password: 123 # password
     hikari:
       connection-timeout: 30000 # Thời gian chờ một kết nối (ms)
       idle-timeout: 600000     # Thời gian một kết nối có thể nhàn rỗi trong pool (ms)
