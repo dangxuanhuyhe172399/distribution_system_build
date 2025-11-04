@@ -16,7 +16,7 @@ public class ZaloCustomerLink extends BaseEntity {
     private String zaloUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = true)
     private Customer customer;
 
     @Column(name = "follow_status", length = 20)
