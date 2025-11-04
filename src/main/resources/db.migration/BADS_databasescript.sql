@@ -177,7 +177,7 @@ CREATE TABLE [Supplier] (
 ------------------------------------------------------------
 CREATE TABLE [SalesOrder] (
                               order_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-                              saleorder_code NVARCHAR(50) UNIQUE,
+                              order_code NVARCHAR(50) UNIQUE,
                               customer_id BIGINT,
                               user_id BIGINT,
                               total_amount DECIMAL(18,2) DEFAULT 0,
