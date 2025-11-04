@@ -72,4 +72,5 @@ public class SalesOrderController {
             @Valid @RequestBody SalesOrderFilterDto filter, Pageable pageable) {
         return ResultResponse.success(salesOrderService.filterOrders(filter, pageable));
     }
+
 }

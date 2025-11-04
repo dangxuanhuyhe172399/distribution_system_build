@@ -106,7 +106,6 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toDto(p);
     }
 
-
     @Override
     public Page<ProductDto> filterProducts(ProductFilterDto f) {
         Sort.Direction dir = "DESC".equalsIgnoreCase(f.getDirection()) ? Sort.Direction.DESC : Sort.Direction.ASC;
@@ -122,7 +121,4 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::toDto)
                 .toList();
     }
-
-
-
 }

@@ -22,45 +22,46 @@ import java.util.List;
 @Validated
 @Tag(name = "Product", description = "Quản lý sản phẩm (Product)")
 public class ProductController {
-
     private final ProductService productService;
 
-    @Operation(summary = "Tạo mới sản phẩm", description = "Thêm một sản phẩm mới vào hệ thống.")
+    @Operation(summary = "them san pham")
     @PostMapping
-    public ResultResponse<ProductDto> create(@Valid @RequestBody ProductCreateDto body) {
+    public ResultResponse<ProductDto> createProduct(@Valid @RequestBody ProductCreateDto body) {
         return ResultResponse.created(productService.createProduct(body));
     }
 
-    @Operation(summary = "Xem chi tiết sản phẩm", description = "Trả về thông tin chi tiết của sản phẩm theo ID.")
+    @Operation(summary = "Lay ra san pham theo Id")
     @GetMapping("/{id}")
-    public ResultResponse<ProductDto> get(@PathVariable @Positive Long id) {
+    public ResultResponse<ProductDto> getProductById(@PathVariable @Positive Long id) {
         return ResultResponse.success(productService.getProductById(id));
     }
 
-    @Operation(summary = "Cập nhật sản phẩm", description = "Cập nhật thông tin sản phẩm (tên, giá, tồn kho, danh mục, v.v...).")
+    @Operation(summary = "Cap nhat san pham moi")
     @PutMapping("/{id}")
     public ResultResponse<ProductDto> update(@PathVariable @Positive Long id,
                                              @Valid @RequestBody ProductUpdateDto body) {
         return ResultResponse.success(productService.updateProduct(id, body));
     }
 
-    @Operation(summary = "Xóa mềm sản phẩm", description = "Ẩn sản phẩm khỏi danh sách hiển thị (soft delete).")
+    @Operation(summary = "xoa san pham")
     @DeleteMapping("/{id}")
     public ResultResponse<Object> delete(@PathVariable @Positive Long id) {
         productService.softDeleteProduct(id);
         return ResultResponse.success(null);
     }
 
-    @Operation(summary = "Lọc sản phẩm", description = "Lọc theo tên, danh mục, trạng thái, giá hoặc tồn kho, có phân trang.")
+    @Operation(summary = "tim kiem san pham")
     @PostMapping("/filter")
     public ResultResponse<Page<ProductDto>> filter(@Valid @RequestBody ProductFilterDto f) {
         return ResultResponse.success(productService.filterProducts(f));
     }
 
-    @Operation(summary = "Lấy toàn bộ danh sách sản phẩm", description = "Trả về tất cả sản phẩm (dạng danh sách).")
+    @Operation(summary = "lay ra t ca san pham")
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProductDto>>> getAllProducts() {
-        return ResponseEntity.ok(ApiResponse.success(productService.getAllProducts()));
+        return ResponseEntity.ok(
+                ApiResponse.success(productService.getAllProducts())
+        );
     }
 
     @Operation(summary = "Khôi phục sản phẩm đã ẩn", description = "Khôi phục lại sản phẩm bị soft delete.")
