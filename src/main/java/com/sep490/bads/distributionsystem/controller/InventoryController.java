@@ -70,6 +70,14 @@ public class InventoryController extends BaseController{
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Chi tiết tồn theo Sản phẩm–Kho")
+    @GetMapping("/{warehouseId}/{productId}/detail")
+    public ResultResponse<InventoryDetailDto> detail(@PathVariable Long warehouseId,
+                                                     @PathVariable Long productId) {
+        return ResultResponse.success(inventoryService.getDetail(warehouseId, productId));
+    }
+
+
     @Operation(summary = "Lịch sử nhập/xuất theo sản phẩm-kho")
     @GetMapping("/{warehouseId}/{productId}/history")
     public ResultResponse<Object> history(@PathVariable Long warehouseId, @PathVariable Long productId) {
