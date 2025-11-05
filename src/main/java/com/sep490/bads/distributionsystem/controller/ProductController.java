@@ -8,6 +8,7 @@ import com.sep490.bads.distributionsystem.dto.ProductUpdateDto;
 import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
 import com.sep490.bads.distributionsystem.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/public/products")
+@Tag(name = "Product", description = "Quản lý sản phẩm")
 @RequiredArgsConstructor
 @Validated
-public class ProductController {
+public class ProductController extends BaseController {
     private final ProductService productService;
 
     @Operation(summary = "them san pham")

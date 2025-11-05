@@ -65,6 +65,9 @@ public class SecurityConfig {
                         .requestMatchers("/v1/it/**").permitAll()
                         .requestMatchers("/v1/doc/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers(
+                                "/v1/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )

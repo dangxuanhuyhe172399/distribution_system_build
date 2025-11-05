@@ -1,6 +1,5 @@
 package com.sep490.bads.distributionsystem.entity;
 
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -38,9 +37,9 @@ public class GoodsReceiptDetail extends BaseEntity {
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 20)
-    private CommonStatus status;
+    @Column(name = "status", length = 20, nullable = false)
+    private String status;
+    public void setStatus(String s) { this.status = s == null ? null : s.toUpperCase(); }
 
     @Column(name = "note", length = 255)
     private String note;

@@ -2,6 +2,8 @@ package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
@@ -36,10 +38,10 @@ public class Product extends BaseEntity {
     private String name;
 
     @Column(name = "cost_price", precision = 18, scale = 2)
-    private Long costPrice;
+    private BigDecimal costPrice;
 
     @Column(name = "selling_price", precision = 18, scale = 2)
-    private Long sellingPrice;
+    private BigDecimal sellingPrice;
 
     @Column(name = "min_stock")
     private Long minStock;
@@ -52,18 +54,18 @@ public class Product extends BaseEntity {
     private CommonStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "p_category_id")
     private ProductCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unit_id")
+    @JoinColumn(name = "p_unit_id")
     private Unit unit;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
 
-    @Column(name = "note", length = 255)
+    @Column(name = "p_note", length = 255)
     private String note;
 
     @Column(name = "reorder_qty")
