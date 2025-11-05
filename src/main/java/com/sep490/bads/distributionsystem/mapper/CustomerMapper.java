@@ -9,10 +9,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface CustomerMapper extends EntityMapper<CustomerDto, Customer> {
 
-    @Mapping(source = "type.id", target = "typeId")
-    @Mapping(source = "type.name", target = "typeName")
-    CustomerDto toDto(Customer entity);
 
-    @Mapping(source = "typeId", target = "type.id")
-    Customer toEntity(CustomerDto dto);
 }

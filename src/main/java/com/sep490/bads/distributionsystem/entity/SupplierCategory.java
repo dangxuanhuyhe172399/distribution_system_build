@@ -21,7 +21,7 @@ public class SupplierCategory {
     @Column(name = "category_name", length = 100, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "category")
     @JsonIgnore
     private List<Supplier> suppliers;
 }

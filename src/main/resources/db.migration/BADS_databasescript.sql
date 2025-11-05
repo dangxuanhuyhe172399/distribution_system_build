@@ -27,8 +27,8 @@ CREATE TABLE [Unit] (
 );
 
 CREATE TABLE [SupplierCategory] (
-                                    s_category_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-                                    s_category_name NVARCHAR(100) NOT NULL
+                                    category_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+                                    category_name NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE [Qrcode] (
@@ -164,11 +164,11 @@ CREATE TABLE [Supplier] (
                             email NVARCHAR(100),
                             address NVARCHAR(255),
                             tax_code NVARCHAR(50),
-                            s_category_id BIGINT,
+                            category_id BIGINT,
                             [status] NVARCHAR(20),
                             created_at DATETIME DEFAULT GETDATE(),
                             created_by BIGINT NOT NULL,
-                            CONSTRAINT FK_Supplier_Category FOREIGN KEY (s_category_id) REFERENCES [SupplierCategory](s_category_id),
+                            CONSTRAINT FK_Supplier_Category FOREIGN KEY (category_id) REFERENCES [SupplierCategory](category_id),
                             CONSTRAINT FK_Supplier_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
 
