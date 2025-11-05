@@ -3,7 +3,6 @@ package com.sep490.bads.distributionsystem.dto.inventoryDto;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Getter
