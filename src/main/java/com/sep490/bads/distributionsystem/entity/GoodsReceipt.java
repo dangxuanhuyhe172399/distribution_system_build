@@ -1,7 +1,7 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.StockNoteStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -49,8 +49,8 @@ public class GoodsReceipt extends BaseEntity {
     private User postedBy;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 20)
-    private CommonStatus status;
+    @Column(name = "status", length = 20, nullable = false)
+    private StockNoteStatus status;
 
     @Column(name = "note", length = 255)
     private String note;

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("v1/public/customers")
 @RequiredArgsConstructor
 @Tag(name = "Customer", description = "Quản lý thông tin khách hàng")
-public class CustomerController {
+public class CustomerController extends BaseController {
 
     private final CustomerService customerService;
 

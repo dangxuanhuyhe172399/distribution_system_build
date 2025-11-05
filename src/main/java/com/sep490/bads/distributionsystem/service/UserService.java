@@ -7,10 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-@Service
 public interface UserService {
     Page<UserDto> search(Pageable pageable, UserFilterDto filter);
 

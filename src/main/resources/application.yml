@@ -77,6 +77,18 @@ jwt:
   expire-time: ${JWT_EXPIRE_TIME:86400} # GIÂY
   expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
 
+springdoc:
+  api-docs:
+    path: /v1/doc/api/index.html
+  swagger-ui:
+    path: /v1/doc/index.html
+    display-request-duration: true
+    syntax-highlight:
+      activated: true
+      theme: monokai
+    filter: true
+    tags-sorter: alpha
+    operations-sorter: alpha
 zalo:
   app-id: ${ZALO_APP_ID:}
   oa-secret: ${ZALO_OA_SECRET:}

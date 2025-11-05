@@ -4,8 +4,6 @@ import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class CustomerFilterDto {
 

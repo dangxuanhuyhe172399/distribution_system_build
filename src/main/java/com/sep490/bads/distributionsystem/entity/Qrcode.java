@@ -16,7 +16,7 @@ public class Qrcode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qr_id")
-    private Long id;
+    private Integer id;
 
     @Column(name = "qr_image", length = 255, nullable = false)
     private String image;

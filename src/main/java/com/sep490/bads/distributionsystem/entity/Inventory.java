@@ -3,7 +3,7 @@ package com.sep490.bads.distributionsystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Inventory", schema = "dbo")
@@ -47,12 +47,8 @@ public class Inventory extends BaseEntity {
     private LocalDate expiryDate;
 
     @Column(name = "last_in_at")
-    private LocalDate lastInAt;
+    private LocalDateTime lastInAt;
 
     @Column(name = "last_out_at")
-    private LocalDate lastOutAt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 20)
-    private CommonStatus status;
+    private LocalDateTime lastOutAt;
 }

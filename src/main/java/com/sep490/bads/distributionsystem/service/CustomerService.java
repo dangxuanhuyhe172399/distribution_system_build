@@ -4,9 +4,7 @@ import com.sep490.bads.distributionsystem.dto.CustomerDto;
 import com.sep490.bads.distributionsystem.dto.CustomerFilterDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-@Service
 public interface CustomerService {
     Page<CustomerDto> getAllCustomers(Pageable pageable);
     CustomerDto getCustomerById(Long id);

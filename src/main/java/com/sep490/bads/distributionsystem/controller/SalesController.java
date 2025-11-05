@@ -5,6 +5,7 @@ import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
 import com.sep490.bads.distributionsystem.entity.SalesOrder;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.SalesOrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/public/sales-orders")
+@RequestMapping("/v1/public/sales")
+@Tag(name = "SaleOrder", description = "SaleOrder management")
 @RequiredArgsConstructor
 @Validated
-public class SalesController {
+public class SalesController extends BaseController {
 
     private final SalesOrderService salesOrderService;
 
