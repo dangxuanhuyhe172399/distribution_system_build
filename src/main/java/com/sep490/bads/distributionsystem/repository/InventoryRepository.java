@@ -42,6 +42,20 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     List<Inventory> lockLotsForIssue(@Param("warehouseId") Long warehouseId,
                                      @Param("productId") Long productId);
 
+    @Query("""
+ select coalesce(sum(coalesce(i.quantity,0) - coalesce(i.reservedQuantity,0)),0)
+ from Inventory i
+ where i.warehouse.id=:wid and i.product.id=:pid
+""")
+    Long sumAvailable(@Param("wid") Long wid, @Param("pid") Long pid);
+
+    @Query("""
+ select i from Inventory i
+ where i.warehouse.id=:wid and i.product.id=:pid
+   and (coalesce(i.quantity,0) - coalesce(i.reservedQuantity,0)) > 0
+ order by i.expiryDate asc nulls last, i.id asc
+""")
+    List<Inventory> findLotsForDetail(@Param("wid") Long wid, @Param("pid") Long pid);
     Page<Inventory> findAll(Specification<Inventory> inventorySpecification, Pageable pageable);
 }
 

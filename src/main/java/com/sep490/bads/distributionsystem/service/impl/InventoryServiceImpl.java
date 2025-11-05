@@ -28,6 +28,7 @@ import java.util.*;
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository inventoryRepo;
+    private final GoodsReceiptDetailRepository goodsReceiptDetailRepo;
     private final ProductRepository productRepo;
     private final WarehouseRepository warehouseRepo;
     private final QrcodeRepository qrcodeRepo;
@@ -235,6 +236,36 @@ public class InventoryServiceImpl implements InventoryService {
         if (Optional.ofNullable(inv.getReservedQuantity()).orElse(0L) > 0)
             throw new BadRequestException("Cannot delete: reserved quantity > 0");
         inventoryRepo.delete(inv);
+    }
+
+
+    // -------- DETAIL ----------
+    @Override
+    @Transactional(readOnly = true)
+    public InventoryDetailDto getDetail(Long wid, Long pid) {
+        Product p = productRepo.findById(pid).orElseThrow(() -> new NotFoundException("Product not found"));
+        Warehouse w = warehouseRepo.findById(wid).orElseThrow(() -> new NotFoundException("Warehouse not found"));
+
+        long available = Optional.ofNullable(inventoryRepo.sumAvailable(wid, pid)).orElse(0L);
+
+        var lots = inventoryRepo.findLotsForDetail(wid, pid);
+        LocalDate mfg  = lots.isEmpty() ? null : lots.get(0).getManufactureDate();
+        LocalDate exp  = lots.isEmpty() ? null : lots.get(0).getExpiryDate();
+        Long daysToExp = (exp == null) ? null : java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), exp);
+
+        String supplier = null;
+        var names = goodsReceiptDetailRepo.findLastSupplierName(wid, pid);
+        if (!names.isEmpty()) supplier = names.get(0);
+
+        return InventoryDetailDto.builder()
+                .productId(pid).sku(p.getSku()).productName(p.getName())
+                .warehouseId(wid).warehouseName(w.getName())
+                .unitName(p.getUnit()!=null ? p.getUnit().getName() : null)
+                .availableQty(available)
+                .manufactureDate(mfg).expiryDate(exp).daysToExpire(daysToExp)
+                .sellingPrice(p.getSellingPrice())
+                .supplierName(supplier)
+                .build();
     }
 
     // -------- HISTORY + EXPORT (stub) ----------

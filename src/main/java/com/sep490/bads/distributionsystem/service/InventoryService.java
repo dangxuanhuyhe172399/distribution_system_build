@@ -16,7 +16,7 @@ public interface InventoryService {
     InventoryDto create(InventoryCreateDto dto);
     void update(Long id, InventoryUpdateDto dto);
     void delete(Long id);
-
+    InventoryDetailDto getDetail(Long warehouseId, Long productId);
     Object history(Long productId, Long warehouseId);
 
     ByteArrayResource exportCsv(InventoryFilterDto filter);
