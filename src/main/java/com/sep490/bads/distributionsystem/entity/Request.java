@@ -2,6 +2,7 @@ package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.RequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -35,7 +36,7 @@ public class Request extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "request_status", length = 100)
-    private CommonStatus requestStatus;
+    private RequestStatus requestStatus;
 
     @Column(name = "request_type", length = 20, nullable = false)
     private String requestType;

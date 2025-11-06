@@ -1,5 +1,6 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.sep490.bads.distributionsystem.entity.type.InspectionResultStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -28,6 +29,13 @@ public class RequestDetail {
 
     @Column(name = "quantity", nullable = false)
     private Long quantity;
+
+    @Column(name="inspected_qty")
+    private Long inspectedQty; // đạt
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="inspection_result", length=20)
+    private InspectionResultStatus inspectionResult;
 
     @Column(name = "reason_for_item", length = 255)
     private String reasonForItem;

@@ -34,11 +34,20 @@ public class StockController extends BaseController {
         return ResponseEntity.ok(stockService.createAndPost(dto, uid));
     }
 
-    // nếu cần tách “tạo draft” và “post”
-    @PostMapping("/receipts/{id}:post") public ResponseEntity<?> postReceipt(@PathVariable Long id, Authentication a){
-        return ResponseEntity.ok(stockService.postReceipt(id, getUserDetails(a).getUserId()));
+    // ===== ISSUE: tách draft → confirm-pick → post =====
+    @Operation(summary="Tạo phiếu lấy hàng")
+    @PostMapping("/issues")
+    public ResponseEntity<?> createIssueDraft(@RequestBody @Valid CreateIssueDto dto, Authentication a){
+        return ResponseEntity.ok(stockService.createIssueDraft(dto, getUserDetails(a).getUserId()));
     }
-    @PostMapping("/issues/{id}:post") public ResponseEntity<?> postIssue(@PathVariable Long id, Authentication a){
+    @Operation(summary="Để người dùng xác nhận từ sale gửi cho người dùng")
+    @PatchMapping("/issues/{id}/confirm-pick")
+    public ResponseEntity<?> confirmPick(@PathVariable Long id, Authentication a){
+        return ResponseEntity.ok(stockService.confirmPick(id, getUserDetails(a).getUserId()));
+    }
+    @Operation(summary="Xác nhận lấy hàng ")
+    @PostMapping("/issues/{id}:post")
+    public ResponseEntity<?> postIssue(@PathVariable Long id, Authentication a){
         return ResponseEntity.ok(stockService.postIssue(id, getUserDetails(a).getUserId()));
     }
 }

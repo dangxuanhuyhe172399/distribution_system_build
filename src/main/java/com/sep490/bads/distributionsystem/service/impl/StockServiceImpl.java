@@ -85,6 +85,60 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
+    public GoodsIssues createIssueDraft(CreateIssueDto dto, Long userId) {
+        Warehouse w = whRepo.findById(dto.getWarehouseId())
+                .orElseThrow(() -> new NotFoundException("Kho không tồn tại"));
+        User u = userRepo.getReferenceById(userId);
+
+        GoodsIssues gi = new GoodsIssues();
+        gi.setWarehouse(w);
+        gi.setOrder(null);
+        gi.setCreatedBy(u);
+        gi.setStatus(StockNoteStatus.DRAFT);
+        gi = giRepo.save(gi);
+
+        for (var l : dto.getLines()) {
+            Product p = productRepo.findById(l.getProductId())
+                    .orElseThrow(() -> new NotFoundException("SP không tồn tại"));
+            GoodsIssuesDetail d = GoodsIssuesDetail.builder()
+                    .issue(gi).product(p).quantity(l.getQuantity()).status("DRAFT").build();
+            gidRepo.save(d);
+        }
+        return gi;
+    }
+
+    @Override
+    @Transactional
+    public GoodsIssues confirmPick(Long issueId, Long userId) {
+        GoodsIssues gi = giRepo.findById(issueId)
+                .orElseThrow(() -> new NotFoundException("Phiếu xuất không tồn tại"));
+        if (gi.getStatus() != StockNoteStatus.DRAFT) return gi;
+
+        Warehouse w = gi.getWarehouse();
+        for (GoodsIssuesDetail d : gidRepo.findByIssueId(issueId)) {
+            long need = d.getQuantity();
+            for (Inventory lot : invRepo.lockLotsForIssue(w.getId(), d.getProduct().getId())) {
+                if (need == 0) break;
+                long qty = Optional.ofNullable(lot.getQuantity()).orElse(0L);
+                long rsv = Optional.ofNullable(lot.getReservedQuantity()).orElse(0L);
+                long free = Math.max(0L, qty - rsv);
+                long take = Math.min(free, need);
+                if (take > 0) {
+                    lot.setReservedQuantity(rsv + take);
+                    invRepo.save(lot);
+                    need -= take;
+                }
+            }
+            if (need > 0) throw new BadRequestException("Không đủ tồn khả dụng để reserve");
+            d.setStatus("PROCESSING");
+            gidRepo.save(d);
+        }
+        gi.setStatus(StockNoteStatus.CONFIRMED);
+        return giRepo.save(gi);
+    }
+
+    @Override
+    @Transactional
     public GoodsReceipt postReceipt(Long receiptId, Long userId) {
         GoodsReceipt gr = grRepo.findById(receiptId)
                 .orElseThrow(() -> new NotFoundException("Phiếu nhập không tồn tại"));
@@ -178,7 +232,7 @@ public class StockServiceImpl implements StockService {
     public GoodsIssues postIssue(Long issueId, Long userId) {
         GoodsIssues gi = giRepo.findById(issueId)
                 .orElseThrow(() -> new NotFoundException("Phiếu xuất không tồn tại"));
-        if (gi.getStatus() == StockNoteStatus.POSTED) return gi;
+        if (gi.getStatus() == StockNoteStatus.COMPLETED || gi.getStatus() == StockNoteStatus.POSTED) return gi;
 
         Warehouse w   = gi.getWarehouse();
         User poster   = userRepo.getReferenceById(userId);
@@ -215,7 +269,7 @@ public class StockServiceImpl implements StockService {
             d.setStatus("POSTED");
             gidRepo.save(d);
         }
-        gi.setStatus(StockNoteStatus.POSTED);
+        gi.setStatus(StockNoteStatus.COMPLETED);
         gi.setPostedAt(LocalDateTime.now());
         gi.setPostedBy(poster);
         return giRepo.save(gi);

@@ -53,7 +53,4 @@ public class SalesOrderDetail extends BaseEntity {
     @Column(name = "note", length = 255)
     private String note;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private User createdBy;
 }
