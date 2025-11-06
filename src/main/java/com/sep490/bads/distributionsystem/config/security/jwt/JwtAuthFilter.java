@@ -23,13 +23,20 @@ import java.util.List;
 @Log4j2
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final List<String> PERMIT_ALL_PATHS =  List.of("/v1/public", "/actuator", "/error");
+    private static final List<String> PERMIT_ALL_PATHS =  List.of(
+            "/v1/public/auth", // Chỉ bỏ qua các endpoint xác thực
+            "/v1/doc",         // Bỏ qua Swagger
+            "/actuator",
+            "/error",
+            "/zalo_verifier"   // Bỏ qua Zalo verifier
+    );
 
     @Autowired @Lazy private JwtService jwtService;
     @Autowired @Lazy private UserSecurityService userDetailsService;
 
     private boolean isPermitAll(HttpServletRequest request) {
         String path = request.getServletPath();
+        if (path.startsWith("/v1/api-docs")) return true;
         return PERMIT_ALL_PATHS.stream().anyMatch(path::startsWith);
     }
 

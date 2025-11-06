@@ -21,6 +21,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ public class UserController extends BaseController {
     private UserService userService;
 
     @Operation(summary = "Lấy danh sách User và lọc danh sách")
+    @PreAuthorize("hasRole('admin')")
     @GetMapping
     public ResultResponse<Page<UserDto>> getAllUserAndFilter(
             @ModelAttribute UserFilterDto filter,
@@ -41,6 +43,7 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Lấy danh sách users")
+    @PreAuthorize("hasRole('admin')")
     @GetMapping("/getAllUser")
     public ResultResponse<Page<UserDto>> getAllUsers(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -48,12 +51,14 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Lấy chi tiết user theo id")
+    @PreAuthorize("hasRole('admin')")
     @GetMapping("/{id}")
     public ResultResponse<UserDto> getUserDetail(@PathVariable Long id) {
         return ResultResponse.success(userService.findDtoById(id));
     }
 
     @Operation(summary = "Tạo mới user")
+    @PreAuthorize("hasRole('admin')")
     @PostMapping("")
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserCreateDto dto) {
         UserDto created = userService.createUser(dto);
@@ -61,6 +66,7 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Cập nhật user")
+    @PreAuthorize("hasRole('admin')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserUpdateDto updateData) {
         userService.updateUser(id, updateData);
@@ -68,6 +74,7 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Cập nhật status user")
+    @PreAuthorize("hasRole('admin')")
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateUserStatus(@PathVariable Long id, @RequestBody UserStatus status) {
         userService.updateUserStatus(id, status);
@@ -75,6 +82,7 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Xóa mềm user (chuyển trạng thai)")
+    @PreAuthorize("hasRole('admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.softDeleteUser(id);

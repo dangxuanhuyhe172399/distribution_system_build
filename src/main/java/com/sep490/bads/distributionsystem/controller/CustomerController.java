@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,7 @@ public class CustomerController extends BaseController {
 
 
     @Operation(summary = "Lấy danh sách khách hàng (phân trang)")
+    @PreAuthorize("hasRole('admin') or hasRole('saleStaff')")
     @GetMapping
     public ResponseEntity<Page<CustomerDto>> getAllCustomers(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -33,18 +35,18 @@ public class CustomerController extends BaseController {
 
 
     @Operation(summary = "Lấy chi tiết khách hàng theo ID")
+    @PreAuthorize("hasRole('admin') or hasRole('saleStaff')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> getCustomerById(@PathVariable @Positive Long id) {
         return ResponseEntity.ok(customerService.getCustomerById(id));
     }
 
-
     @Operation(summary = "Tạo mới khách hàng")
+    @PreAuthorize("hasRole('admin') or hasRole('saleStaff')")
     @PostMapping
     public ResponseEntity<CustomerDto> createCustomer(@RequestBody @Valid CustomerDto dto) {
         return ResponseEntity.ok(customerService.createCustomer(dto));
     }
-
 
     @Operation(summary = "Cập nhật thông tin khách hàng")
     @PutMapping("/{id}")
