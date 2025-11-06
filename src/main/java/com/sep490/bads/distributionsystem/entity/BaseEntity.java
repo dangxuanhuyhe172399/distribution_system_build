@@ -18,7 +18,7 @@ public abstract class BaseEntity {
     @Column(name="created_at") private LocalDateTime createdAt;
     @Column(name="updated_at") private LocalDateTime updatedAt;
 
-    @Column(name="created_by") private Long createdBy;
+
 
     @PrePersist void prePersist() { createdAt = LocalDateTime.now(); updatedAt = createdAt; }
     @PreUpdate  void preUpdate()  { updatedAt = LocalDateTime.now(); }

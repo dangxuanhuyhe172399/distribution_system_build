@@ -91,15 +91,12 @@ CREATE TABLE [Product] (
                            min_stock BIGINT DEFAULT 0,
                            max_stock BIGINT DEFAULT 0,
                            [status] NVARCHAR(20) DEFAULT 'ACTIVE',
-                           created_at DATETIME DEFAULT GETDATE(),
-                           created_by BIGINT NOT NULL,
                            category_id BIGINT,
                            note NVARCHAR(255),
                            unit_id BIGINT,
                            reorder_qty BIGINT DEFAULT 0,
                            CONSTRAINT FK_Product_Category FOREIGN KEY (category_id) REFERENCES [ProductCategory](p_category_id),
                            CONSTRAINT FK_Product_Unit FOREIGN KEY (unit_id) REFERENCES [Unit](unit_id),
-                           CONSTRAINT FK_Product_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
 CREATE INDEX IX_Product_category ON [Product](p_category_id);
 CREATE INDEX IX_Product_unit ON [Product](p_unit_id);
@@ -116,8 +113,6 @@ CREATE TABLE [Inventory] (
                              expiry_date DATE NULL,
                              last_in_at DATETIME NULL,
                              last_out_at DATETIME NULL,
-                             created_at DATETIME DEFAULT GETDATE(),
-                             created_by BIGINT NOT NULL,
                              CONSTRAINT FK_Inventory_Warehouse FOREIGN KEY (warehouse_id) REFERENCES [Warehouse](warehouse_id),
                              CONSTRAINT FK_Inventory_Product FOREIGN KEY (product_id) REFERENCES [Product](product_id),
                              CONSTRAINT FK_Inventory_QR FOREIGN KEY (qr_id) REFERENCES [Qrcode](qr_id),
@@ -218,6 +213,7 @@ CREATE TABLE [Invoice] (
                            grand_total DECIMAL(18,2),
                            [status] NVARCHAR(20) DEFAULT 'Pending',
                            payment_method NVARCHAR(50),
+                           tax_code NVARCHAR(50),
                            created_at DATETIME DEFAULT GETDATE(),
                            created_by BIGINT NOT NULL,
                            CONSTRAINT FK_Invoice_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id),
