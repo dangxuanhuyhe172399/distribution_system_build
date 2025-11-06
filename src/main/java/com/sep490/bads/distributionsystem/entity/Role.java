@@ -19,7 +19,4 @@ public class Role {
 
     @Column(name = "role_name", length = 50, unique = true, nullable = false)
     private String roleName;
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<User> users;
 }

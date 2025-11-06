@@ -61,7 +61,7 @@ public class SecurityConfig {
                                 "/zalo_verifier*.html",        // cho tiền tố root
                                 "/v1/zalo_verifier*.html"      // nếu dùng tiền tố /v1
                         ).permitAll()
-                        .requestMatchers("/v1/public/**").permitAll()
+                        .requestMatchers("/v1/public/auth/**").permitAll()
                         .requestMatchers("/v1/it/**").permitAll()
                         .requestMatchers("/v1/doc/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
