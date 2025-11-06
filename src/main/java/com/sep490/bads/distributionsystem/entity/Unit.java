@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "Unit", schema = "dbo")
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Unit extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

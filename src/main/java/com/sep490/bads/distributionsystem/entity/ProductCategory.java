@@ -16,10 +16,10 @@ public class ProductCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "p_category_id")
     private Long id;
 
-    @Column(name = "category", length = 100, nullable = false)
+    @Column(name = "p_category", length = 100, nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)

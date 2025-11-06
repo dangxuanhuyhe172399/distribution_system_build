@@ -15,10 +15,10 @@ import java.util.List;
 public class SupplierCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "s_category_id")
     private Long id;
 
-    @Column(name = "category_name", length = 100, nullable = false)
+    @Column(name = "s_category_name", length = 100, nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)

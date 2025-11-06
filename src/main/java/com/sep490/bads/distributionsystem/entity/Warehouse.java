@@ -5,6 +5,7 @@ import lombok.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "Warehouse", schema = "dbo")
@@ -12,7 +13,7 @@ import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Warehouse extends BaseEntity {
 
     @Id

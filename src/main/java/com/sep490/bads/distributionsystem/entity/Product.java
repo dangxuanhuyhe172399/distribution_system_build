@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "Product", schema = "dbo")
@@ -14,7 +15,7 @@ import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Product extends BaseEntity {
 
     @Id
