@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class GoodsIssuesDetail extends BaseEntity {
+public class GoodsIssuesDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

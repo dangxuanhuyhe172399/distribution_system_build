@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class GoodsReceiptDetail extends BaseEntity {
+public class GoodsReceiptDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

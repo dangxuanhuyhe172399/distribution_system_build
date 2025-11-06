@@ -15,7 +15,7 @@ import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product extends BaseEntity {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

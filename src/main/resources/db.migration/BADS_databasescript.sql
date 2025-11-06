@@ -17,8 +17,8 @@ CREATE TABLE [CustomerType] (
 );
 
 CREATE TABLE [ProductCategory] (
-                                   p_category_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-                                   p_category NVARCHAR(100) NOT NULL
+                                   category_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+                                   category NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE [Unit] (
@@ -56,6 +56,7 @@ CREATE TABLE [User] (
                         gender NVARCHAR(16) NULL,
                         address NVARCHAR(255) NULL,
                         created_at DATETIME DEFAULT GETDATE(),
+                        created_by BIGINT NOT NULL ,
                         CONSTRAINT FK_User_Role FOREIGN KEY (role_id) REFERENCES [Role](role_id)
 );
 CREATE INDEX IX_User_role ON [User](role_id);
@@ -74,6 +75,7 @@ CREATE TABLE [Warehouse] (
                              email NVARCHAR(100),
                              is_active BIT DEFAULT 1,
                              created_at DATETIME DEFAULT GETDATE(),
+                             created_by BIGINT NOT NULL,
                              CONSTRAINT FK_Warehouse_Manager FOREIGN KEY (manager_id) REFERENCES [User](user_id)
 );
 
@@ -91,12 +93,12 @@ CREATE TABLE [Product] (
                            [status] NVARCHAR(20) DEFAULT 'ACTIVE',
                            created_at DATETIME DEFAULT GETDATE(),
                            created_by BIGINT NOT NULL,
-                           p_category_id BIGINT,
-                           p_note NVARCHAR(255),
-                           p_unit_id BIGINT,
+                           category_id BIGINT,
+                           note NVARCHAR(255),
+                           unit_id BIGINT,
                            reorder_qty BIGINT DEFAULT 0,
-                           CONSTRAINT FK_Product_Category FOREIGN KEY (p_category_id) REFERENCES [ProductCategory](p_category_id),
-                           CONSTRAINT FK_Product_Unit FOREIGN KEY (p_unit_id) REFERENCES [Unit](unit_id),
+                           CONSTRAINT FK_Product_Category FOREIGN KEY (category_id) REFERENCES [ProductCategory](p_category_id),
+                           CONSTRAINT FK_Product_Unit FOREIGN KEY (unit_id) REFERENCES [Unit](unit_id),
                            CONSTRAINT FK_Product_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
 CREATE INDEX IX_Product_category ON [Product](p_category_id);
@@ -114,6 +116,8 @@ CREATE TABLE [Inventory] (
                              expiry_date DATE NULL,
                              last_in_at DATETIME NULL,
                              last_out_at DATETIME NULL,
+                             created_at DATETIME DEFAULT GETDATE(),
+                             created_by BIGINT NOT NULL,
                              CONSTRAINT FK_Inventory_Warehouse FOREIGN KEY (warehouse_id) REFERENCES [Warehouse](warehouse_id),
                              CONSTRAINT FK_Inventory_Product FOREIGN KEY (product_id) REFERENCES [Product](product_id),
                              CONSTRAINT FK_Inventory_QR FOREIGN KEY (qr_id) REFERENCES [Qrcode](qr_id),
@@ -147,7 +151,6 @@ CREATE TABLE [Customer] (
                             note NVARCHAR(255),
                             created_at DATETIME DEFAULT GETDATE(),
                             created_by BIGINT NULL,
-                            updated_at DATETIME NULL,
                             CONSTRAINT FK_Customer_Type FOREIGN KEY (type_id) REFERENCES [CustomerType](type_id),
                             CONSTRAINT FK_Customer_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
@@ -181,7 +184,6 @@ CREATE TABLE [SalesOrder] (
                               customer_id BIGINT,
                               user_id BIGINT,
                               total_amount DECIMAL(18,2) DEFAULT 0,
-                              note NVARCHAR(255),
                               payment_method NVARCHAR(50),
                               [status] NVARCHAR(20) DEFAULT 'Pending',
                               created_at DATETIME DEFAULT GETDATE(),
@@ -200,10 +202,9 @@ CREATE TABLE [SalesOrderDetail] (
                                     unit_price DECIMAL(18,2) NOT NULL,
                                     discount DECIMAL(5,2) DEFAULT 0,
                                     vat_amount DECIMAL(18,2),
-                                    total_price AS (CONVERT(DECIMAL(18,2), ROUND((quantity * unit_price) * (1 - discount / 100.0), 2))) PERSISTED,
+                                    total_price AS (CONVERT(DECIMAL(18,2), ROUND((quantity * unit_price) + vat_amount - discount, 2))) PERSISTED,
                                     [status] NVARCHAR(20) DEFAULT 'Draft',
                                     note NVARCHAR(255),
-                                    created_at DATETIME DEFAULT GETDATE(),
                                     CONSTRAINT FK_SOD_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id) ON DELETE CASCADE,
                                     CONSTRAINT FK_SOD_Product FOREIGN KEY (product_id) REFERENCES [Product](product_id)
 );
@@ -243,7 +244,7 @@ CREATE TABLE [RequestDetail] (
                                  request_id BIGINT NOT NULL,
                                  order_detail_id BIGINT NOT NULL,
                                  quantity BIGINT NOT NULL,
-                                 reason_for_item NVARCHAR(255),
+--                                  reason_for_item NVARCHAR(255),
                                  CONSTRAINT FK_RequestDetail_Request FOREIGN KEY (request_id) REFERENCES [Request](request_id) ON DELETE CASCADE,
                                  CONSTRAINT FK_RequestDetail_OrderDetail FOREIGN KEY (order_detail_id) REFERENCES [SalesOrderDetail](order_detail_id)
 );
@@ -272,7 +273,7 @@ CREATE TABLE [ContractDetail] (
                                   quantity BIGINT NOT NULL,
                                   unit_price DECIMAL(18,2) NOT NULL,
                                   vat_amount DECIMAL(18,2),
-                                  total_price AS (quantity * unit_price) PERSISTED,
+                                  total_price AS (quantity * unit_price) + vat_amount PERSISTED,
                                   [status] NVARCHAR(20) DEFAULT 'Pending',
                                   estimated_delivery_date DATE NULL,
                                   note NVARCHAR(255),
