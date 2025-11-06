@@ -13,9 +13,8 @@ import java.util.List;
 public interface SalesOrderDetailRepository extends JpaRepository<SalesOrderDetail, Long>, JpaSpecificationExecutor<SalesOrderDetail> {
 
     //Lấy toàn bộ chi tiết đơn hàng theo ID đơn hàng
-
     @Query(value = "SELECT * FROM SalesOrderDetail WHERE order_id = :orderId", nativeQuery = true)
-    List<SalesOrderDetail> findByOrderId(@Param("orderId") Long orderId);
+    List<SalesOrderDetail> findByOrderId(@Param("order_Id") Long orderId);
 
     //Cập nhật số lượng, đơn giá, chiết khấu
     @Modifying(clearAutomatically = true, flushAutomatically = true)
@@ -26,30 +25,22 @@ public interface SalesOrderDetailRepository extends JpaRepository<SalesOrderDeta
             discount = :discount
         WHERE order_detail_id = :id
     """, nativeQuery = true)
-    int updateItem(@Param("id") Long id,
+    int updateItem(@Param("order_detail_id") Long id,
                    @Param("quantity") Long quantity,
-                   @Param("unitPrice") Long unitPrice,
+                   @Param("unit_price") Long unitPrice,
                    @Param("discount") Long discount);
 
     //Xóa mềm (ẩn chi tiết đơn hàng)
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE SalesOrderDetail SET discount = -1 WHERE order_detail_id = :id", nativeQuery = true)
-    int softDelete(@Param("id") Long id);
+    int softDelete(@Param("order_detail_id") Long id);
 
-    //Tạo specification linh hoạt từ DTO (nếu cần lọc theo product, order, giá, v.v.)
+    @Query("""
+    select d from SalesOrderDetail d
+      join fetch d.product p
+      left join fetch p.unit u
+    where d.order.id = :orderId
+  """)
+    List<SalesOrderDetail> findAllWithProductByOrderId(@Param("order_Id") Long orderId);
 
-    static Specification<SalesOrderDetail> specFrom(Long orderId, Long productId) {
-        return (root, q, cb) -> {
-            var ps = new java.util.ArrayList<Predicate>();
-
-            if (orderId != null)
-                ps.add(cb.equal(root.get("order").get("id"), orderId));
-
-            if (productId != null)
-                ps.add(cb.equal(root.get("product").get("id"), productId));
-
-            return cb.and(ps.toArray(Predicate[]::new));
-        };
-    }
 }

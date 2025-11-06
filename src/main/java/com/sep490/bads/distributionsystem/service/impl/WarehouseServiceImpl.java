@@ -1,5 +1,7 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
+import com.sep490.bads.distributionsystem.dto.PickGoodsDto.PickGoodsDetailDto;
+import com.sep490.bads.distributionsystem.dto.PickGoodsDto.PickGoodsLineDto;
 import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseCreateDto;
 import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseDto;
 import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseFilterDto;
@@ -10,6 +12,8 @@ import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import com.sep490.bads.distributionsystem.exception.BadRequestException;
 import com.sep490.bads.distributionsystem.exception.NotFoundException;
 import com.sep490.bads.distributionsystem.mapper.WarehouseMapper;
+import com.sep490.bads.distributionsystem.repository.SalesOrderDetailRepository;
+import com.sep490.bads.distributionsystem.repository.SalesOrderRepository;
 import com.sep490.bads.distributionsystem.repository.UserRepository;
 import com.sep490.bads.distributionsystem.repository.WarehouseRepository;
 import com.sep490.bads.distributionsystem.service.WarehouseService;
@@ -23,8 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -33,6 +39,8 @@ public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository repo;
     private final UserRepository userRepo;
     private final WarehouseMapper mapper;
+    private final SalesOrderDetailRepository sodRepo;
+    private final SalesOrderRepository orderRepo;
 
     @Override
     public Page<WarehouseDto> search(Pageable pageable, WarehouseFilterDto f) {
@@ -129,5 +137,38 @@ public class WarehouseServiceImpl implements WarehouseService {
         w.setIsActive(active);
         w.setStatus(active ? CommonStatus.ACTIVE : CommonStatus.INACTIVE);
         repo.save(w);
+    }
+
+    @Transactional(readOnly = true)
+    public PickGoodsDetailDto getPickDetailByOrder(Long orderId){
+//        var o = orderRepo.findById(orderId).orElseThrow();
+//        var lines = sodRepo.findAllWithProductByOrderId(orderId).stream().map(d ->
+//                PickGoodsLineDto.builder()
+//                        .sku(d.getProduct().getSku())
+//                        .productName(d.getProduct().getName())
+//                        .unitName(d.getProduct().getUnit()!=null? d.getProduct().getUnit().getName():null)
+//                        .quantity(Optional.ofNullable(d.getQuantity()).orElse(0L))
+//                        .unitPrice(d.getUnitPrice())
+//                        .lineTotal(d.getUnitPrice()!=null? d.getUnitPrice().multiply(BigDecimal.valueOf(
+//                               Optional.ofNullable(d.getQuantity()).orElse(0L))): BigDecimal.ZERO)
+//                        .build()
+//        ).toList();
+//
+//        return PickGoodsDetailDto.builder()
+//                .header(PickGoodsDetailDto.builder()
+//                        .orderCode(o.getOrderCode())
+//                        .customerName(o.getCustomer()!=null? o.getCustomer().getName():null)
+//                        .email(o.getCustomer()!=null? o.getCustomer().getEmail():null)
+//                        .phone(o.getCustomer()!=null? o.getCustomer().getPhone():null)
+//                        .taxCode(o.getCustomer()!=null? o.getCustomer().getTaxCode():null)
+//                        .address(o.getCustomer()!=null? o.getCustomer().getAddress():null)
+//                        .paymentMethod(o.getPaymentMethod())
+//                        .sellerName(o.getSeller()!=null? o.getSeller().getFullName():null)
+//                        .orderDate(o.getOrderDate())
+//                        .status(o.getStatus().name())
+//                        .build())
+//                .lines(lines)
+//                .build();
+        return null;
     }
 }

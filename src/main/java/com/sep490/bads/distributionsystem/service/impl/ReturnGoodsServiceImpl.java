@@ -168,4 +168,35 @@ public class ReturnGoodsServiceImpl implements ReturnGoodsService {
         reqRepo.save(r);
         return gi;
     }
+
+//    @Override
+//    @Transactional(readOnly = true)
+//    public ReturnGoodsDetailDto getReturnDetail(Long requestId){
+//        var r = reqRepo.findById(requestId).orElseThrow();
+//        var lines = rdRepo.findAllViewByRequestId(requestId).stream().map(rd -> {
+//            var p = rd.getOrderDetail().getProduct();
+//            return ReturnLineDto.builder()
+//                    .sku(p.getSku())
+//                    .productName(p.getName())
+//                    .qtyReturn(Optional.ofNullable(rd.getQuantity()).orElse(0L))
+//                    .inspectedQty(rd.getInspectedQty())
+//                    .inspectionResult(rd.getInspectionResult()!=null? rd.getInspectionResult().name():null)
+//                    .note(rd.getReasonForItem())
+//                    .build();
+//        }).toList();
+//
+//        return ReturnDetailView.builder()
+//                .header(ReturnHeaderDto.builder()
+//                        .requestCode(r.getRequestCode())
+//                        .requesterName(r.getCustomer()!=null? r.getCustomer().getName(): null)
+//                        .sellerName(r.getOrder()!=null && r.getOrder().getSeller()!=null ? r.getOrder().getSeller().getFullName(): null)
+//                        .returnDate(r.getCreatedAt()!=null? r.getCreatedAt().toLocalDate(): null)
+//                        .org("Công ty/chi nhánh") // điền nếu có trường
+//                        .reason(r.getReason())
+//                        .status(r.getRequestStatus().name())
+//                        .build())
+//                .lines(lines)
+//                .mediaUrls(List.of()) // nếu chưa có bảng minh chứng
+//                .build();
+//    }
 }

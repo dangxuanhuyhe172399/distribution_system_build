@@ -1,5 +1,6 @@
 package com.sep490.bads.distributionsystem.service;
 
+import com.sep490.bads.distributionsystem.dto.PickGoodsDto.PickGoodsDetailDto;
 import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseCreateDto;
 import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseDto;
 import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseFilterDto;
@@ -15,4 +16,5 @@ public interface WarehouseService {
     void softDelete(Long id);            // set isActive=false, status=INACTIVE
     void activate(Long id);
     void deactivate(Long id);
+    PickGoodsDetailDto getPickDetailByOrder(Long orderId);
 }

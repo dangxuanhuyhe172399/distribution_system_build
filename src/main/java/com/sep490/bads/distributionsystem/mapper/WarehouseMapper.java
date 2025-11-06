@@ -6,6 +6,5 @@ import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
-@Component
 public interface WarehouseMapper extends EntityMapper<WarehouseDto, Warehouse> {
 }

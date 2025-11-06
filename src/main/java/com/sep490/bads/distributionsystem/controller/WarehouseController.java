@@ -1,5 +1,6 @@
 package com.sep490.bads.distributionsystem.controller;
 
+import com.sep490.bads.distributionsystem.dto.PickGoodsDto.PickGoodsDetailDto;
 import com.sep490.bads.distributionsystem.dto.warehouseDto.*;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.WarehouseService;
@@ -66,4 +67,11 @@ public class WarehouseController extends BaseController {
         service.deactivate(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary="Chi tiết lấy hàng theo đơn bán")
+    @GetMapping("/orders/{orderId}")
+    public ResultResponse<PickGoodsDetailDto> get(@PathVariable Long orderId){
+        return ResultResponse.success(service.getPickDetailByOrder(orderId));
+    }
+
 }
