@@ -34,9 +34,6 @@ public class Invoice extends BaseEntity {
     @Column(name = "grand_total", precision = 18, scale = 2)
     private BigDecimal grandTotal;
 
-    @Column(name = "tax_code", length = 50)
-    private String taxCode;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
     private CommonStatus status;

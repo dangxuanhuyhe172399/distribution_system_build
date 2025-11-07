@@ -19,5 +19,7 @@ public interface SalesOrderService {
     SalesOrderDto confirm(Long orderId);
 
     void cancel(Long orderId, String reason);
+    OrderProgressDto getProgress(Long orderId);
+    OrderProgressDto updateProgress(Long orderId, OrderProgressUpdateDto dto, Long userId);
 
 }

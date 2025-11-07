@@ -2,6 +2,8 @@ package com.sep490.bads.distributionsystem.service.impl;
 
 import com.sep490.bads.distributionsystem.dto.salesOrderDto.*;
 import com.sep490.bads.distributionsystem.entity.*;
+import com.sep490.bads.distributionsystem.entity.type.OverallProgress;
+import com.sep490.bads.distributionsystem.entity.type.ReviewStatus;
 import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import com.sep490.bads.distributionsystem.entity.type.SaleOrderDetailStatus;
 import com.sep490.bads.distributionsystem.exception.BadRequestException;
@@ -172,6 +174,8 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         if (o.getSaleOrderCode() == null) {
             o.setSaleOrderCode(generateOrderCode());
         }
+        o.setFinanceStatus(ReviewStatus.PENDING);
+        o.setWarehouseStatus(ReviewStatus.PENDING);
         o.setStatus(SaleOderStatus.CONFIRMED);
         if (o.getOrderDetails() != null) {
             o.getOrderDetails().forEach(d -> d.setStatus(SaleOrderDetailStatus.CONFIRM));
@@ -286,4 +290,39 @@ public class SalesOrderServiceImpl implements SalesOrderService {
                 .items(items)
                 .build();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public OrderProgressDto getProgress(Long orderId) {
+        var o = orderRepo.findByIdDeep(orderId).orElseThrow(() -> new NotFoundException("Order not found"));
+        var overall = (o.getFinanceStatus()== ReviewStatus.APPROVED && o.getWarehouseStatus()==ReviewStatus.APPROVED)
+                ? OverallProgress.DONE : OverallProgress.IN_PROGRESS;
+        return OrderProgressDto.builder()
+                .orderId(o.getId())
+                .customerName(o.getCustomer()!=null? o.getCustomer().getName(): null)
+                .financeStatus(o.getFinanceStatus())
+                .warehouseStatus(o.getWarehouseStatus())
+                .note(o.getProgressNote())
+                .overall(overall)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public OrderProgressDto updateProgress(Long orderId, OrderProgressUpdateDto dto, Long userId) {
+        var o = orderRepo.findById(orderId).orElseThrow(() -> new NotFoundException("Order not found"));
+
+        if (dto.getFinanceStatus()!=null)   o.setFinanceStatus(dto.getFinanceStatus());
+        if (dto.getWarehouseStatus()!=null) o.setWarehouseStatus(dto.getWarehouseStatus());
+        if (dto.getNote()!=null)            o.setProgressNote(dto.getNote());
+
+        // Nếu cả hai đã duyệt → có thể tự động cập nhật trạng thái lớn
+        if (o.getFinanceStatus()==ReviewStatus.APPROVED && o.getWarehouseStatus()==ReviewStatus.APPROVED) {
+            if (o.getStatus()==SaleOderStatus.CONFIRMED) {
+                o.setStatus(SaleOderStatus.SHIPPED); // hoặc giữ nguyên
+            }
+        }
+        return getProgress(orderId);
+    }
+
+
 }

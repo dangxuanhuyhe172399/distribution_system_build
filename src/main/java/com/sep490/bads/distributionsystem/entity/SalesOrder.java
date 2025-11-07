@@ -1,6 +1,7 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.ReviewStatus;
 import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -62,6 +63,17 @@ public class SalesOrder extends BaseEntity {
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Request> requests;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "finance_status", length = 20)
+    private ReviewStatus financeStatus;     // PENDING / APPROVED
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "warehouse_status", length = 20)
+    private ReviewStatus warehouseStatus;   // PENDING / APPROVED
+
+    @Column(name = "progress_note", length = 500)
+    private String progressNote;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     @JsonIgnore
