@@ -1,8 +1,6 @@
 package com.sep490.bads.distributionsystem.repository;
 
 import com.sep490.bads.distributionsystem.entity.SalesOrderDetail;
-import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,7 +12,7 @@ public interface SalesOrderDetailRepository extends JpaRepository<SalesOrderDeta
 
     //Lấy toàn bộ chi tiết đơn hàng theo ID đơn hàng
     @Query(value = "SELECT * FROM SalesOrderDetail WHERE order_id = :orderId", nativeQuery = true)
-    List<SalesOrderDetail> findByOrderId(@Param("order_Id") Long orderId);
+    List<SalesOrderDetail> findByOrderId(@Param("orderId") Long orderId);
 
     //Cập nhật số lượng, đơn giá, chiết khấu
     @Modifying(clearAutomatically = true, flushAutomatically = true)
@@ -25,15 +23,15 @@ public interface SalesOrderDetailRepository extends JpaRepository<SalesOrderDeta
             discount = :discount
         WHERE order_detail_id = :id
     """, nativeQuery = true)
-    int updateItem(@Param("order_detail_id") Long id,
+    int updateItem(@Param("id") Long id,
                    @Param("quantity") Long quantity,
-                   @Param("unit_price") Long unitPrice,
+                   @Param("unitPrice") Long unitPrice,
                    @Param("discount") Long discount);
 
     //Xóa mềm (ẩn chi tiết đơn hàng)
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE SalesOrderDetail SET discount = -1 WHERE order_detail_id = :id", nativeQuery = true)
-    int softDelete(@Param("order_detail_id") Long id);
+    int softDelete(@Param("id") Long id);
 
     @Query("""
     select d from SalesOrderDetail d
@@ -41,6 +39,6 @@ public interface SalesOrderDetailRepository extends JpaRepository<SalesOrderDeta
       left join fetch p.unit u
     where d.order.id = :orderId
   """)
-    List<SalesOrderDetail> findAllWithProductByOrderId(@Param("order_Id") Long orderId);
+    List<SalesOrderDetail> findAllWithProductByOrderId(@Param("orderId") Long orderId);
 
 }

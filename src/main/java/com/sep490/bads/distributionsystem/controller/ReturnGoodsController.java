@@ -1,6 +1,7 @@
 package com.sep490.bads.distributionsystem.controller;
 
 import com.sep490.bads.distributionsystem.dto.ReturnGoodsDto.ReturnCreateDto;
+import com.sep490.bads.distributionsystem.dto.ReturnGoodsDto.ReturnGoodsDetailDto;
 import com.sep490.bads.distributionsystem.dto.ReturnGoodsDto.ReturnInspectDto;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.ReturnGoodsService;
@@ -39,9 +40,9 @@ public class ReturnGoodsController extends BaseController{
         return ResponseEntity.ok(service.scrap(id, warehouseId, getUserDetails(a).getUserId()));
     }
 
-//    @Operation(summary="Chi tiết phiếu trả hàng")
-//    @GetMapping("/requests/{id}")
-//    public ResultResponse<ReturnDetailView> get(@PathVariable Long id){
-//        return ResultResponse.success(svc.getReturnDetail(id));
-//    }
+    @Operation(summary="Chi tiết phiếu trả hàng")
+    @GetMapping("/requests/{id}")
+    public ResultResponse<ReturnGoodsDetailDto> getGoodsDetail(@PathVariable Long id){
+        return ResultResponse.success(service.getReturnDetail(id));
+    }
 }

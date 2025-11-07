@@ -1,14 +1,15 @@
 package com.sep490.bads.distributionsystem.dto.PickGoodsDto;
 import com.sep490.bads.distributionsystem.entity.type.StockNoteStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PickGoodsHeaderDto {
     private String orderCode;
     private String customerName;

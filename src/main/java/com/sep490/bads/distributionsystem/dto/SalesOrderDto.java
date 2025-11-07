@@ -3,7 +3,12 @@ package com.sep490.bads.distributionsystem.dto;
 import lombok.*;
 import java.util.*;
 
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SalesOrderDto {
     private Long id;
     private Long customerId;

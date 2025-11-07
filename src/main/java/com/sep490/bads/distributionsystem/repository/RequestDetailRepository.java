@@ -16,5 +16,5 @@ public interface RequestDetailRepository extends JpaRepository<RequestDetail, Lo
       left join fetch p.unit u
     where rd.request.id = :reqId
   """)
-    List<RequestDetail> findAllViewByRequestId(@Param("request_Id") Long reqId);
+    List<RequestDetail> findAllViewByRequestId(@Param("reqId") Long reqId);
 }

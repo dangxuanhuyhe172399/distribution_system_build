@@ -5,6 +5,8 @@ import lombok.*;
 import java.util.List;
 
 @Data
+@Getter
+@Setter
 public class CreateIssueDto {
     @NotNull private Long warehouseId;
     @NotEmpty private List<Line> lines;
