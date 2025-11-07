@@ -14,11 +14,11 @@ public interface SalesOrderRepository extends JpaRepository<SalesOrder, Long>, J
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE Sales_Order SET status = :status WHERE sales_order_id = :id", nativeQuery = true)
-    int updateStatus(@Param("order_id") Long id, @Param("status") String status);
+    int updateStatus(@Param("id") Long id, @Param("status") String status);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE Sales_Order SET status = 'DELETE' WHERE sales_order_id = :id", nativeQuery = true)
-    int softDelete(@Param("order_id") Long id);
+    int softDelete(@Param("id") Long id);
 
 
     static Specification<SalesOrder> specFrom(SalesOrderFilterDto f) {

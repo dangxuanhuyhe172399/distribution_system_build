@@ -21,5 +21,5 @@ public interface GoodsReceiptDetailRepository extends JpaRepository<GoodsReceipt
  where r.warehouse.id=:wid and d.product.id=:pid and r.status='POSTED'
  order by r.postedAt desc
 """)
-    List<String> findLastSupplierName(@Param("warehouse_id") Long wid, @Param("product_id") Long pid);
+    List<String> findLastSupplierName(@Param("wid") Long wid, @Param("pid") Long pid);
 }

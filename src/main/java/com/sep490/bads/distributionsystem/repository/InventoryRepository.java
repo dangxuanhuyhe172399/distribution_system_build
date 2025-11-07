@@ -27,11 +27,11 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
       and ((:mfg is null and i.manufactureDate is null) or i.manufactureDate=:mfg)
       and ((:exp is null and i.expiryDate is null) or i.expiryDate=:exp)
   """)
-    Optional<Inventory> lockLot(@Param("warehouse_id") Long warehouseId,
-                                @Param("product_id") Long productId,
-                                @Param("qr_id") Integer qrId,
-                                @Param("manufacture_date") LocalDate mfg,
-                                @Param("expiry_date") LocalDate exp);
+    Optional<Inventory> lockLot(@Param("warehouseId") Long warehouseId,
+                                @Param("productId") Long productId,
+                                @Param("qrId") Integer qrId,
+                                @Param("mfg") LocalDate mfg, //manufacture_date
+                                @Param("exp") LocalDate exp); //expiry_date
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
@@ -39,15 +39,15 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     where i.warehouse.id=:warehouseId and i.product.id=:productId
     order by i.expiryDate asc nulls last, i.id asc
   """)
-    List<Inventory> lockLotsForIssue(@Param("warehouse_id") Long warehouseId,
-                                     @Param("product_id") Long productId);
+    List<Inventory> lockLotsForIssue(@Param("warehouseId") Long warehouseId,
+                                     @Param("productId") Long productId);
 
     @Query("""
  select coalesce(sum(coalesce(i.quantity,0) - coalesce(i.reservedQuantity,0)),0)
  from Inventory i
  where i.warehouse.id=:wid and i.product.id=:pid
 """)
-    Long sumAvailable(@Param("warehouse_id") Long wid, @Param("product_id") Long pid);
+    Long sumAvailable(@Param("wid") Long wid, @Param("pid") Long pid);
 
     @Query("""
  select i from Inventory i
@@ -55,7 +55,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
    and (coalesce(i.quantity,0) - coalesce(i.reservedQuantity,0)) > 0
  order by i.expiryDate asc nulls last, i.id asc
 """)
-    List<Inventory> findLotsForDetail(@Param("warehouse_id") Long wid, @Param("product_id") Long pid);
+    List<Inventory> findLotsForDetail(@Param("wid") Long wid, @Param("pid") Long pid);
     Page<Inventory> findAll(Specification<Inventory> inventorySpecification, Pageable pageable);
 }
 

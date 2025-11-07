@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
 @Query("select r from Role r join User u on u.role = r where u.id = :userId")
-Optional<Role> findRoleByUserId(@Param("user_Id") Long userId);
+Optional<Role> findRoleByUserId(@Param("userId") Long userId);
     boolean existsById(Long id);
 
 //    List<Role> findByRoleIdAndStatusNot(long l, RoleStatus roleStatus);

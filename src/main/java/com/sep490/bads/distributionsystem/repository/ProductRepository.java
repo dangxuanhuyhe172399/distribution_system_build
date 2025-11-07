@@ -20,13 +20,13 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
                     "    unit_id = :unitId " +
                     "WHERE product_id = :id",
             nativeQuery = true)
-    void updateRelations(@Param("product_id") Long id,
-                        @Param("p_category_id") Long categoryId,
-                        @Param("p_unit_id") Long unitId);
+    void updateRelations(@Param("id") Long id,
+                        @Param("categoryId") Long categoryId,
+                        @Param("unitId") Long unitId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE Product SET status = 'DELETE' WHERE product_id = :id", nativeQuery = true)
-    int softDelete(@Param("product_id") Long id);
+    int softDelete(@Param("id") Long id);
 
     static Specification<Product> specFrom(ProductFilterDto f) {
         return (root, q, cb) -> {
