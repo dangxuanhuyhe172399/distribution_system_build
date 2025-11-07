@@ -55,7 +55,7 @@ public class SalesOrder extends BaseEntity {
     @JsonIgnore
     private List<SalesOrderDetail> orderDetails;
 
-    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "order")
     @JsonIgnore
     private Invoice invoice;
 

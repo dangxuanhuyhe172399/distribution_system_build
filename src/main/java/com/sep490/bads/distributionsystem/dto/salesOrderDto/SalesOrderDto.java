@@ -1,6 +1,10 @@
-package com.sep490.bads.distributionsystem.dto;
+package com.sep490.bads.distributionsystem.dto.salesOrderDto;
 
+import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
@@ -11,16 +15,17 @@ import java.util.*;
 @Builder
 public class SalesOrderDto {
     private Long id;
+    private String saleOrderCode;
     private Long customerId;
     private String customerName;
     private Long userId;
     private String userName;
     private String orderDate;
-    private String status;
+    private SaleOderStatus status;
     private String paymentMethod;
     private String note;
-    private Long subTotal;
-    private Long discountTotal;
-    private Long grandTotal;
+    private BigDecimal subTotal;
+    private BigDecimal discountTotal;
+    private BigDecimal grandTotal;
     private List<SalesOrderItemDto> items;
 }

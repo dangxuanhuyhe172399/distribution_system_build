@@ -1,7 +1,10 @@
-package com.sep490.bads.distributionsystem.dto;
+package com.sep490.bads.distributionsystem.dto.salesOrderDto;
 
+import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import jakarta.validation.constraints.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -10,7 +13,7 @@ import lombok.*;
 public class SalesOrderFilterDto {
 
     private String keyword;       // tìm theo tên KH, mã đơn
-    private String status;        // PENDING, CONFIRMED, CANCELED
+    private SaleOderStatus status;        // PENDING, CONFIRMED, CANCELED
     private String paymentMethod; // lọc theo hình thức thanh toán
 
     private String sortBy = "createdAt";
@@ -22,7 +25,7 @@ public class SalesOrderFilterDto {
     private int size = 10;
 
     @PositiveOrZero
-    private Long minTotal;        // lọc khoảng tổng tiền
+    private BigDecimal minTotal;        // lọc khoảng tổng tiền
     @PositiveOrZero
-    private Long maxTotal;
+    private BigDecimal maxTotal;
 }
