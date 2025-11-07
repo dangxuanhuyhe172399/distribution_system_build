@@ -1,43 +1,56 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "SalesOrderDetail")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "SalesOrderDetail", schema = "dbo")
 @Getter
 @Setter
-public class SalesOrderDetail {
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class SalesOrderDetail extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderDetailId;
+    @Column(name = "saleorder_detail_id")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private SalesOrder salesOrder;
+    @JoinColumn(name = "saleorder_id", nullable = false)
+    @JsonIgnore
+    private SalesOrder order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    private Integer quantity;
+    @Column(name = "quantity", nullable = false)
+    private Long quantity;
 
-    @Column(name = "unit_price", precision = 18, scale = 2)
+    @Column(name = "unit_price", precision = 18, scale = 2, nullable = false)
     private BigDecimal unitPrice;
 
-    @Column(precision = 5, scale = 2)
-    private BigDecimal discount = BigDecimal.ZERO;
+    @Column(name = "discount", precision = 5, scale = 2)
+    private BigDecimal discount;
 
-    // No persisted column for total_price here; calculation provided by getter
-    public BigDecimal getTotalPrice() {
-        if (quantity == null || unitPrice == null) return BigDecimal.ZERO;
-        BigDecimal qty = BigDecimal.valueOf(quantity);
-        BigDecimal line = unitPrice.multiply(qty);
-        BigDecimal disc = line.multiply(discount).divide(BigDecimal.valueOf(100));
-        return line.subtract(disc);
-    }
+    @Column(name = "vat_amount", precision = 18, scale = 2)
+    private BigDecimal vatAmount;
+
+    @Column(name = "total_price", precision = 18, scale = 2)
+    private BigDecimal totalPrice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private CommonStatus status;
+
+    @Column(name = "note", length = 255)
+    private String note;
+
 }

@@ -1,66 +1,69 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
-@Table(name = "User")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "\"User\"", schema = "dbo")
 @Getter
 @Setter
-public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class User extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "user_code", length = 50, unique = true, nullable = false)
+    private String userCode;
+
+    @Column(name = "username", length = 50, unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
 
     @Column(name = "full_name", length = 100)
     private String fullName;
 
-    @Column(length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(nullable = false)
-    private Boolean status = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    private UserStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @Column(name = "gender", length = 16)
+    private String gender;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(name = "avatar", length = 255)
+    private String avatar;
+
+    @Column(name = "address", length = 255)
+    private String address;
+
+    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<SalesOrder> salesOrders = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<Invoice> invoicesCreated = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<ExportNote> exportNotesCreated = new HashSet<>();
-}
+    private List<Warehouse> managedWarehouses;
 }

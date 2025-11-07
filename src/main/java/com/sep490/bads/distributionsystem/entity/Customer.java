@@ -1,57 +1,83 @@
 package com.sep490.bads.distributionsystem.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.zalo.ZaloCustomerLink;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
-@Table(name = "Customer")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "Customer", schema = "dbo")
 @Getter
 @Setter
-public class Customer {
-
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class Customer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long customerId;
+    @Column(name = "customer_id")
+    private Long id;
 
+    @Column(name = "customer_code", length = 50, unique = true)
+    private String code;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
 
-
-    @Column(length = 255)
+    @Column(name = "address", length = 255)
     private String address;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
-    private CustomerType customerType;
+    private CustomerType type;
 
-
-    @Column(length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
-
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
-
 
     @Column(name = "tax_code", length = 50)
     private String taxCode;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private CommonStatus status;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "district", length = 100)
+    private String district;
 
+    @Column(name = "province", length = 100)
+    private String province;
+
+    @Column(name = "balance_limit", precision = 18, scale = 2)
+    private BigDecimal balanceLimit;
+
+    @Column(name = "current_balance", precision = 18, scale = 2)
+    private BigDecimal currentBalance;
+
+    @Column(name = "note", length = 255)
+    private String note;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-    private Set<SalesOrder> salesOrders = new HashSet<>();
+    @JsonIgnore
+    private List<SalesOrder> salesOrders;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Request> requests;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<ZaloCustomerLink> zaloLinks;
 }

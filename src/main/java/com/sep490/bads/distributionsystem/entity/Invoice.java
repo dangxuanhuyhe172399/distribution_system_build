@@ -1,31 +1,32 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Invoice")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "Invoice", schema = "dbo")
 @Getter
 @Setter
-public class Invoice {
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class Invoice extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long invoiceId;
+    @Column(name = "invoice_id")
+    private Long id;
+
+    @Column(name = "invoice_code", length = 50, unique = true, nullable = false)
+    private String invoiceCode;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private SalesOrder salesOrder;
-
-    @Column(name = "invoice_date")
-    private LocalDateTime invoiceDate;
-
-    @Column(name = "vat_rate", precision = 5, scale = 2)
-    private BigDecimal vatRate;
+    @JoinColumn(name = "order_id", unique = true, nullable = false)
+    private SalesOrder order;
 
     @Column(name = "vat_amount", precision = 18, scale = 2)
     private BigDecimal vatAmount;
@@ -33,7 +34,17 @@ public class Invoice {
     @Column(name = "grand_total", precision = 18, scale = 2)
     private BigDecimal grandTotal;
 
+    @Column(name = "tax_code", length = 50)
+    private String taxCode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private CommonStatus status;
+
+    @Column(name = "payment_method", length = 50)
+    private String paymentMethod;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private User createdByUser;
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 }

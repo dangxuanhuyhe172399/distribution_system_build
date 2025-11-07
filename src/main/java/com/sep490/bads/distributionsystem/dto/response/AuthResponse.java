@@ -12,16 +12,13 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 public class AuthResponse {
-    private String token;
-    private String tokenType;
+    private String token;          // access token
+    private String refreshToken;   // optional
+    private String tokenType;      // "Bearer"
     private Long userId;
     private String userEmail;
-    private String role;
-    private String fullname;
-    private Instant previousLastLoginAt;
-
-    public AuthResponse(String token, Long aLong) {
-        this.token = token;
-        this.tokenType = "Bearer";
-    }
+    private String userName;
+    private String fullName;
+    private String role;           // roleName
+    private Instant expiresAt;
 }

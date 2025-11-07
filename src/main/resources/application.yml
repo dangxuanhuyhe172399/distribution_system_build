@@ -1,0 +1,128 @@
+server:
+  port: 8080
+
+app:
+  client-bads-url: http://localhost:3000
+
+spring:
+  application:
+    name: BUILDING A DISTRIBUTION SYSTEM FOR SNACK AND FROZEN FOOD PRODUCTS
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    hikari:
+      connection-timeout: 30000 # Thời gian chờ một kết nối (ms)
+      idle-timeout: 600000     # Thời gian một kết nối có thể nhàn rỗi trong pool (ms)
+      max-lifetime: 1800000      # Tuổi thọ tối đa của một kết nối (ms)
+      maximum-pool-size: 10      # Số lượng kết nối tối đa trong pool
+      minimum-idle: 2          # Số lượng kết nối rảnh tối thiểu
+      pool-name: BADS-HikariCP   # Tên của connection pool
+
+  # JPA and Hibernate
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.SQLServerDialect
+
+  # Configure Flyway to automatically run database scripts
+  flyway:
+    enabled: true # turn on Flyway
+    # 'classpath:db.migration' point to the directory 'resources/db.migration'
+    locations: classpath:db.migration
+    baseline-on-migrate: true
+
+    # Cấu hình Redis
+    cache:
+      type: redis
+    data:
+      redis:
+        host: ${REDIS_HOST:localhost}
+        port: ${REDIS_PORT:6379}
+        #        password: ${REDIS_PASSWORD:}
+        ssl: ${REDIS_SSL:false}
+  # cấu hình mail
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+mail:
+  from: ${MAIL_FROM:danhtpa1k60@gmail.com}
+  # Cấu hình cho việc upload file
+#  servlet:
+#      multipart:
+#        max-file-size: 10MB
+#        max-request-size: 10MB
+
+#app:
+jwt:
+  secret: ${JWT_SECRET}                 # base64
+  expire-time: ${JWT_EXPIRE_TIME:86400} # GIÂY
+  expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
+
+springdoc:
+  api-docs:
+    path: /v1/doc/api/index.html
+  swagger-ui:
+    path: /v1/doc/index.html
+    display-request-duration: true
+    syntax-highlight:
+      activated: true
+      theme: monokai
+    filter: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+zalo:
+  app-id: ${ZALO_APP_ID:}
+  oa-secret: ${ZALO_OA_SECRET:}
+  verify: ${ZALO_VERIFY:true}
+  signature-mode: ${ZALO_SIGNATURE_MODE:APP_BODY_TS}
+  webhook-path: /v1/public/zalo/webhook
+
+logging:
+  level:
+    root: info
+    org.springframework.web: info
+    com.sep490.bads: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+    #    chưa dung mail
+    mail:
+      enabled: false
+    redis:
+      enabled: false
+payment:
+  vnPay:
+    url: ${PAY_URL}
+    tmnCode: ${TMN_CODE}
+    secretKey: ${SECRET_KEY}
+    returnUrl: ${RETURN_URL}
+    version: ${VERSION}
+    command: ${COMMAND}
+    orderType: ${ORDER_TYPE}

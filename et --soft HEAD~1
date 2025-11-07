@@ -1,0 +1,903 @@
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/controller/ProductController.java b/src/main/java/com/sep490/bads/distributionsystem/controller/ProductController.java[m
+[1mindex 8fca63e..c969483 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/controller/ProductController.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/controller/ProductController.java[m
+[36m@@ -59,7 +59,7 @@[m [mpublic class ProductController extends BaseController {[m
+         return ResultResponse.success(productService.filterProducts(f));[m
+     }[m
+ [m
+[31m-    @Operation(summary = "lay ra tat ca san pham")[m
+[32m+[m[32m    @Operation(summary = "lay ra t ca san pham")[m
+     @GetMapping[m
+     public ResponseEntity<ApiResponse<List<ProductDto>>> getAllProducts() {[m
+         return ResponseEntity.ok([m
+[36m@@ -71,7 +71,6 @@[m [mpublic class ProductController extends BaseController {[m
+         return ResultResponse.success(productService.recoverProduct(id));[m
+     }[m
+ [m
+[31m-    // tối thiếu[m
+ [m
+ }[m
+ [m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/controller/SupplierController.java b/src/main/java/com/sep490/bads/distributionsystem/controller/SupplierController.java[m
+[1mdeleted file mode 100644[m
+[1mindex bdc206c..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/controller/SupplierController.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,65 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.controller;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.dto.*;[m
+[31m-import com.sep490.bads.distributionsystem.dto.response.ApiResponse;[m
+[31m-import com.sep490.bads.distributionsystem.response.ResultResponse;[m
+[31m-import com.sep490.bads.distributionsystem.service.SupplierService;[m
+[31m-import jakarta.validation.Valid;[m
+[31m-import jakarta.validation.constraints.Positive;[m
+[31m-import lombok.RequiredArgsConstructor;[m
+[31m-import org.springframework.data.domain.Page;[m
+[31m-import org.springframework.data.domain.Pageable;[m
+[31m-import org.springframework.http.ResponseEntity;[m
+[31m-import org.springframework.validation.annotation.Validated;[m
+[31m-import org.springframework.web.bind.annotation.*;[m
+[31m-[m
+[31m-import java.util.List;[m
+[31m-[m
+[31m-@RestController[m
+[31m-@RequestMapping("v1/public/suppliers")[m
+[31m-@RequiredArgsConstructor[m
+[31m-@Validated[m
+[31m-public class SupplierController {[m
+[31m-[m
+[31m-    private final SupplierService supplierService;[m
+[31m-[m
+[31m-    @PostMapping[m
+[31m-    public ResultResponse<SupplierDto> create(@Valid @RequestBody SupplierCreateDto dto) {[m
+[31m-        return ResultResponse.created(supplierService.createSupplier(dto));[m
+[31m-    }[m
+[31m-[m
+[31m-    @GetMapping("/{id}")[m
+[31m-    public ResultResponse<SupplierDto> get(@PathVariable @Positive Long id) {[m
+[31m-        return ResultResponse.success(supplierService.getSupplierById(id));[m
+[31m-    }[m
+[31m-[m
+[31m-    @PutMapping("/{id}")[m
+[31m-    public ResultResponse<SupplierDto> update(@PathVariable @Positive Long id, @Valid @RequestBody SupplierDto dto) {[m
+[31m-        return ResultResponse.success(supplierService.updateSupplier(id, dto));[m
+[31m-    }[m
+[31m-[m
+[31m-    @DeleteMapping("/{id}")[m
+[31m-    public ResultResponse<Object> delete(@PathVariable @Positive Long id) {[m
+[31m-        supplierService.softDeleteSupplier(id);[m
+[31m-        return ResultResponse.success("Nhà cung cấp đã được ẩn");[m
+[31m-    }[m
+[31m-[m
+[31m-    @PostMapping("/filter")[m
+[31m-    public ResultResponse<Page<SupplierDto>> filter(@Valid @RequestBody SupplierFilterDto f) {[m
+[31m-        return ResultResponse.success(supplierService.filterSuppliers(f));[m
+[31m-    }[m
+[31m-[m
+[31m-    @GetMapping[m
+[31m-    public ResponseEntity<ApiResponse<List<SupplierDto>>> getAllSuppliers() {[m
+[31m-        return ResponseEntity.ok(ApiResponse.success([m
+[31m-                supplierService.getAllSuppliers(Pageable.unpaged()).getContent()[m
+[31m-        ));[m
+[31m-    }[m
+[31m-    @PutMapping("/{id}/recover")[m
+[31m-    public ResultResponse<SupplierDto> recover(@PathVariable @Positive Long id) {[m
+[31m-        return ResultResponse.success(supplierService.recover(id));[m
+[31m-    }[m
+[31m-[m
+[31m-}[m
+[31m-[m
+[31m-[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/controller/UserController.java b/src/main/java/com/sep490/bads/distributionsystem/controller/UserController.java[m
+[1mindex 39599ea..7a728a9 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/controller/UserController.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/controller/UserController.java[m
+[36m@@ -1,6 +1,10 @@[m
+ package com.sep490.bads.distributionsystem.controller;[m
+ [m
+[31m-import com.sep490.bads.distributionsystem.dto.*;[m
+[32m+[m[32mimport com.sep490.bads.distributionsystem.dto.UserCreateDto;[m
+[32m+[m[32mimport com.sep490.bads.distributionsystem.dto.UserDto;[m
+[32m+[m[32mimport com.sep490.bads.distributionsystem.dto.UserProfileUpdateDto;[m
+[32m+[m[32mimport com.sep490.bads.distributionsystem.dto.UserUpdateDto;[m
+[32m+[m[32mimport com.sep490.bads.distributionsystem.dto.UserFilterDto;[m
+ import com.sep490.bads.distributionsystem.entity.type.UserStatus;[m
+ import com.sep490.bads.distributionsystem.response.ResultResponse;[m
+ import com.sep490.bads.distributionsystem.service.UserService;[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierCategoryDTO.java b/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierCategoryDTO.java[m
+[1mdeleted file mode 100644[m
+[1mindex 6e17386..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierCategoryDTO.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,13 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.dto;[m
+[31m-[m
+[31m-import lombok.*;[m
+[31m-[m
+[31m-@Getter[m
+[31m-@Setter[m
+[31m-@NoArgsConstructor[m
+[31m-@AllArgsConstructor[m
+[31m-@Builder[m
+[31m-public class SupplierCategoryDTO {[m
+[31m-    private Long id;[m
+[31m-    private String name;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierCreateDto.java b/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierCreateDto.java[m
+[1mdeleted file mode 100644[m
+[1mindex 6482734..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierCreateDto.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,26 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.dto;[m
+[31m-[m
+[31m-import jakarta.validation.constraints.*;[m
+[31m-import lombok.*;[m
+[31m-[m
+[31m-@Data[m
+[31m-@NoArgsConstructor[m
+[31m-@AllArgsConstructor[m
+[31m-@Builder[m
+[31m-public class SupplierCreateDto {[m
+[31m-    @NotBlank(message = "Tên nhà cung cấp không được để trống")[m
+[31m-    private String name;[m
+[31m-[m
+[31m-    private String address;[m
+[31m-[m
+[31m-    @NotNull(message = "Phải chọn danh mục nhà cung cấp")[m
+[31m-    private Long categoryId;[m
+[31m-[m
+[31m-    @Email(message = "Email không hợp lệ")[m
+[31m-    private String email;[m
+[31m-[m
+[31m-    @Pattern(regexp = "^[0-9]{9,15}$", message = "Số điện thoại không hợp lệ")[m
+[31m-    private String phone;[m
+[31m-[m
+[31m-    private String taxCode;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierDto.java b/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierDto.java[m
+[1mdeleted file mode 100644[m
+[1mindex 74318e4..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierDto.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,22 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.dto;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;[m
+[31m-import lombok.*;[m
+[31m-[m
+[31m-@Data[m
+[31m-@NoArgsConstructor[m
+[31m-@AllArgsConstructor[m
+[31m-@Builder[m
+[31m-public class SupplierDto {[m
+[31m-    private Long id;[m
+[31m-    private String name;[m
+[31m-    private String address;[m
+[31m-[m
+[31m-    private Long categoryId;[m
+[31m-    private String categoryName;[m
+[31m-[m
+[31m-    private String email;[m
+[31m-    private String phone;[m
+[31m-    private String taxCode;[m
+[31m-    private CommonStatus status;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierFilterDto.java b/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierFilterDto.java[m
+[1mdeleted file mode 100644[m
+[1mindex 4b1e1fa..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierFilterDto.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,24 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.dto;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;[m
+[31m-import jakarta.validation.constraints.*;[m
+[31m-import lombok.*;[m
+[31m-[m
+[31m-@Data[m
+[31m-@NoArgsConstructor[m
+[31m-@AllArgsConstructor[m
+[31m-@Builder[m
+[31m-public class SupplierFilterDto {[m
+[31m-    private String keyword;[m
+[31m-    private Long categoryId;[m
+[31m-    private CommonStatus status;[m
+[31m-[m
+[31m-    private String sortBy = "createdAt";[m
+[31m-    private String direction = "DESC";[m
+[31m-[m
+[31m-    @Min(0)[m
+[31m-    private int page = 0;[m
+[31m-[m
+[31m-    @Min(1)[m
+[31m-    private int size = 10;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierUpdateDto.java b/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierUpdateDto.java[m
+[1mdeleted file mode 100644[m
+[1mindex 8c47511..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/dto/SupplierUpdateDto.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,21 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.dto;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;[m
+[31m-import jakarta.validation.constraints.Email;[m
+[31m-import jakarta.validation.constraints.Size;[m
+[31m-import lombok.*;[m
+[31m-[m
+[31m-@Data[m
+[31m-@NoArgsConstructor[m
+[31m-@AllArgsConstructor[m
+[31m-@Builder[m
+[31m-public class SupplierUpdateDto {[m
+[31m-    private String name;[m
+[31m-    private String contactName;[m
+[31m-    @Size(max = 20) private String phone;[m
+[31m-    @Email private String email;[m
+[31m-    private String address;[m
+[31m-    private String taxCode;[m
+[31m-    private Long categoryId;[m
+[31m-    private CommonStatus status;[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/BaseEntity.java b/src/main/java/com/sep490/bads/distributionsystem/entity/BaseEntity.java[m
+[1mindex d8927c1..9a4ce75 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/BaseEntity.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/BaseEntity.java[m
+[36m@@ -18,8 +18,6 @@[m [mpublic abstract class BaseEntity {[m
+     @Column(name="created_at") private LocalDateTime createdAt;[m
+     @Column(name="updated_at") private LocalDateTime updatedAt;[m
+ [m
+[31m-[m
+[31m-[m
+     @PrePersist void prePersist() { createdAt = LocalDateTime.now(); updatedAt = createdAt; }[m
+     @PreUpdate  void preUpdate()  { updatedAt = LocalDateTime.now(); }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/ContractDetail.java b/src/main/java/com/sep490/bads/distributionsystem/entity/ContractDetail.java[m
+[1mindex 511b6fe..3c8820d 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/ContractDetail.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/ContractDetail.java[m
+[36m@@ -15,7 +15,7 @@[m [mimport java.time.LocalDate;[m
+ @NoArgsConstructor[m
+ @AllArgsConstructor[m
+ @SuperBuilder[m
+[31m-public class ContractDetail {[m
+[32m+[m[32mpublic class ContractDetail extends BaseEntity {[m
+ [m
+     @Id[m
+     @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/GoodsIssuesDetail.java b/src/main/java/com/sep490/bads/distributionsystem/entity/GoodsIssuesDetail.java[m
+[1mindex 8e4ec24..bc5c077 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/GoodsIssuesDetail.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/GoodsIssuesDetail.java[m
+[36m@@ -11,7 +11,7 @@[m [mimport lombok.experimental.SuperBuilder;[m
+ @NoArgsConstructor[m
+ @AllArgsConstructor[m
+ @SuperBuilder[m
+[31m-public class GoodsIssuesDetail {[m
+[32m+[m[32mpublic class GoodsIssuesDetail extends BaseEntity {[m
+ [m
+     @Id[m
+     @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/GoodsReceiptDetail.java b/src/main/java/com/sep490/bads/distributionsystem/entity/GoodsReceiptDetail.java[m
+[1mindex 811010b..644ec12 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/GoodsReceiptDetail.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/GoodsReceiptDetail.java[m
+[36m@@ -13,7 +13,7 @@[m [mimport java.time.LocalDate;[m
+ @NoArgsConstructor[m
+ @AllArgsConstructor[m
+ @SuperBuilder[m
+[31m-public class GoodsReceiptDetail {[m
+[32m+[m[32mpublic class GoodsReceiptDetail extends BaseEntity {[m
+ [m
+     @Id[m
+     @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/Product.java b/src/main/java/com/sep490/bads/distributionsystem/entity/Product.java[m
+[1mindex 00f56c8..9e3df90 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/Product.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/Product.java[m
+[36m@@ -79,9 +79,4 @@[m [mpublic class Product extends BaseEntity {[m
+     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)[m
+     @JsonIgnore[m
+     private List<Qrcode> qrcodes;[m
+[31m-[m
+[31m-    @ManyToOne[m
+[31m-    @JoinColumn(name = "supplier_id")[m
+[31m-    private Supplier supplier;[m
+[31m-[m
+ }[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/SalesOrderDetail.java b/src/main/java/com/sep490/bads/distributionsystem/entity/SalesOrderDetail.java[m
+[1mindex bf50b7f..e237e1a 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/SalesOrderDetail.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/SalesOrderDetail.java[m
+[36m@@ -15,7 +15,7 @@[m [mimport java.math.BigDecimal;[m
+ @NoArgsConstructor[m
+ @AllArgsConstructor[m
+ @SuperBuilder[m
+[31m-public class SalesOrderDetail  {[m
+[32m+[m[32mpublic class SalesOrderDetail extends BaseEntity {[m
+ [m
+     @Id[m
+     @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/Supplier.java b/src/main/java/com/sep490/bads/distributionsystem/entity/Supplier.java[m
+[1mindex de5e9ef..be6201c 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/Supplier.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/Supplier.java[m
+[36m@@ -1,14 +1,20 @@[m
+ package com.sep490.bads.distributionsystem.entity;[m
+ [m
+[32m+[m[32mimport com.fasterxml.jackson.annotation.JsonIgnore;[m
+ import com.sep490.bads.distributionsystem.entity.type.CommonStatus;[m
+ import jakarta.persistence.*;[m
+ import lombok.*;[m
+[32m+[m[32mimport lombok.experimental.SuperBuilder;[m
+[32m+[m
+ import java.util.List;[m
+[31m-import com.fasterxml.jackson.annotation.JsonIgnore;[m
+ [m
+ @Entity[m
+[31m-@Table(name = "Supplier")[m
+[31m-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder[m
+[32m+[m[32m@Table(name = "Supplier", schema = "dbo")[m
+[32m+[m[32m@Getter[m
+[32m+[m[32m@Setter[m
+[32m+[m[32m@NoArgsConstructor[m
+[32m+[m[32m@AllArgsConstructor[m
+[32m+[m[32m@SuperBuilder[m
+ public class Supplier extends BaseEntity {[m
+ [m
+     @Id[m
+[36m@@ -16,31 +22,37 @@[m [mpublic class Supplier extends BaseEntity {[m
+     @Column(name = "supplier_id")[m
+     private Long id;[m
+ [m
+[31m-    @Column(name = "name", nullable = false, length = 100)[m
+[32m+[m[32m    @Column(name = "supplier_name", length = 100, nullable = false)[m
+     private String name;[m
+ [m
+[31m-    @Column(name = "address", length = 255)[m
+[31m-    private String address;[m
+[32m+[m[32m    @Column(name = "contact_name", length = 100)[m
+[32m+[m[32m    private String contactName;[m
+[32m+[m
+[32m+[m[32m    @Column(name = "phone", length = 20)[m
+[32m+[m[32m    private String phone;[m
+ [m
+     @Column(name = "email", length = 100)[m
+     private String email;[m
+ [m
+[31m-    @Column(name = "phone", length = 20)[m
+[31m-    private String phone;[m
+[32m+[m[32m    @Column(name = "address", length = 255)[m
+[32m+[m[32m    private String address;[m
+ [m
+     @Column(name = "tax_code", length = 50)[m
+     private String taxCode;[m
+ [m
+[31m-    @Enumerated(EnumType.STRING)[m
+[31m-    @Column(name = "status", length = 20, nullable = false)[m
+[31m-    @Builder.Default[m
+[31m-    private CommonStatus status = CommonStatus.ACTIVE;[m
+[31m-[m
+[31m-    @ManyToOne[m
+[32m+[m[32m    @ManyToOne(fetch = FetchType.LAZY)[m
+     @JoinColumn(name = "category_id")[m
+     private SupplierCategory category;[m
+ [m
+[31m-    @OneToMany(mappedBy = "supplier")[m
+[32m+[m[32m    @Enumerated(EnumType.STRING)[m
+[32m+[m[32m    @Column(name = "status", length = 20)[m
+[32m+[m[32m    private CommonStatus status;[m
+[32m+[m
+[32m+[m[32m    @ManyToOne(fetch = FetchType.LAZY)[m
+[32m+[m[32m    @JoinColumn(name = "created_by")[m
+[32m+[m[32m    private User createdBy;[m
+[32m+[m
+[32m+[m[32m    @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY)[m
+     @JsonIgnore[m
+[31m-    private List<Product> products; // nếu sản phẩm có quan hệ với nhà cung cấp[m
+[32m+[m[32m    private List<Contract> contracts;[m
+ }[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/SupplierCategory.java b/src/main/java/com/sep490/bads/distributionsystem/entity/SupplierCategory.java[m
+[1mindex 0deb98b..a53292a 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/SupplierCategory.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/SupplierCategory.java[m
+[36m@@ -21,7 +21,7 @@[m [mpublic class SupplierCategory {[m
+     @Column(name = "s_category_name", length = 100, nullable = false)[m
+     private String name;[m
+ [m
+[31m-    @OneToMany(mappedBy = "category")[m
+[32m+[m[32m    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)[m
+     @JsonIgnore[m
+     private List<Supplier> suppliers;[m
+ }[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/entity/Unit.java b/src/main/java/com/sep490/bads/distributionsystem/entity/Unit.java[m
+[1mindex e1c2f68..4af90a4 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/entity/Unit.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/entity/Unit.java[m
+[36m@@ -4,6 +4,7 @@[m [mimport jakarta.persistence.*;[m
+ import lombok.*;[m
+ import java.util.List;[m
+ import com.fasterxml.jackson.annotation.JsonIgnore;[m
+[32m+[m[32mimport lombok.experimental.SuperBuilder;[m
+ [m
+ @Entity[m
+ @Table(name = "Unit", schema = "dbo")[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/mapper/CustomerMapper.java b/src/main/java/com/sep490/bads/distributionsystem/mapper/CustomerMapper.java[m
+[1mindex d7c9bac..25c8068 100644[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/mapper/CustomerMapper.java[m
+[1m+++ b/src/main/java/com/sep490/bads/distributionsystem/mapper/CustomerMapper.java[m
+[36m@@ -9,5 +9,10 @@[m [mimport org.springframework.stereotype.Component;[m
+ @Component[m
+ public interface CustomerMapper extends EntityMapper<CustomerDto, Customer> {[m
+ [m
+[32m+[m[32m    @Mapping(source = "type.id", target = "typeId")[m
+[32m+[m[32m    @Mapping(source = "type.name", target = "typeName")[m
+[32m+[m[32m    CustomerDto toDto(Customer entity);[m
+ [m
+[32m+[m[32m    @Mapping(source = "typeId", target = "type.id")[m
+[32m+[m[32m    Customer toEntity(CustomerDto dto);[m
+ }[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/mapper/SupplierMapper.java b/src/main/java/com/sep490/bads/distributionsystem/mapper/SupplierMapper.java[m
+[1mdeleted file mode 100644[m
+[1mindex 9e14db5..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/mapper/SupplierMapper.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,17 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.mapper;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.dto.SupplierDto;[m
+[31m-import com.sep490.bads.distributionsystem.entity.Supplier;[m
+[31m-import org.mapstruct.*;[m
+[31m-import org.springframework.stereotype.Component;[m
+[31m-[m
+[31m-@Mapper(componentModel = "spring")[m
+[31m-@Component[m
+[31m-public interface SupplierMapper extends EntityMapper<SupplierDto, Supplier> {[m
+[31m-//    @Mapping(source = "category.id", target = "categoryId")[m
+[31m-//    @Mapping(source = "category.name", target = "categoryName")[m
+[31m-//    SupplierDto toDto(Supplier entity);[m
+[31m-//[m
+[31m-//    @Mapping(target = "category.id", source = "categoryId")[m
+[31m-//    Supplier toEntity(SupplierDto dto);[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/repository/SupplierCategoryRepository.java b/src/main/java/com/sep490/bads/distributionsystem/repository/SupplierCategoryRepository.java[m
+[1mdeleted file mode 100644[m
+[1mindex bf91c4b..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/repository/SupplierCategoryRepository.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,9 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.repository;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.entity.SupplierCategory;[m
+[31m-import org.springframework.data.jpa.repository.JpaRepository;[m
+[31m-import org.springframework.stereotype.Repository;[m
+[31m-[m
+[31m-@Repository[m
+[31m-public interface SupplierCategoryRepository extends JpaRepository<SupplierCategory, Long> {[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/repository/SupplierRepository.java b/src/main/java/com/sep490/bads/distributionsystem/repository/SupplierRepository.java[m
+[1mdeleted file mode 100644[m
+[1mindex 4c58593..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/repository/SupplierRepository.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,16 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.repository;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.entity.Supplier;[m
+[31m-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;[m
+[31m-import org.springframework.data.domain.*;[m
+[31m-import org.springframework.data.jpa.repository.*;[m
+[31m-import org.springframework.stereotype.Repository;[m
+[31m-[m
+[31m-@Repository[m
+[31m-public interface SupplierRepository extends JpaRepository<Supplier, Long>, JpaSpecificationExecutor<Supplier> {[m
+[31m-    boolean existsByEmail(String email);[m
+[31m-    boolean existsByPhone(String phone);[m
+[31m-[m
+[31m-    @Query("SELECT s FROM Supplier s WHERE s.status = com.sep490.bads.distributionsystem.entity.type.CommonStatus.ACTIVE")[m
+[31m-    Page<Supplier> findAllActive(Pageable pageable);[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/service/SupplierService.java b/src/main/java/com/sep490/bads/distributionsystem/service/SupplierService.java[m
+[1mdeleted file mode 100644[m
+[1mindex ad47505..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/service/SupplierService.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,17 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.service;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.dto.*;[m
+[31m-import org.springframework.data.domain.Page;[m
+[31m-import org.springframework.data.domain.Pageable;[m
+[31m-import org.springframework.stereotype.Service;[m
+[31m-[m
+[31m-@Service[m
+[31m-public interface SupplierService {[m
+[31m-    Page<SupplierDto> getAllSuppliers(Pageable pageable);[m
+[31m-    SupplierDto getSupplierById(Long id);[m
+[31m-    SupplierDto createSupplier(SupplierCreateDto dto);[m
+[31m-    SupplierDto updateSupplier(Long id, SupplierDto dto);[m
+[31m-    void softDeleteSupplier(Long id);[m
+[31m-    Page<SupplierDto> filterSuppliers(SupplierFilterDto f);[m
+[31m-SupplierDto recover(Long id);[m
+[31m-}[m
+[1mdiff --git a/src/main/java/com/sep490/bads/distributionsystem/service/impl/SupplierServiceImpl.java b/src/main/java/com/sep490/bads/distributionsystem/service/impl/SupplierServiceImpl.java[m
+[1mdeleted file mode 100644[m
+[1mindex 8380421..0000000[m
+[1m--- a/src/main/java/com/sep490/bads/distributionsystem/service/impl/SupplierServiceImpl.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,143 +0,0 @@[m
+[31m-package com.sep490.bads.distributionsystem.service.impl;[m
+[31m-[m
+[31m-import com.sep490.bads.distributionsystem.dto.*;[m
+[31m-import com.sep490.bads.distributionsystem.entity.*;[m
+[31m-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;[m
+[31m-import com.sep490.bads.distributionsystem.mapper.SupplierMapper;[m
+[31m-import com.sep490.bads.distributionsystem.repository.SupplierCategoryRepository;[m
+[31m-import com.sep490.bads.distributionsystem.repository.SupplierRepository;[m
+[31m-import com.sep490.bads.distributionsystem.service.SupplierService;[m
+[31m-import lombok.RequiredArgsConstructor;[m
+[31m-import lombok.extern.log4j.Log4j2;[m
+[31m-import org.springframework.data.domain.*;[m
+[31m-import org.springframework.data.jpa.domain.Specification;[m
+[31m-import org.springframework.stereotype.Service;[m
+[31m-import org.springframework.transaction.annotation.Transactional;[m
+[31m-import jakarta.persistence.criteria.Predicate;[m
+[31m-import java.util.*;[m
+[31m-@Service[m
+[31m-@RequiredArgsConstructor[m
+[31m-@Transactional[m
+[31m-@Log4j2[m
+[31m-public class SupplierServiceImpl implements SupplierService {[m
+[31m-[m
+[31m-    private final SupplierRepository supplierRepository;[m
+[31m-    private final SupplierCategoryRepository supplierCategoryRepository;[m
+[31m-    private final SupplierMapper supplierMapper;[m
+[31m-[m
+[31m-    @Override[m
+[31m-    public Page<SupplierDto> getAllSuppliers(Pageable pageable) {[m
+[31m-        return supplierRepository.findAllActive(pageable).map(supplierMapper::toDto);[m
+[31m-    }[m
+[31m-[m
+[31m-    @Override[m
+[31m-    public SupplierDto getSupplierById(Long id) {[m
+[31m-        Supplier s = supplierRepository.findById(id)[m
+[31m-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp ID=" + id));[m
+[31m-        return supplierMapper.toDto(s);[m
+[31m-    }[m
+[31m-[m
+[31m-    @Override[m
+[31m-    public SupplierDto createSupplier(SupplierCreateDto dto) {[m
+[31m-        if (supplierRepository.existsByEmail(dto.getEmail()))[m
+[31m-            throw new RuntimeException("Email đã tồn tại: " + dto.getEmail());[m
+[31m-        if (supplierRepository.existsByPhone(dto.getPhone()))[m
+[31m-            throw new RuntimeException("Số điện thoại đã tồn tại: " + dto.getPhone());[m
+[31m-[m
+[31m-        Supplier entity = new Supplier();[m
+[31m-        entity.setName(dto.getName());[m
+[31m-        entity.setAddress(dto.getAddress());[m
+[31m-        entity.setEmail(dto.getEmail());[m
+[31m-        entity.setPhone(dto.getPhone());[m
+[31m-        entity.setTaxCode(dto.getTaxCode());[m
+[31m-        entity.setStatus(CommonStatus.ACTIVE);[m
+[31m-[m
+[31m-        if (dto.getCategoryId() != null) {[m
+[31m-            SupplierCategory category = supplierCategoryRepository.findById(dto.getCategoryId())[m
+[31m-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục nhà cung cấp ID=" + dto.getCategoryId()));[m
+[31m-            entity.setCategory(category);[m
+[31m-        }[m
+[31m-[m
+[31m-        Supplier saved = supplierRepository.save(entity);[m
+[31m-        log.info("Đã tạo nhà cung cấp mới: {}", saved.getName());[m
+[31m-        return supplierMapper.toDto(saved);[m
+[31m-    }[m
+[31m-[m
+[31m-    @Override[m
+[31m-    public SupplierDto updateSupplier(Long id, SupplierDto dto) {[m
+[31m-        Supplier existing = supplierRepository.findById(id)[m
+[31m-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp ID=" + id));[m
+[31m-[m
+[31m-        existing.setName(dto.getName());[m
+[31m-        existing.setAddress(dto.getAddress());[m
+[31m-        existing.setEmail(dto.getEmail());[m
+[31m-        existing.setPhone(dto.getPhone());[m
+[31m-        existing.setTaxCode(dto.getTaxCode());[m
+[31m-        existing.setStatus(dto.getStatus());[m
+[31m-[m
+[31m-        if (dto.getCategoryId() != null) {[m
+[31m-            SupplierCategory category = supplierCategoryRepository.findById(dto.getCategoryId())[m
+[31m-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục nhà cung cấp ID=" + dto.getCategoryId()));[m
+[31m-            existing.setCategory(category);[m
+[31m-        }[m
+[31m-[m
+[31m-        Supplier updated = supplierRepository.save(existing);[m
+[31m-        log.info("Đã cập nhật nhà cung cấp ID={}", id);[m
+[31m-        return supplierMapper.toDto(updated);[m
+[31m-    }[m
+[31m-[m
+[31m-    @Override[m
+[31m-    public void softDeleteSupplier(Long id) {[m
+[31m-        Supplier s = supplierRepository.findById(id)[m
+[31m-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp ID=" + id));[m
+[31m-[m
+[31m-        s.setStatus(CommonStatus.INACTIVE);[m
+[31m-        supplierRepository.save(s);[m
+[31m-        log.info("Đã ẩn (soft delete) nhà cung cấp ID={}", id);[m
+[31m-    }[m
+[31m-[m
+[31m-    @Override[m
+[31m-    public Page<SupplierDto> filterSuppliers(SupplierFilterDto f) {[m
+[31m-        Pageable pageable = PageRequest.of(f.getPage(), f.getSize(),[m
+[31m-                Sort.by("DESC".equalsIgnoreCase(f.getDirection()) ? Sort.Direction.DESC : Sort.Direction.ASC,[m
+[31m-                        f.getSortBy()));[m
+[31m-[m
+[31m-        Specification<Supplier> spec = (root, query, cb) -> {[m
+[31m-            List<Predicate> ps = new ArrayList<>();[m
+[31m-[m
+[31m-            if (f.getKeyword() != null && !f.getKeyword().isBlank()) {[m
+[31m-                String like = "%" + f.getKeyword().trim().toLowerCase() + "%";[m
+[31m-                ps.add(cb.or([m
+[31m-                        cb.like(cb.lower(root.get("name")), like),[m
+[31m-                        cb.like(cb.lower(root.get("email")), like)[m
+[31m-                ));[m
+[31m-            }[m
+[31m-[m
+[31m-            if (f.getCategoryId() != null)[m
+[31m-                ps.add(cb.equal(root.get("category").get("id"), f.getCategoryId()));[m
+[31m-[m
+[31m-            if (f.getStatus() != null)[m
+[31m-                ps.add(cb.equal(root.get("status"), f.getStatus()));[m
+[31m-[m
+[31m-            return cb.and(ps.toArray(new Predicate[0]));[m
+[31m-        };[m
+[31m-[m
+[31m-        return supplierRepository.findAll(spec, pageable).map(supplierMapper::toDto);[m
+[31m-    }[m
+[31m-    @Override[m
+[31m-    public SupplierDto recover(Long id) {[m
+[31m-        Supplier supplier = supplierRepository.findById(id)[m
+[31m-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp ID=" + id));[m
+[31m-[m
+[31m-        if (supplier.getStatus() == CommonStatus.ACTIVE) {[m
+[31m-            throw new RuntimeException("Nhà cung cấp này đã ở trạng thái ACTIVE rồi");[m
+[31m-        }[m
+[31m-[m
+[31m-        supplier.setStatus(CommonStatus.ACTIVE);[m
+[31m-        Supplier recovered = supplierRepository.save(supplier);[m
+[31m-        log.info("Đã khôi phục nhà cung cấp ID={}", id);[m
+[31m-[m
+[31m-        return supplierMapper.toDto(recovered);[m
+[31m-    }[m
+[31m-[m
+[31m-}[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/resources/db.migration/BADS_databasescript.sql b/src/main/resources/db.migration/BADS_databasescript.sql[m
+[1mindex 1ddfc5b..0d8105d 100644[m
+[1m--- a/src/main/resources/db.migration/BADS_databasescript.sql[m
+[1m+++ b/src/main/resources/db.migration/BADS_databasescript.sql[m
+[36m@@ -2,7 +2,7 @@[m [mIF DB_ID('bads_db') IS NULL[m
+     BEGIN[m
+         CREATE DATABASE bads_db;[m
+     END;[m
+[31m-	use bads_db[m
+[32m+[m
+ ------------------------------------------------------------[m
+ -- 1. Reference tables[m
+ ------------------------------------------------------------[m
+[36m@@ -17,8 +17,8 @@[m [mCREATE TABLE [CustomerType] ([m
+ );[m
+ [m
+ CREATE TABLE [ProductCategory] ([m
+[31m-                                   category_id BIGINT IDENTITY(1,1) PRIMARY KEY,[m
+[31m-                                   category NVARCHAR(100) NOT NULL[m
+[32m+[m[32m                                   p_category_id BIGINT IDENTITY(1,1) PRIMARY KEY,[m
+[32m+[m[32m                                   p_category NVARCHAR(100) NOT NULL[m
+ );[m
+ [m
+ CREATE TABLE [Unit] ([m
+[36m@@ -27,8 +27,8 @@[m [mCREATE TABLE [Unit] ([m
+ );[m
+ [m
+ CREATE TABLE [SupplierCategory] ([m
+[31m-                                    category_id BIGINT IDENTITY(1,1) PRIMARY KEY,[m
+[31m-                                    category_name NVARCHAR(100) NOT NULL[m
+[32m+[m[32m                                    s_category_id BIGINT IDENTITY(1,1) PRIMARY KEY,[m
+[32m+[m[32m                                    s_category_name NVARCHAR(100) NOT NULL[m
+ );[m
+ [m
+ CREATE TABLE [Qrcode] ([m
+[36m@@ -56,7 +56,6 @@[m [mCREATE TABLE [User] ([m
+                         gender NVARCHAR(16) NULL,[m
+                         address NVARCHAR(255) NULL,[m
+                         created_at DATETIME DEFAULT GETDATE(),[m
+[31m-                        created_by BIGINT NOT NULL ,[m
+                         CONSTRAINT FK_User_Role FOREIGN KEY (role_id) REFERENCES [Role](role_id)[m
+ );[m
+ CREATE INDEX IX_User_role ON [User](role_id);[m
+[36m@@ -73,8 +72,8 @@[m [mCREATE TABLE [Warehouse] ([m
+                              code NVARCHAR(20) NOT NULL UNIQUE,[m
+                              phone NVARCHAR(20),[m
+                              email NVARCHAR(100),[m
+[32m+[m[32m                             is_active BIT DEFAULT 1,[m
+                              created_at DATETIME DEFAULT GETDATE(),[m
+[31m-                             created_by BIGINT NOT NULL,[m
+                              CONSTRAINT FK_Warehouse_Manager FOREIGN KEY (manager_id) REFERENCES [User](user_id)[m
+ );[m
+ [m
+[36m@@ -90,15 +89,18 @@[m [mCREATE TABLE [Product] ([m
+                            min_stock BIGINT DEFAULT 0,[m
+                            max_stock BIGINT DEFAULT 0,[m
+                            [status] NVARCHAR(20) DEFAULT 'ACTIVE',[m
+[31m-                           category_id BIGINT,[m
+[31m-                           note NVARCHAR(255),[m
+[31m-                           unit_id BIGINT,[m
+[32m+[m[32m                           created_at DATETIME DEFAULT GETDATE(),[m
+[32m+[m[32m                           created_by BIGINT NOT NULL,[m
+[32m+[m[32m                           p_category_id BIGINT,[m
+[32m+[m[32m                           p_note NVARCHAR(255),[m
+[32m+[m[32m                           p_unit_id BIGINT,[m
+                            reorder_qty BIGINT DEFAULT 0,[m
+[31m-                           CONSTRAINT FK_Product_Category FOREIGN KEY (category_id) REFERENCES [ProductCategory](category_id),[m
+[31m-                           CONSTRAINT FK_Product_Unit FOREIGN KEY (unit_id) REFERENCES [Unit](unit_id),[m
+[32m+[m[32m                           CONSTRAINT FK_Product_Category FOREIGN KEY (p_category_id) REFERENCES [ProductCategory](p_category_id),[m
+[32m+[m[32m                           CONSTRAINT FK_Product_Unit FOREIGN KEY (p_unit_id) REFERENCES [Unit](unit_id),[m
+[32m+[m[32m                           CONSTRAINT FK_Product_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)[m
+ );[m
+[31m-CREATE INDEX IX_Product_category ON [Product](category_id);[m
+[31m-CREATE INDEX IX_Product_unit ON [Product](unit_id);[m
+[32m+[m[32mCREATE INDEX IX_Product_category ON [Product](p_category_id);[m
+[32m+[m[32mCREATE INDEX IX_Product_unit ON [Product](p_unit_id);[m
+ [m
+ CREATE TABLE [Inventory] ([m
+                              inventory_id BIGINT IDENTITY(1,1) PRIMARY KEY,[m
+[36m@@ -145,6 +147,7 @@[m [mCREATE TABLE [Customer] ([m
+                             note NVARCHAR(255),[m
+                             created_at DATETIME DEFAULT GETDATE(),[m
+                             created_by BIGINT NULL,[m
+[32m+[m[32m                            updated_at DATETIME NULL,[m
+                             CONSTRAINT FK_Customer_Type FOREIGN KEY (type_id) REFERENCES [CustomerType](type_id),[m
+                             CONSTRAINT FK_Customer_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)[m
+ );[m
+[36m@@ -161,11 +164,11 @@[m [mCREATE TABLE [Supplier] ([m
+                             email NVARCHAR(100),[m
+                             address NVARCHAR(255),[m
+                             tax_code NVARCHAR(50),[m
+[31m-                            category_id BIGINT,[m
+[32m+[m[32m                            s_category_id BIGINT,[m
+                             [status] NVARCHAR(20),[m
+                             created_at DATETIME DEFAULT GETDATE(),[m
+                             created_by BIGINT NOT NULL,[m
+[31m-                            CONSTRAINT FK_Supplier_Category FOREIGN KEY (category_id) REFERENCES [SupplierCategory](category_id),[m
+[32m+[m[32m                            CONSTRAINT FK_Supplier_Category FOREIGN KEY (s_category_id) REFERENCES [SupplierCategory](s_category_id),[m
+                             CONSTRAINT FK_Supplier_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)[m
+ );[m
+ [m
+[36m@@ -174,10 +177,11 @@[m [mCREATE TABLE [Supplier] ([m
+ ------------------------------------------------------------[m
+ CREATE TABLE [SalesOrder] ([m
+                               order_id BIGINT IDENTITY(1,1) PRIMARY KEY,[m
+[31m-                              order_code NVARCHAR(50) UNIQUE,[m
+[32m+[m[32m                              saleorder_code NVARCHAR(50) UNIQUE,[m
+                               customer_id BIGINT,[m
+                               user_id BIGINT,[m
+                               total_amount DECIMAL(18,2) DEFAULT 0,[m
+[32m+[m[32m                              note NVARCHAR(255),[m
+                               payment_method NVARCHAR(50),[m
+                               [status] NVARCHAR(20) DEFAULT 'Pending',[m
+                               created_at DATETIME DEFAULT GETDATE(),[m
+[36m@@ -196,9 +200,10 @@[m [mCREATE TABLE [SalesOrderDetail] ([m
+                                     unit_price DECIMAL(18,2) NOT NULL,[m
+                                     discount DECIMAL(5,2) DEFAULT 0,[m
+                                     vat_amount DECIMAL(18,2),[m
+[31m-                                    total_price AS (CONVERT(DECIMAL(18,2), ROUND((quantity * unit_price) + vat_amount - discount, 2))) PERSISTED,[m
+[32m+[m[32m                                    total_price AS (CONVERT(DECIMAL(18,2), ROUND((quantity * unit_price) * (1 - discount / 100.0), 2))) PERSISTED,[m
+                                     [status] NVARCHAR(20) DEFAULT 'Draft',[m
+                                     note NVARCHAR(255),[m
+[32m+[m[32m                                    created_at DATETIME DEFAULT GETDATE(),[m
+                                     CONSTRAINT FK_SOD_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id) ON DELETE CASCADE,[m
+                                     CONSTRAINT FK_SOD_Product FOREIGN KEY (product_id) REFERENCES [Product](product_id)[m
+ );[m
+[36m@@ -212,7 +217,6 @@[m [mCREATE TABLE [Invoice] ([m
+                            grand_total DECIMAL(18,2),[m
+                            [status] NVARCHAR(20) DEFAULT 'Pending',[m
+                            payment_method NVARCHAR(50),[m
+[31m-                           tax_code NVARCHAR(50),[m
+                            created_at DATETIME DEFAULT GETDATE(),[m
+                            created_by BIGINT NOT NULL,[m
+                            CONSTRAINT FK_Invoice_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id),[m
+[36m@@ -239,7 +243,7 @@[m [mCREATE TABLE [RequestDetail] ([m
+                                  request_id BIGINT NOT NULL,[m
+                                  order_detail_id BIGINT NOT NULL,[m
+                                  quantity BIGINT NOT NULL,[m
+[31m---                                  reason_for_item NVARCHAR(255),[m
+[32m+[m[32m                                 reason_for_item NVARCHAR(255),[m
+                                  CONSTRAINT FK_RequestDetail_Request FOREIGN KEY (request_id) REFERENCES [Request](request_id) ON DELETE CASCADE,[m
+                                  CONSTRAINT FK_RequestDetail_OrderDetail FOREIGN KEY (order_detail_id) REFERENCES [SalesOrderDetail](order_detail_id)[m
+ );[m
+[36m@@ -268,7 +272,7 @@[m [mCREATE TABLE [ContractDetail] ([m
+                                   quantity BIGINT NOT NULL,[m
+                                   unit_price DECIMAL(18,2) NOT NULL,[m
+                                   vat_amount DECIMAL(18,2),[m
+[31m-                                  total_price AS (quantity * unit_price) + vat_amount PERSISTED,[m
+[32m+[m[32m                                  total_price AS (quantity * unit_price) PERSISTED,[m
+                                   [status] NVARCHAR(20) DEFAULT 'Pending',[m
+                                   estimated_delivery_date DATE NULL,[m
+                                   note NVARCHAR(255),[m
+[36m@@ -379,3 +383,7 @@[m [mCREATE INDEX IX_Supplier_name ON [Supplier](supplier_name);[m
+ ALTER TABLE [Product] ADD CONSTRAINT CK_Product_prices_nonneg CHECK (cost_price >= 0 AND selling_price >= 0);[m
+ ALTER TABLE [SalesOrderDetail] ADD CONSTRAINT CK_SOD_quantity_nonneg CHECK (quantity >= 0);[m
+ ALTER TABLE [ContractDetail] ADD CONSTRAINT CK_CD_quantity_nonneg CHECK (quantity >= 0);[m
+[32m+[m
+[32m+[m[32mALTER TABLE [SalesOrder] ADD CONSTRAINT DF_SalesOrder_status DEFAULT 'Pending' FOR [status];[m
+[32m+[m[32mALTER TABLE [Contract] ADD CONSTRAINT DF_Contract_status DEFAULT 'Pending' FOR [status];[m
+[32m+[m[32mALTER TABLE [Invoice] ADD CONSTRAINT DF_Invoice_status DEFAULT 'Pending' FOR [status];[m
+[1mdiff --git a/src/main/resources/db.migration/master_data.sql b/src/main/resources/db.migration/master_data.sql[m
+[1mindex 75c3dbd..438396d 100644[m
+[1m--- a/src/main/resources/db.migration/master_data.sql[m
+[1m+++ b/src/main/resources/db.migration/master_data.sql[m
+[36m@@ -4,7 +4,7 @@[m [mINSERT INTO Role (role_name) VALUES[m
+                                  (N'admin'),               -- Quản trị toàn hệ thống[m
+                                  (N'warehouseStaff'),     -- Nhân viên kho[m
+                                  (N'saleStaff'),         -- Nhân viên bán hàng[m
+[31m-                                 (N'accountant');    -- Nhân viên kế toán[m
+[32m+[m[32m                                 (N'accountstaff');    -- Nhân viên kế toán[m
+ [m
+ -- INSERT UNIT (Đơn vị tính)[m
+ INSERT INTO Unit (unit_name) VALUES[m
+[36m@@ -24,15 +24,20 @@[m [mINSERT INTO CustomerType (type_name) VALUES[m
+                                          (N'Khách buôn');[m
+ [m
+ --INSERT CATEGORY (Danh mục sản phẩm)[m
+[31m-INSERT INTO ProductCategory (category) VALUES[m
+[32m+[m[32mINSERT INTO Category (category_name) VALUES[m
+                                          (N'Nem chua rán'),[m
+                                          (N'Phô mai'),[m
+                                          (N'Xúc xích'),[m
+                                          (N'Đồ viên');[m
+ [m
+[32m+[m[32m--INSERT WAREHOUSE[m
+[32m+[m[32mINSERT INTO Warehouse (warehouse_name, address, manager_id, status) VALUES[m
+[32m+[m[32m                                                                        (N'Kho Hà Nội', N'Hà Nội', NULL, 1),[m
+[32m+[m[32m                                                                        (N'Kho Hồ Chí Minh', N'Hồ Chí Minh', NULL, 1);[m
+ [m
+ --INSERT USER[m
+[31m-[m
+[32m+[m[32mUSE [bads_db];[m
+[32m+[m[32mGO[m
+ [m
+ INSERT INTO [dbo].[User][m
+            ([user_code][m
+[36m@@ -48,21 +53,11 @@[m [mINSERT INTO [dbo].[User][m
+            ,[gender][m
+            ,[address][m
+            ,[created_at][m
+[31m-           ,[created_by])[m
+[31m-     VALUES[m
+[31m-           ('U00123' -- user_code[m
+[31m-           ,'dsuasa' -- username[m
+[31m-           ,'$2a$12$q6DjjvWZDtAMiHEfrsqUQ.lQM/IOtMWOD2QCQ1YHJdaZiISU2kE0u' -- password (Hashed value - never store plaintext!)[m
+[31m-           ,'2003-12-12' -- date_of_birth[m
+[31m-           ,'/avatars/jsmith.png' -- avatar[m
+[31m-           ,'dxhuy' -- full_name[m
+[31m-           ,'dangxuanhuy3108@gmail.com' -- email[m
+[31m-           ,'0385474355' -- phone[m
+[31m-           ,'Active' -- status[m
+[31m-           ,2 -- role_id (e.g., 2 for 'Standard User')[m
+[31m-           ,'Male' -- gender[m
+[31m-           ,'HungYen' -- address[m
+[31m-           ,GETDATE() -- created_at (Uses current date/time)[m
+[31m-           ,1 -- created_by [m
+[31m-           )[m
+[31m-GO[m
+\ No newline at end of file[m
+[32m+[m[32m           ,[updated_at])[m
+[32m+[m[32mVALUES[m
+[32m+[m[32m('U001', 'admin', '123', '2003-08-31', 'avatar1.png', N'Dang Xuan Huy', 'dangxuanhuy3108@gmail.com', '0385474355', 'ACTIVE', 1, 'MALE', N'Hà Nội', GETDATE(), GETDATE()),[m
+[32m+[m[32m('U002', 'linhpham', '123456', '2000-11-22', 'avatar2.png', N'Phạm Thùy Linh', 'linh.pham@example.com', '0912345678', 'ACTIVE', 2, 'FEMALE', N'Hồ Chí Minh', GETDATE(), GETDATE()),[m
+[32m+[m[32m('U003', 'trungkien', '123456', '1999-02-14', 'avatar3.png', N'Đỗ Trung Kiên', 'kien.do@example.com', '0978123456', 'ACTIVE', 2, 'MALE', N'Đà Nẵng', GETDATE(), GETDATE()),[m
+[32m+[m[32m('U004', 'minhchau', '123456', '2001-07-05', 'avatar4.png', N'Lê Minh Châu', 'chau.le@example.com', '0909988776', 'INACTIVE', 3, 'FEMALE', N'Hải Phòng', GETDATE(), GETDATE()),[m
+[32m+[m[32m('U005', 'quanghuy', '123456', '1997-12-01', 'avatar5.png', N'Trần Quang Huy', 'huy.tran@example.com', '0933445566', 'ACTIVE', 1, 'MALE', N'Hưng Yên', GETDATE(), GETDATE());[m
+[32m+[m[32mGO[m

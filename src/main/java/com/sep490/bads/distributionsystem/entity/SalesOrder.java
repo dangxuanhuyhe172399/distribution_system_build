@@ -1,23 +1,30 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.experimental.SuperBuilder;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
-@Table(name = "SalesOrder")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "SalesOrder", schema = "dbo")
 @Getter
 @Setter
-public class SalesOrder {
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class SalesOrder extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderId;
+    @Column(name = "saleorder_id")
+    private Long id;
+
+    @Column(name = "saleorder_code", length = 50, unique = true)
+    private String saleOrderCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
@@ -27,21 +34,36 @@ public class SalesOrder {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "order_date")
-    private LocalDateTime orderDate;
+    @Column(name = "total_amount", precision = 18, scale = 2)
+    private BigDecimal totalAmount;
 
-    @Column(length = 50)
-    private String status;
+    @Column(name = "note", length = 255)
+    private String note;
 
     @Column(name = "payment_method", length = 50)
     private String paymentMethod;
 
-    @Column(length = 255)
-    private String note;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private SaleOderStatus status;
 
-    @OneToMany(mappedBy = "salesOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<SalesOrderDetail> details = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 
-    @OneToOne(mappedBy = "salesOrder", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<SalesOrderDetail> orderDetails;
+
+    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Invoice invoice;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Request> requests;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<GoodsIssues> goodsIssues;
 }

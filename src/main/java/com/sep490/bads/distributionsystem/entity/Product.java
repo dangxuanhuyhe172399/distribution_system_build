@@ -1,34 +1,42 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
-@Table(name = "Product")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "Product", schema = "dbo")
 @Getter
 @Setter
-public class Product {
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+    @Column(name = "product_id")
+    private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "sku", length = 50, unique = true, nullable = false)
+    private String sku;
+
+    @Column(name = "description", length = 255)
+    private String description;
+
+    @Column(name = "barcode", length = 64)
+    private String barcode;
+
+    @Column(name = "image", length = 255)
+    private String image;
+
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unit_id")
-    private Unit unit;
 
     @Column(name = "cost_price", precision = 18, scale = 2)
     private BigDecimal costPrice;
@@ -36,27 +44,39 @@ public class Product {
     @Column(name = "selling_price", precision = 18, scale = 2)
     private BigDecimal sellingPrice;
 
-    @Column(name = "stock_quantity")
-    private Integer stockQuantity = 0;
-
     @Column(name = "min_stock")
-    private Integer minStock = 0;
+    private Long minStock;
 
     @Column(name = "max_stock")
-    private Integer maxStock = 0;
+    private Long maxStock;
 
-    @Column(columnDefinition = "bit default 1")
-    private Boolean status = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private CommonStatus status;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "p_category_id")
+    private ProductCategory category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "p_unit_id")
+    private Unit unit;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @Column(name = "p_note", length = 255)
+    private String note;
+
+    @Column(name = "reorder_qty")
+    private Long reorderQty;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private Set<Inventory> inventories = new HashSet<>();
+    @JsonIgnore
+    private List<Inventory> inventories;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private Set<SalesOrderDetail> salesOrderDetails = new HashSet<>();
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private Set<PurchaseOrderDetail> purchaseOrderDetails = new HashSet<>();
+    @JsonIgnore
+    private List<Qrcode> qrcodes;
 }
