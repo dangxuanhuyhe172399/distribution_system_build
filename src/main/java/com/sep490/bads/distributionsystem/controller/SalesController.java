@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 public class SalesController extends BaseController {
 
     private final SalesOrderService service;
-    private final SaleOrderDetailService detailService;
 
     @Operation(summary = "Tim kiem ")
     @GetMapping

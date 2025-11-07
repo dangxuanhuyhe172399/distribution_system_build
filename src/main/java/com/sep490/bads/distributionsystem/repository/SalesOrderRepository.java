@@ -1,9 +1,6 @@
 package com.sep490.bads.distributionsystem.repository;
 
-import com.sep490.bads.distributionsystem.dto.salesOrderDto.SalesOrderFilterDto;
 import com.sep490.bads.distributionsystem.entity.SalesOrder;
-import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;

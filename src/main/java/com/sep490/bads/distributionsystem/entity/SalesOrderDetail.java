@@ -1,7 +1,6 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import com.sep490.bads.distributionsystem.entity.type.SaleOrderDetailStatus;
 import jakarta.persistence.*;
 import lombok.*;

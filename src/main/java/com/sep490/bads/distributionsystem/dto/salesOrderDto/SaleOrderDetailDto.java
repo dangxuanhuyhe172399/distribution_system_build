@@ -1,10 +1,8 @@
 package com.sep490.bads.distributionsystem.dto.salesOrderDto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep490.bads.distributionsystem.entity.Product;
 import com.sep490.bads.distributionsystem.entity.SalesOrder;
 import com.sep490.bads.distributionsystem.entity.type.SaleOrderDetailStatus;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
