@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.controller;
 
-import com.sep490.bads.distributionsystem.dto.CustomerDto.*;
+import com.sep490.bads.distributionsystem.dto.customerDto.*;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,39 +23,39 @@ public class CustomerController extends BaseController {
 
     @Operation(summary = "Tìm kiếm + phân trang khách hàng")
     @GetMapping
-    public ResultResponse<Page<CustomerDto>> search(CustomerFilterDto f, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResultResponse<Page<CustomersDto>> searchByCustomer(CustomerFilterDto f, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResultResponse.success(service.search(pageable, f));
     }
 
     @Operation(summary = "Xem chi tiết khách hàng")
     @GetMapping("/{id}")
-    public ResultResponse<CustomerDto> get(@PathVariable Long id) {
+    public ResultResponse<CustomersDto> getByIdCustomer(@PathVariable Long id) {
         return ResultResponse.success(service.get(id));
     }
 
     @Operation(summary = "Tạo khách hàng")
     @PostMapping
-    public ResultResponse<CustomerDto> create(@RequestBody @Valid CustomerCreateDto dto,
-                                              @RequestHeader(value = "X-User-Id", required = false) Long createdById) {
+    public ResultResponse<CustomersDto> createCustomer(@RequestBody @Valid CustomerCreateDto dto,
+                                               @RequestHeader(value = "X-User-Id", required = false) Long createdById) {
         return ResultResponse.created(service.create(dto, createdById));
     }
 
     @Operation(summary = "Cập nhật khách hàng")
     @PutMapping("/{id}")
-    public ResultResponse<CustomerDto> update(@PathVariable Long id, @RequestBody @Valid CustomerUpdateDto dto) {
+    public ResultResponse<CustomersDto> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerUpdateDto dto) {
         return ResultResponse.success(service.update(id, dto));
     }
 
     @Operation(summary = "Kích hoạt tài khoản khách hàng")
     @PostMapping("/{id}/activate")
-    public ResultResponse<Void> activate(@PathVariable Long id) {
+    public ResultResponse<Void> activateCustomer(@PathVariable Long id) {
         service.activate(id);
         return ResultResponse.success(null);
     }
 
     @Operation(summary = "khoá tài khoản khách hàng")
     @PostMapping("/{id}/deactivate")
-    public ResultResponse<Void> deactivate(@PathVariable Long id) {
+    public ResultResponse<Void> deactivateCustomer(@PathVariable Long id) {
         service.deactivate(id);
         return ResultResponse.success(null);
     }

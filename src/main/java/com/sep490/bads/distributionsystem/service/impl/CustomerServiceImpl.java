@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.dto.CustomerDto.*;
+import com.sep490.bads.distributionsystem.dto.customerDto.*;
 import com.sep490.bads.distributionsystem.entity.*;
 import com.sep490.bads.distributionsystem.entity.type.CustomerStatus;
 import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
@@ -17,12 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
     // ---------- SEARCH ----------
     @Transactional(readOnly = true)
     @Override
-    public Page<CustomerDto> search(Pageable pageable, CustomerFilterDto f) {
+    public Page<CustomersDto> search(Pageable pageable, CustomerFilterDto f) {
         return customerRepo.findAll(buildSpec(f), pageable)
                 .map(this::toDto);
     }
@@ -92,7 +90,7 @@ public class CustomerServiceImpl implements CustomerService {
     // ---------- GET ----------
     @Transactional(readOnly = true)
     @Override
-    public CustomerDto get(Long id) {
+    public CustomersDto get(Long id) {
         var c = customerRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
         return toDto(c);
@@ -101,7 +99,7 @@ public class CustomerServiceImpl implements CustomerService {
     // ---------- CREATE ----------
     @Transactional
     @Override
-    public CustomerDto create(CustomerCreateDto dto, Long createdById) {
+    public CustomersDto create(CustomerCreateDto dto, Long createdById) {
         validateUnique(dto.getPhone(), dto.getEmail(), null);
 
         var c = new Customer();
@@ -132,7 +130,7 @@ public class CustomerServiceImpl implements CustomerService {
     // ---------- UPDATE ----------
     @Transactional
     @Override
-    public CustomerDto update(Long id, CustomerUpdateDto dto) {
+    public CustomersDto update(Long id, CustomerUpdateDto dto) {
         var c = customerRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
 
@@ -248,8 +246,8 @@ public class CustomerServiceImpl implements CustomerService {
         return "KH" + today.format(DateTimeFormatter.BASIC_ISO_DATE) + "-" + String.format("%04d", seq);
     }
 
-    private CustomerDto toDto(Customer c){
-        return CustomerDto.builder()
+    private CustomersDto toDto(Customer c){
+        return CustomersDto.builder()
                 .id(c.getId())
                 .code(c.getCode())
                 .name(c.getName())

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep490.bads.distributionsystem.entity.Customer;
 import com.sep490.bads.distributionsystem.entity.CustomerType;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.CustomerStatus;
 import com.sep490.bads.distributionsystem.entity.type.ZaloEventLogStatus;
 import com.sep490.bads.distributionsystem.entity.zalo.ZaloCustomerLink;
 import com.sep490.bads.distributionsystem.entity.zalo.ZaloEventLog;
@@ -164,7 +165,7 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
             customer.setPhone(standardizedPhone);
             customer.setName(name);
             customer.setAddress(address);
-            customer.setStatus(CommonStatus.ACTIVE);
+            customer.setStatus(CustomerStatus.ACTIVE);
             customer.setType(defaultType);
         }
 

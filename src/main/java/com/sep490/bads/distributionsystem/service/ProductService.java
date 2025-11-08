@@ -19,5 +19,5 @@ public interface ProductService {
 
     Page<ProductDto> filterProducts(ProductFilterDto filterDto);
 
-    public ProductDto recoverProduct(Long id) ;
+     ProductDto recoverProduct(Long id) ;
 }

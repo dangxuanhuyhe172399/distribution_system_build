@@ -1,15 +1,15 @@
 package com.sep490.bads.distributionsystem.service;
 
-import com.sep490.bads.distributionsystem.dto.CustomerDto.*;
+import com.sep490.bads.distributionsystem.dto.customerDto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CustomerService {
-    Page<CustomerDto> search(Pageable pageable, CustomerFilterDto f);
-    CustomerDto get(Long id);
+    Page<CustomersDto> search(Pageable pageable, CustomerFilterDto f);
+    CustomersDto get(Long id);
 
-    CustomerDto create(CustomerCreateDto dto, Long createdById);
-    CustomerDto update(Long id, CustomerUpdateDto dto);
+    CustomersDto create(CustomerCreateDto dto, Long createdById);
+    CustomersDto update(Long id, CustomerUpdateDto dto);
 
     void activate(Long id);
     void deactivate(Long id);

@@ -87,9 +87,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void softDeleteProduct(Long id) {
         Product p = productRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm: "));
 
-        // Chuyển trạng thái về INACTIVE (ẩn)
+        // Chuyển trạng thái về INACTIVE
         p.setStatus(CommonStatus.INACTIVE);
         productRepo.save(p);
 
@@ -108,7 +108,6 @@ public class ProductServiceImpl implements ProductService {
         p.setStatus(CommonStatus.ACTIVE);
         productRepo.save(p);
 
-        log.info("Khôi phục sản phẩm ID={} về trạng thái ACTIVE", id);
         return productMapper.toDto(p);
     }
 

@@ -1,4 +1,4 @@
-package com.sep490.bads.distributionsystem.dto.CustomerDto;
+package com.sep490.bads.distributionsystem.dto.customerDto;
 
 import lombok.*;
 import java.math.BigDecimal;
