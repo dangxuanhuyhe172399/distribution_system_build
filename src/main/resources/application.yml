@@ -64,7 +64,8 @@ spring:
           starttls:
             enable: true
 mail:
-  from: ${MAIL_FROM:danhtpa1k60@gmail.com}
+#  danhtpa1k60@gmail.com
+  from: ${MAIL_FROM:dangquanghuynh0108@gmail.com}
   # Cấu hình cho việc upload file
 #  servlet:
 #      multipart:
