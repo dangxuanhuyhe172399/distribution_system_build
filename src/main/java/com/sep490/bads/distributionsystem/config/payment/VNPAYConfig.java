@@ -1,7 +1,7 @@
 package com.sep490.bads.distributionsystem.config.payment;
 
 import com.sep490.bads.distributionsystem.utils.VNPayUtil;
-import lombok.*;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 

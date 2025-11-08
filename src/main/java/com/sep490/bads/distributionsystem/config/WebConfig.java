@@ -1,4 +1,4 @@
-package com.sep490.bads.distributionsystem.config.config;
+package com.sep490.bads.distributionsystem.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
