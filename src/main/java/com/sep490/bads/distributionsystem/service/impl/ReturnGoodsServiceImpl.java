@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +32,7 @@ public class ReturnGoodsServiceImpl implements ReturnGoodsService {
     private final WarehouseRepository whRepo;
     private final InventoryRepository invRepo;
     private final UserRepository userRepo;
+
     @Override
     @Transactional
     public Request create(ReturnCreateDto dto, Long userId) {
@@ -167,5 +169,36 @@ public class ReturnGoodsServiceImpl implements ReturnGoodsService {
         r.setRequestStatus(RequestStatus.RETURN_TO_SUPPLIER); // hoặc trạng thái riêng cho scrap nội bộ
         reqRepo.save(r);
         return gi;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ReturnGoodsDetailDto getReturnDetail(Long requestId){
+        var r = reqRepo.findById(requestId).orElseThrow();
+        var lines = rdRepo.findAllViewByRequestId(requestId).stream().map(rd -> {
+            var p = rd.getOrderDetail().getProduct();
+            return ReturnGoodsLineDto.builder()
+                    .sku(p.getSku())
+                    .productName(p.getName())
+                    .qtyReturn(Optional.ofNullable(rd.getQuantity()).orElse(0L))
+                    .inspectedQty(rd.getInspectedQty())
+                    .inspectionResult(rd.getInspectionResult())
+                    .note(rd.getReasonForItem())
+                    .build();
+        }).toList();
+
+        return ReturnGoodsDetailDto.builder()
+                .header(ReturnGoodsHeaderDto.builder()
+                        .requestCode(r.getRequestCode())
+                        .requesterName(r.getCustomer()!=null? r.getCustomer().getName(): null)
+                        .sellerName(r.getOrder()!=null && r.getOrder().getCustomer()!=null ? r.getOrder().getCustomer().getName(): null)
+                        .returnDate(r.getCreatedAt()!=null? r.getCreatedAt().toLocalDate(): null)
+                        .org("Công ty/chi nhánh")
+                        .reason(r.getReason())
+                        .status(r.getRequestStatus())
+                        .build())
+                .lines(lines)
+                .mediaUrls(List.of())
+                .build();
     }
 }

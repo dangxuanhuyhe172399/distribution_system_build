@@ -14,4 +14,9 @@ public class Constants {
     public static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
     public static final String COMPONENT_VIEW_COUNT_KEY = "component_view_count";
     public static final String INACTIVE_USER = "Inactive User";
+    public static final String ORDER_NOT_FOUND = "Order not found";
+    public static final String CUSTOMER_NOT_FOUND = "Customer not found";
+    public static final String PRODUCT_NOT_FOUND = "Product not found";
+    public static final String CANNOT_EDIT_ORDER = "Đơn chỉ được sửa khi NEW/PENDING";
+    public static final String CANNOT_CANCEL_ORDER = "Không thể hủy đơn đã giao/hoàn tất";
 }

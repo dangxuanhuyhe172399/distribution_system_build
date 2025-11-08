@@ -41,7 +41,7 @@ public class Supplier extends BaseEntity {
     private String taxCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "s_category_id")
     private SupplierCategory category;
 
     @Enumerated(EnumType.STRING)

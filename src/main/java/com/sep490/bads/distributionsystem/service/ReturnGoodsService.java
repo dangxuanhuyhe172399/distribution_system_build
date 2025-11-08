@@ -8,4 +8,6 @@ public interface ReturnGoodsService {
     Request inspect(Long requestId, ReturnInspectDto dto, Long userId);
     GoodsReceipt receipt(Long requestId, Long warehouseId, Long userId);
     GoodsIssues scrap(Long requestId, Long warehouseId, Long userId);
+
+    ReturnGoodsDetailDto getReturnDetail(Long requestId);
 }

@@ -30,8 +30,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Optional<Inventory> lockLot(@Param("warehouseId") Long warehouseId,
                                 @Param("productId") Long productId,
                                 @Param("qrId") Integer qrId,
-                                @Param("mfg") LocalDate mfg,
-                                @Param("exp") LocalDate exp);
+                                @Param("mfg") LocalDate mfg, //manufacture_date
+                                @Param("exp") LocalDate exp); //expiry_date
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""

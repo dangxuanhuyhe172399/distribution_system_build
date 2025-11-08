@@ -11,7 +11,7 @@ import java.util.*;
 @Table(name = "Role", schema = "dbo")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role {
+public class Role extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")

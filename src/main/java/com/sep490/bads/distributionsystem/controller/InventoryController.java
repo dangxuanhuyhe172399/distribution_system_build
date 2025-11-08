@@ -52,27 +52,27 @@ public class InventoryController extends BaseController{
 
     @Operation(summary = "Tạo dòng tồn kho")
     @PostMapping
-    public ResponseEntity<InventoryDto> create(@RequestBody @Valid InventoryCreateDto dto) {
+    public ResponseEntity<InventoryDto> createInventory(@RequestBody @Valid InventoryCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(inventoryService.create(dto));
     }
 
     @Operation(summary = "Cập nhật dòng tồn kho")
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid InventoryUpdateDto dto) {
+    public ResponseEntity<Void> updateInventory(@PathVariable Long id, @RequestBody @Valid InventoryUpdateDto dto) {
         inventoryService.update(id, dto);
         return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Xóa dòng tồn kho")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteInventory(@PathVariable Long id) {
         inventoryService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Chi tiết tồn theo Sản phẩm–Kho")
     @GetMapping("/{warehouseId}/{productId}/detail")
-    public ResultResponse<InventoryDetailDto> detail(@PathVariable Long warehouseId,
+    public ResultResponse<InventoryDetailDto> detailInventory(@PathVariable Long warehouseId,
                                                      @PathVariable Long productId) {
         return ResultResponse.success(inventoryService.getDetail(warehouseId, productId));
     }
@@ -80,13 +80,13 @@ public class InventoryController extends BaseController{
 
     @Operation(summary = "Lịch sử nhập/xuất theo sản phẩm-kho")
     @GetMapping("/{warehouseId}/{productId}/history")
-    public ResultResponse<Object> history(@PathVariable Long warehouseId, @PathVariable Long productId) {
+    public ResultResponse<Object> historyInventory(@PathVariable Long warehouseId, @PathVariable Long productId) {
         return ResultResponse.success(inventoryService.history(productId, warehouseId));
     }
 
     @Operation(summary = "Xuất CSV")
     @GetMapping("/export")
-    public ResponseEntity<Resource> export(
+    public ResponseEntity<Resource> exportInventory(
             @RequestParam(required = false) Long warehouseId,
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String status) {

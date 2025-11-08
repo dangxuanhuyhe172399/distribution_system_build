@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name = "SupplierCategory", schema = "dbo")
 @AllArgsConstructor
 @NoArgsConstructor
-public class SupplierCategory {
+public class SupplierCategory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "s_category_id")

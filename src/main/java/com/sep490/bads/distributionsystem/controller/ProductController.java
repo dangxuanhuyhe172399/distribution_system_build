@@ -23,7 +23,6 @@ import java.util.List;
 @RequestMapping("v1/public/products")
 @Tag(name = "Product", description = "Quản lý sản phẩm")
 @RequiredArgsConstructor
-@Validated
 public class ProductController extends BaseController {
     private final ProductService productService;
 
