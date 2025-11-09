@@ -1,5 +1,6 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
+import com.sep490.bads.distributionsystem.entity.type.ProductStatus;
 import com.sep490.bads.distributionsystem.service.InventoryService;
 import com.sep490.bads.distributionsystem.dto.inventoryDtos.*;
 import com.sep490.bads.distributionsystem.entity.*;
@@ -122,7 +123,7 @@ public class InventoryServiceImpl implements InventoryService {
         dto.setNearestExpiry(inv.getExpiryDate());
 
         boolean discontinued =
-                inv.getProduct().getStatus() != CommonStatus.ACTIVE
+                inv.getProduct().getStatus() != ProductStatus.ACTIVE
                         || inv.getWarehouse().getStatus() != CommonStatus.ACTIVE
                         || Boolean.FALSE.equals(inv.getWarehouse().getIsActive());
 
