@@ -37,10 +37,10 @@ public class Supplier extends BaseEntity {
     private CommonStatus status = CommonStatus.ACTIVE;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "supplier_category_id")
     private SupplierCategory category;
 
     @OneToMany(mappedBy = "supplier")
     @JsonIgnore
-    private List<Product> products; // nếu sản phẩm có quan hệ với nhà cung cấp
+    private List<Product> products;
 }

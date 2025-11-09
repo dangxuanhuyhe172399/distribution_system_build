@@ -1,10 +1,8 @@
 package com.sep490.bads.distributionsystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 
 @Entity
 @Getter
@@ -15,13 +13,12 @@ import java.util.List;
 public class SupplierCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "supplier_category_id")
     private Long id;
 
     @Column(name = "category_name", length = 100, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "category")
-    @JsonIgnore
-    private List<Supplier> suppliers;
+    @Column(name = "description", length = 255)
+    private String description;
 }

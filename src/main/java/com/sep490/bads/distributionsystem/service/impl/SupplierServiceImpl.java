@@ -1,143 +1,147 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
 import com.sep490.bads.distributionsystem.dto.*;
-import com.sep490.bads.distributionsystem.entity.*;
+import com.sep490.bads.distributionsystem.entity.Supplier;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import com.sep490.bads.distributionsystem.mapper.SupplierMapper;
 import com.sep490.bads.distributionsystem.repository.SupplierCategoryRepository;
 import com.sep490.bads.distributionsystem.repository.SupplierRepository;
 import com.sep490.bads.distributionsystem.service.SupplierService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import jakarta.persistence.criteria.Predicate;
-import java.util.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-@RequiredArgsConstructor
-@Transactional
 @Log4j2
 public class SupplierServiceImpl implements SupplierService {
 
-    private final SupplierRepository supplierRepository;
-    private final SupplierCategoryRepository supplierCategoryRepository;
-    private final SupplierMapper supplierMapper;
+    private  SupplierRepository supplierRepository;
+    private  SupplierCategoryRepository categoryRepository;
+
+    private  SupplierMapper mapper;
 
     @Override
     public Page<SupplierDto> getAllSuppliers(Pageable pageable) {
-        return supplierRepository.findAllActive(pageable).map(supplierMapper::toDto);
+        return null;
     }
 
     @Override
-    public SupplierDto getSupplierById(Long id) {
-        Supplier s = supplierRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp ID=" + id));
-        return supplierMapper.toDto(s);
+    public Page<SupplierDto> filter(SupplierFilterDto filterDto) {
+        Pageable pageable = PageRequest.of(filterDto.getPage(), filterDto.getSize());
+        return supplierRepository.findAll(SupplierRepository.specFrom(filterDto), pageable)
+                .map(mapper::toDto);
     }
 
     @Override
-    public SupplierDto createSupplier(SupplierCreateDto dto) {
-        if (supplierRepository.existsByEmail(dto.getEmail()))
-            throw new RuntimeException("Email đã tồn tại: " + dto.getEmail());
-        if (supplierRepository.existsByPhone(dto.getPhone()))
-            throw new RuntimeException("Số điện thoại đã tồn tại: " + dto.getPhone());
-
-        Supplier entity = new Supplier();
-        entity.setName(dto.getName());
-        entity.setAddress(dto.getAddress());
-        entity.setEmail(dto.getEmail());
-        entity.setPhone(dto.getPhone());
-        entity.setTaxCode(dto.getTaxCode());
-        entity.setStatus(CommonStatus.ACTIVE);
-
-        if (dto.getCategoryId() != null) {
-            SupplierCategory category = supplierCategoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục nhà cung cấp ID=" + dto.getCategoryId()));
-            entity.setCategory(category);
-        }
-
-        Supplier saved = supplierRepository.save(entity);
-        log.info("Đã tạo nhà cung cấp mới: {}", saved.getName());
-        return supplierMapper.toDto(saved);
+    public SupplierDto create(SupplierCreateDto dto) {
+        var category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Loại nhà cung cấp không tồn tại"));
+        Supplier supplier = Supplier.builder()
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .phone(dto.getPhone())
+                .address(dto.getAddress())
+                .taxCode(dto.getTaxCode())
+                .category(category)
+                .status(CommonStatus.ACTIVE)
+                .build();
+        return mapper.toDto(supplierRepository.save(supplier));
     }
 
     @Override
-    public SupplierDto updateSupplier(Long id, SupplierDto dto) {
-        Supplier existing = supplierRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp ID=" + id));
-
-        existing.setName(dto.getName());
-        existing.setAddress(dto.getAddress());
-        existing.setEmail(dto.getEmail());
-        existing.setPhone(dto.getPhone());
-        existing.setTaxCode(dto.getTaxCode());
-        existing.setStatus(dto.getStatus());
-
-        if (dto.getCategoryId() != null) {
-            SupplierCategory category = supplierCategoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục nhà cung cấp ID=" + dto.getCategoryId()));
-            existing.setCategory(category);
-        }
-
-        Supplier updated = supplierRepository.save(existing);
-        log.info("Đã cập nhật nhà cung cấp ID={}", id);
-        return supplierMapper.toDto(updated);
+    public SupplierDto update(Long id, SupplierUpdateDto dto) {
+        var supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp"));
+        if (dto.getName() != null) supplier.setName(dto.getName());
+        if (dto.getEmail() != null) supplier.setEmail(dto.getEmail());
+        if (dto.getPhone() != null) supplier.setPhone(dto.getPhone());
+        if (dto.getAddress() != null) supplier.setAddress(dto.getAddress());
+        if (dto.getTaxCode() != null) supplier.setTaxCode(dto.getTaxCode());
+        if (dto.getCategoryId() != null)
+            supplier.setCategory(categoryRepository.findById(dto.getCategoryId()).orElse(null));
+        if (dto.getStatus() != null) supplier.setStatus(dto.getStatus());
+        return mapper.toDto(supplierRepository.save(supplier));
     }
 
     @Override
-    public void softDeleteSupplier(Long id) {
-        Supplier s = supplierRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp ID=" + id));
-
-        s.setStatus(CommonStatus.INACTIVE);
-        supplierRepository.save(s);
-        log.info("Đã ẩn (soft delete) nhà cung cấp ID={}", id);
+    public SupplierDto delete(Long id) {
+        var supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp"));
+        supplier.setStatus(CommonStatus.INACTIVE);
+        return mapper.toDto(supplierRepository.save(supplier));
     }
 
-    @Override
-    public Page<SupplierDto> filterSuppliers(SupplierFilterDto f) {
-        Pageable pageable = PageRequest.of(f.getPage(), f.getSize(),
-                Sort.by("DESC".equalsIgnoreCase(f.getDirection()) ? Sort.Direction.DESC : Sort.Direction.ASC,
-                        f.getSortBy()));
-
-        Specification<Supplier> spec = (root, query, cb) -> {
-            List<Predicate> ps = new ArrayList<>();
-
-            if (f.getKeyword() != null && !f.getKeyword().isBlank()) {
-                String like = "%" + f.getKeyword().trim().toLowerCase() + "%";
-                ps.add(cb.or(
-                        cb.like(cb.lower(root.get("name")), like),
-                        cb.like(cb.lower(root.get("email")), like)
-                ));
-            }
-
-            if (f.getCategoryId() != null)
-                ps.add(cb.equal(root.get("category").get("id"), f.getCategoryId()));
-
-            if (f.getStatus() != null)
-                ps.add(cb.equal(root.get("status"), f.getStatus()));
-
-            return cb.and(ps.toArray(new Predicate[0]));
-        };
-
-        return supplierRepository.findAll(spec, pageable).map(supplierMapper::toDto);
-    }
     @Override
     public SupplierDto recover(Long id) {
-        Supplier supplier = supplierRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp ID=" + id));
-
-        if (supplier.getStatus() == CommonStatus.ACTIVE) {
-            throw new RuntimeException("Nhà cung cấp này đã ở trạng thái ACTIVE rồi");
-        }
-
+        var supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp"));
         supplier.setStatus(CommonStatus.ACTIVE);
-        Supplier recovered = supplierRepository.save(supplier);
-        log.info("Đã khôi phục nhà cung cấp ID={}", id);
-
-        return supplierMapper.toDto(recovered);
+        return mapper.toDto(supplierRepository.save(supplier));
     }
 
+    @Override
+    public SupplierDto  getDetailById(Long id) {
+        var supplier = supplierRepository.findByIdFetchCategory(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp"));
+        return SupplierDto.builder()
+                .id(supplier.getId())
+                .name(supplier.getName())
+                .email(supplier.getEmail())
+                .phone(supplier.getPhone())
+                .address(supplier.getAddress())
+                .taxCode(supplier.getTaxCode())
+                .categoryName(supplier.getCategory().getName())
+                .status(supplier.getStatus())
+                .build();
+    }
+
+
+    @Override
+    public Object getTransactions(Long id, int page, int size) {
+        // TODO: implement logic when PurchaseOrder module available
+        return List.of();
+    }
+
+    @Override
+    public SupplierStatisticsDto getStatistics(Long id) {
+        // TODO: implement when PurchaseOrder/Payment module available
+        return SupplierStatisticsDto.builder()
+                .totalOrders(0L)
+                .totalDebt(0.0)
+                .totalPaid(0.0)
+                .build();
+    }
+
+    @Override
+    public Resource exportSuppliers(String search, String status) {
+        String csv = "ID,Name,Email,Phone,Status\n" +
+                supplierRepository.findAll().stream()
+                        .map(s -> s.getId() + "," + s.getName() + "," + s.getEmail() + "," + s.getPhone() + "," + s.getStatus())
+                        .collect(Collectors.joining("\n"));
+        return new ByteArrayResource(csv.getBytes());
+    }
+
+//    @Override
+//    public Page<SupplierDto> getSuppliers(int page, int size, String search, String status, String type, String sort) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        var f = SupplierFilterDto.builder()
+//                .keyword(search)
+//                .status(status != null ? CommonStatus.valueOf(status) : null)
+//                .build();
+//        return filter(f);
+//    }
+
+//    @Override
+//    public List<SupplierLookupDto> lookup() {
+//        return supplierRepository.findAllActive()
+//                .stream()
+//                .map(s -> new SupplierLookupDto(s.getId(), s.getName()))
+//                .collect(Collectors.toList());
+//    }
 }
