@@ -1,5 +1,6 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.sep490.bads.distributionsystem.entity.type.ProductStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -52,7 +53,7 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private CommonStatus status;
+    private ProductStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "p_category_id")

@@ -1,8 +1,8 @@
 package com.sep490.bads.distributionsystem.controller;
 
-import com.sep490.bads.distributionsystem.dto.ReturnGoodsDto.ReturnCreateDto;
-import com.sep490.bads.distributionsystem.dto.ReturnGoodsDto.ReturnGoodsDetailDto;
-import com.sep490.bads.distributionsystem.dto.ReturnGoodsDto.ReturnInspectDto;
+import com.sep490.bads.distributionsystem.dto.ReturnGoodsDtos.ReturnCreateDto;
+import com.sep490.bads.distributionsystem.dto.ReturnGoodsDtos.ReturnGoodsDetailDto;
+import com.sep490.bads.distributionsystem.dto.ReturnGoodsDtos.ReturnInspectDto;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.ReturnGoodsService;
 import io.swagger.v3.oas.annotations.Operation;

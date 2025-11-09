@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.mapper;
 
-import com.sep490.bads.distributionsystem.dto.customerDto.CustomersDto;
+import com.sep490.bads.distributionsystem.dto.customerDtos.CustomersDto;
 import com.sep490.bads.distributionsystem.entity.Customer;
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;

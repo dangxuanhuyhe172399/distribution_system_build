@@ -1,7 +1,7 @@
 package com.sep490.bads.distributionsystem.service;
 
 
-import com.sep490.bads.distributionsystem.dto.inventoryDto.*;
+import com.sep490.bads.distributionsystem.dto.inventoryDtos.*;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -57,5 +57,13 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 """)
     List<Inventory> findLotsForDetail(@Param("wid") Long wid, @Param("pid") Long pid);
     Page<Inventory> findAll(Specification<Inventory> inventorySpecification, Pageable pageable);
+
+    @Query("""
+         select coalesce(sum(i.quantity),0)
+         from Inventory i
+         where i.product.id = :pid
+         """)
+    Long sumByProductId(@Param("pid") Long productId);
+
 }
 

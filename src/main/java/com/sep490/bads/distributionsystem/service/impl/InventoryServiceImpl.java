@@ -1,7 +1,7 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
 import com.sep490.bads.distributionsystem.service.InventoryService;
-import com.sep490.bads.distributionsystem.dto.inventoryDto.*;
+import com.sep490.bads.distributionsystem.dto.inventoryDtos.*;
 import com.sep490.bads.distributionsystem.entity.*;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import com.sep490.bads.distributionsystem.exception.BadRequestException;

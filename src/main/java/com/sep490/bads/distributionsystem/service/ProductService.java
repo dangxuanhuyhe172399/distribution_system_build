@@ -1,6 +1,9 @@
 package com.sep490.bads.distributionsystem.service;
 
-import com.sep490.bads.distributionsystem.dto.*;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductCreateDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductFilterDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductUpdateDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

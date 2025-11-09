@@ -1,12 +1,12 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.dto.PickGoodsDto.PickGoodsDetailDto;
-import com.sep490.bads.distributionsystem.dto.PickGoodsDto.PickGoodsHeaderDto;
-import com.sep490.bads.distributionsystem.dto.PickGoodsDto.PickGoodsLineDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseCreateDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseFilterDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseUpdateDto;
+import com.sep490.bads.distributionsystem.dto.PickGoodsDtos.PickGoodsDetailDto;
+import com.sep490.bads.distributionsystem.dto.PickGoodsDtos.PickGoodsHeaderDto;
+import com.sep490.bads.distributionsystem.dto.PickGoodsDtos.PickGoodsLineDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.WarehouseCreateDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.WarehouseDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.WarehouseFilterDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.WarehouseUpdateDto;
 import com.sep490.bads.distributionsystem.entity.User;
 import com.sep490.bads.distributionsystem.entity.Warehouse;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;

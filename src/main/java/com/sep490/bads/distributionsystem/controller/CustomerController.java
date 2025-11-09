@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.controller;
 
-import com.sep490.bads.distributionsystem.dto.customerDto.*;
+import com.sep490.bads.distributionsystem.dto.customerDtos.*;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;

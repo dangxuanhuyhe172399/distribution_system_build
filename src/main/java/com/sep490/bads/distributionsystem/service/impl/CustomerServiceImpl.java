@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.dto.customerDto.*;
+import com.sep490.bads.distributionsystem.dto.customerDtos.*;
 import com.sep490.bads.distributionsystem.entity.*;
 import com.sep490.bads.distributionsystem.entity.type.CustomerStatus;
 import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;

@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.service;
 
-import com.sep490.bads.distributionsystem.dto.customerDto.*;
+import com.sep490.bads.distributionsystem.dto.customerDtos.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

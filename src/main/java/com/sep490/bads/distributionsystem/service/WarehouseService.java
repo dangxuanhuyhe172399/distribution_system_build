@@ -1,10 +1,10 @@
 package com.sep490.bads.distributionsystem.service;
 
-import com.sep490.bads.distributionsystem.dto.PickGoodsDto.PickGoodsDetailDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseCreateDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseFilterDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseUpdateDto;
+import com.sep490.bads.distributionsystem.dto.PickGoodsDtos.PickGoodsDetailDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.WarehouseCreateDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.WarehouseDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.WarehouseFilterDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.WarehouseUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

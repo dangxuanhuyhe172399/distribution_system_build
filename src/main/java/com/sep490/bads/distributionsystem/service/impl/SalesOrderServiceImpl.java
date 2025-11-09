@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.dto.salesOrderDto.*;
+import com.sep490.bads.distributionsystem.dto.salesOrderDtos.*;
 import com.sep490.bads.distributionsystem.entity.*;
 import com.sep490.bads.distributionsystem.entity.type.OverallProgress;
 import com.sep490.bads.distributionsystem.entity.type.ReviewStatus;

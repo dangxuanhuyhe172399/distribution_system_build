@@ -1,7 +1,7 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.dto.stockDto.CreateIssueDto;
-import com.sep490.bads.distributionsystem.dto.stockDto.CreateReceiptDto;
+import com.sep490.bads.distributionsystem.dto.stockDtos.CreateIssueDto;
+import com.sep490.bads.distributionsystem.dto.stockDtos.CreateReceiptDto;
 import com.sep490.bads.distributionsystem.entity.*;
 import com.sep490.bads.distributionsystem.entity.type.StockNoteStatus;
 import com.sep490.bads.distributionsystem.exception.BadRequestException;

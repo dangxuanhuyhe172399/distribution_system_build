@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.service;
 
-import com.sep490.bads.distributionsystem.dto.ReturnGoodsDto.*;
+import com.sep490.bads.distributionsystem.dto.ReturnGoodsDtos.*;
 import com.sep490.bads.distributionsystem.entity.*;
 
 public interface ReturnGoodsService {

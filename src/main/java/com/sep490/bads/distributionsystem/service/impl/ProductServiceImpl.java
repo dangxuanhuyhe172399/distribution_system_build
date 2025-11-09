@@ -1,10 +1,17 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.dto.*;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductCreateDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductFilterDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductUpdateDto;
 import com.sep490.bads.distributionsystem.entity.Product;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.ProductStatus;
 import com.sep490.bads.distributionsystem.mapper.ProductMapper;
+import com.sep490.bads.distributionsystem.repository.InventoryRepository;
+import com.sep490.bads.distributionsystem.repository.ProductCategoryRepository;
 import com.sep490.bads.distributionsystem.repository.ProductRepository;
+import com.sep490.bads.distributionsystem.repository.UnitRepository;
 import com.sep490.bads.distributionsystem.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +27,9 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepo;
+    private final ProductCategoryRepository categoryRepo;
+    private final UnitRepository unitRepo;
+    private final InventoryRepository inventoryRepo;
     private final ProductMapper productMapper;
 
     @Override
@@ -36,21 +46,25 @@ public class ProductServiceImpl implements ProductService {
         p.setSellingPrice(dto.getSellingPrice());
         p.setMinStock(dto.getMinStock());
         p.setMaxStock(dto.getMaxStock());
-        p.setStatus(CommonStatus.ACTIVE);
+        p.setStatus(ProductStatus.ACTIVE);
 
-        Product saved = productRepo.save(p);
-        productRepo.updateRelations(saved.getId(), dto.getCategoryId(), dto.getUnitId());
+        p.setCategory(categoryRepo.getReferenceById(dto.getCategoryId()));
+        p.setUnit(unitRepo.getReferenceById(dto.getUnitId()));
 
-        Product reloaded = productRepo.findById(saved.getId())
-                .orElseThrow(() -> new IllegalStateException("Không tải lại được sản phẩm"));
-        return productMapper.toDto(reloaded);
+        productRepo.save(p);
+
+        ProductDto out = productMapper.toDto(p);
+        out.setStockQuantity(inventoryRepo.sumByProductId(p.getId())); // tồn hiện tại
+        return out;
     }
 
     @Override
     public ProductDto getProductById(Long id) {
         Product p = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
-        return productMapper.toDto(p);
+        ProductDto out = productMapper.toDto(p);
+        out.setStockQuantity(inventoryRepo.sumByProductId(id));
+        return out;
     }
 
     @Override
@@ -64,36 +78,30 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("SKU đã tồn tại: " + dto.getSku());
         }
 
-        if (dto.getSku()!=null)         p.setSku(dto.getSku());
-        if (dto.getName()!=null)        p.setName(dto.getName());
-        if (dto.getCostPrice()!=null)   p.setCostPrice(dto.getCostPrice());
-        if (dto.getSellingPrice()!=null)p.setSellingPrice(dto.getSellingPrice());
-        if (dto.getStatus()!=null)      p.setStatus(dto.getStatus());
-        if (dto.getMinStock()!=null) p.setMinStock(dto.getMinStock());
-        if (dto.getMaxStock()!=null) p.setMaxStock(dto.getMaxStock());
+        if (dto.getSku()!=null)          p.setSku(dto.getSku());
+        if (dto.getName()!=null)         p.setName(dto.getName());
+        if (dto.getCostPrice()!=null)    p.setCostPrice(dto.getCostPrice());
+        if (dto.getSellingPrice()!=null) p.setSellingPrice(dto.getSellingPrice());
+        if (dto.getMinStock()!=null)     p.setMinStock(dto.getMinStock());
+        if (dto.getMaxStock()!=null)     p.setMaxStock(dto.getMaxStock());
+        if (dto.getStatus()!=null)       p.setStatus(dto.getStatus());
 
-        if (dto.getCategoryId()!=null || dto.getUnitId()!=null) {
-            Long catId  = dto.getCategoryId()!=null ? dto.getCategoryId()
-                    : (p.getCategory()!=null ? p.getCategory().getId() : null);
-            Long unitId = dto.getUnitId()!=null ? dto.getUnitId()
-                    : (p.getUnit()!=null ? p.getUnit().getId() : null);
-            productRepo.updateRelations(p.getId(), catId, unitId);
-        }
+        if (dto.getCategoryId()!=null) p.setCategory(categoryRepo.getReferenceById(dto.getCategoryId()));
+        if (dto.getUnitId()!=null)     p.setUnit(unitRepo.getReferenceById(dto.getUnitId()));
 
-        Product updated = productRepo.save(p);
-        return productMapper.toDto(updated);
+        ProductDto out = productMapper.toDto(p);
+        out.setStockQuantity(inventoryRepo.sumByProductId(p.getId()));
+        return out;
     }
 
     @Override
+    @Transactional
     public void softDeleteProduct(Long id) {
         Product p = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm: "));
 
-        // Chuyển trạng thái về INACTIVE
-        p.setStatus(CommonStatus.INACTIVE);
+        p.setStatus(ProductStatus.INACTIVE);
         productRepo.save(p);
-
-        log.info("Đã ẩn sản phẩm ID={} (soft delete)", id);
     }
 
     @Override
@@ -101,11 +109,11 @@ public class ProductServiceImpl implements ProductService {
         Product p = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
 
-        if (p.getStatus() == CommonStatus.ACTIVE) {
+        if (p.getStatus() == ProductStatus.ACTIVE) {
             throw new RuntimeException("Sản phẩm này đã đang ở trạng thái ACTIVE");
         }
 
-        p.setStatus(CommonStatus.ACTIVE);
+        p.setStatus(ProductStatus.ACTIVE);
         productRepo.save(p);
 
         return productMapper.toDto(p);
