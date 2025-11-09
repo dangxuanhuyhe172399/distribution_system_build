@@ -21,7 +21,6 @@ import java.io.OutputStream;
 
 @Component
 @Log4j2
-@Configuration
 public class AuthedEntryPoint implements AuthenticationEntryPoint, AccessDeniedHandler {
 
     @Override

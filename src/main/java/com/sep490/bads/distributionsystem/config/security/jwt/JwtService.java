@@ -1,130 +1,115 @@
 package com.sep490.bads.distributionsystem.config.security.jwt;
 
-//import com.sep490.bads.distributionsystem.utils.TokenInfo;
-//import com.sep490.bads.distributionsystem.utils.RemoteCache;
-
 import io.jsonwebtoken.*;
-        import io.jsonwebtoken.security.Keys;
-import lombok.extern.log4j.Log4j2;
-        import org.springframework.beans.factory.annotation.Value;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
-        import java.util.function.Function;
 
+@Slf4j
 @Component
-@Log4j2
 public class JwtService {
-    @Value(value = "${jwt.secret}")
-    private String secret;
 
-    @Value(value = "${jwt.expire-time}")
-    private Long expireTime;
+    @Value("${jwt.secret}")
+    private String secret;                         // >= 32 bytes
 
-    @Value(value = "${jwt.expire-time-refreshToken}")
-    private Integer jwtRefreshExpirationMs;
+    @Value("${jwt.expire-time:86400}")            // giây
+    private long expireSeconds;
 
-//    @Autowired
-//    private CacheKey cacheKey;
+    private SecretKey key;
+    private JwtParser jwtParser;
 
-    public String generateToken(TokenInfo tokenInfo) {
-        Map<String, Object> claims = Map.of(
-                "userId", tokenInfo.getUserId(),
-                "role", tokenInfo.getRole()
-        );
-        return createToken(claims, String.valueOf(tokenInfo.getUserId()));
+    @PostConstruct
+    void init() {
+        String s = normalize(secret);
+        byte[] keyBytes = tryDecodeSmart(s);
+        if (keyBytes == null) {
+            keyBytes = s.getBytes(StandardCharsets.UTF_8);
+        }
+        if (keyBytes.length < 32) {
+            throw new IllegalArgumentException("JWT secret too short (<32 bytes).");
+        }
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.jwtParser = Jwts.parserBuilder().setSigningKey(key).build();
     }
 
-    private String createToken(Map<String, Object> claims, String id) {
+    /** subject = userId (String) để UserSecurityService parse số. */
+    public String generateToken(TokenInfo info) {
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + expireSeconds * 1000);
+
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(id)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expireTime * 1000))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .setSubject(String.valueOf(info.getUserId()))
+                .claim("username", info.getUsername())
+                .claim("role", info.getRole())
+                .setIssuedAt(now)
+                .setExpiration(exp)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    private Key getSignKey() {
-        String s = secret.trim().replace("\"", "");
-        byte[] keyBytes;
-        if (s.matches("^[A-Za-z0-9_-]+$")) {               // base64url
-            keyBytes = io.jsonwebtoken.io.Decoders.BASE64URL.decode(s);
-        } else if (s.matches("^[A-Za-z0-9+/=\\r\\n]+$")) { // base64 chuẩn
-            // thêm padding nếu thiếu
-            int m = s.length() % 4;
-            if (m != 0) s = s + "====".substring(m);
-            keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(s);
-        } else {                                           // plaintext
-            keyBytes = s.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        }
-        if (keyBytes.length < 32) throw new IllegalArgumentException("JWT secret too short");
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-
-//    public void saveTokenWithExpireTime(String token, String userId) {
-//        String hashToken = Helper.md5Token(token);
-//
-//        String sessionKey = cacheKey.genSessionKey(hashToken);
-//        remoteCache.set(sessionKey, hashToken, jwtRefreshExpirationMs);
-//
-//        String accountSessionKey = cacheKey.genAccountSessionKey(userId);
-//
-//        String existingToken = remoteCache.get(accountSessionKey);
-//        if (existingToken != null) {
-//            remoteCache.del(cacheKey.genSessionKey(existingToken));
-//        }
-//        remoteCache.set(accountSessionKey, hashToken, jwtRefreshExpirationMs);
-//    }
-
-//    public String generateRefreshToken(LoginDto loginDTO) throws RuntimeException {
-//        UUID uuid = UUID.randomUUID();
-//        String hashToken = Helper.md5Token(loginDTO.getUsername() + uuid);
-//        String sessionKey = cacheKey.genSessionKey(hashToken);
-//        remoteCache.set(sessionKey, JsonParser.toJson(loginDTO), jwtRefreshExpirationMs);
-//        return hashToken;
-//    }
-
-    public boolean validateToken(String authToken) {
+    public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(getSignKey()).parseClaimsJws(authToken);
+            jwtParser.parseClaimsJws(stripBearer(token));
             return true;
-        } catch (MalformedJwtException ex) {
-            log.debug("Invalid JWT token");
-        } catch (ExpiredJwtException ex) {
-            log.debug("Expired JWT token");
-        } catch (UnsupportedJwtException ex) {
-            log.debug("Unsupported JWT token");
-        } catch (IllegalArgumentException ex) {
-            log.debug("JWT claims string is empty.");
+        } catch (JwtException | IllegalArgumentException e) {
+            log.debug("Invalid JWT: {}", e.getMessage());
+            return false;
         }
-        return false;
     }
 
-    public Long getExpireTime() {
-        return expireTime;
-    }
-
+    /** Lấy subject; fallback uid/username nếu cần. */
     public String extractSubject(String token) {
-        return extractClaim(token, Claims::getSubject);
+        Claims c = jwtParser.parseClaimsJws(stripBearer(token)).getBody();
+        String sub = c.getSubject();
+        if (sub != null && !sub.isBlank()) return sub;
+
+        Object uid = c.get("uid");
+        if (uid != null) return String.valueOf(uid);
+
+        Object uname = c.get("username");
+        return (uname != null) ? String.valueOf(uname) : null;
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+    public long getExpireTime() { return expireSeconds; }
+    public Key getSigningKey() { return this.key; }
+
+    // ===== helpers =====
+    private static String stripBearer(String token) {
+        if (token == null) return null;
+        return token.startsWith("Bearer ") ? token.substring(7) : token;
     }
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parser()
-                .setSigningKey(getSignKey())
-                .parseClaimsJws(token)
-                .getBody();
+
+    private static String normalize(String s) {
+        s = s.trim();
+        if ((s.startsWith("\"") && s.endsWith("\"")) || (s.startsWith("'") && s.endsWith("'"))) {
+            s = s.substring(1, s.length() - 1);
+        }
+        return s.replaceAll("\\s", "");
     }
-    public String extractId(String token) {
-        final Claims claims = extractAllClaims(token);
-        return claims.get("userId", String.class);
+
+    private static byte[] tryDecodeSmart(String s) {
+        boolean looksUrl = s.indexOf('-') >= 0 || s.indexOf('_') >= 0;
+        String candidate = looksUrl ? s.replace('-', '+').replace('_', '/') : s;
+        int pad = (4 - (candidate.length() % 4)) % 4;
+        candidate = candidate + "=".repeat(pad);
+        try {
+            return Base64.getDecoder().decode(candidate);
+        } catch (IllegalArgumentException e1) {
+            try {
+                String noPad = s.replace("=", "");
+                return Base64.getUrlDecoder().decode(noPad);
+            } catch (IllegalArgumentException e2) {
+                return null;
+            }
+        }
     }
 }

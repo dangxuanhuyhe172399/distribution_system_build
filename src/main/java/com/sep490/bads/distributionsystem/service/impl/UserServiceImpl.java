@@ -102,6 +102,9 @@ public class UserServiceImpl implements UserService {
     public User findByIdWithRole(Long id) {
         return userRepository.findByIdFetchRole(id).orElse(null);
     }
+    public User findByUsernameWithRole(String name) {
+        return userRepository.findByNameFetchRole(name).orElse(null);
+    }
 
     private UserDto toDtoWithRole(User u) {
         var dto = userMapper.toDto(u);
@@ -268,8 +271,6 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
-
-
 
     public static Specification<User> buildUserSpecification(Long id) {
         return (root, query, cb) -> {

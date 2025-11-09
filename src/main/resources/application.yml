@@ -73,9 +73,9 @@ mail:
 
 #app:
 jwt:
-  secret: ${JWT_SECRET}                 # base64
-  expire-time: ${JWT_EXPIRE_TIME:86400} # GIÂY
-  expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
+  secret: ${JWT_SECRET}
+  expire-time: ${JWT_EXPIRE_TIME:86400}
+#  expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
 
 springdoc:
   api-docs:
@@ -103,6 +103,8 @@ logging:
     com.sep490.bads: debug
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
+    org.springframework.boot.context.config: TRACE
+    org.springframework.boot.env: TRACE
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
 
