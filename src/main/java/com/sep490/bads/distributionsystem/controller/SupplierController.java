@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -70,17 +72,21 @@ public class SupplierController {
         return ResultResponse.success(supplierService.getTransactions(id, page, size));
     }
 
-    @Operation(summary = "Lấy thống kê của nhà cung cấp")
+    @Operation(summary = "Lấy thống kê số liệu của nhà cung cấp")
     @GetMapping("/{id}/statistics")
     public ResultResponse<SupplierStatisticsDto> getStatistics(@PathVariable Long id) {
         return ResultResponse.success(supplierService.getStatistics(id));
     }
 
-    @Operation(summary = "Xuất file danh sách nhà cung cấp")
+    @Operation(summary = "Xuất file danh sách nhà cung cấp (theo status định dạng CSV)")
     @GetMapping("/export")
-    public ResponseEntity<Resource> export(@RequestParam(required = false) String search,
-                                           @RequestParam(required = false) String status) {
-        return ResponseEntity.ok(supplierService.exportSuppliers(search, status));
+    public ResponseEntity<Resource> exportSuppliers(@RequestParam(required = false) String search,
+                                                    @RequestParam(required = false) String status) {
+        Resource file = supplierService.exportSuppliers(search, status);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"suppliers.csv\"")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(file);
     }
 //    @Operation(summary = "Lấy danh sách rút gọn (id, name)")
 //    @GetMapping("/lookup")

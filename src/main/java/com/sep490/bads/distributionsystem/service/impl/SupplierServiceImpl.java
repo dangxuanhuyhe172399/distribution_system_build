@@ -2,13 +2,17 @@ package com.sep490.bads.distributionsystem.service.impl;
 
 import com.sep490.bads.distributionsystem.dto.*;
 import com.sep490.bads.distributionsystem.entity.Supplier;
+import com.sep490.bads.distributionsystem.entity.User;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import com.sep490.bads.distributionsystem.mapper.SupplierMapper;
 import com.sep490.bads.distributionsystem.repository.SupplierCategoryRepository;
 import com.sep490.bads.distributionsystem.repository.SupplierRepository;
+import com.sep490.bads.distributionsystem.service.CurrentUserDetailsService;
 import com.sep490.bads.distributionsystem.service.SupplierService;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.*;
@@ -18,14 +22,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Log4j2
 public class SupplierServiceImpl implements SupplierService {
 
-    private  SupplierRepository supplierRepository;
-    private  SupplierCategoryRepository categoryRepository;
+    private final SupplierRepository supplierRepository;
+    private final SupplierCategoryRepository categoryRepository;
+    private final SupplierMapper supplierMapper;
 
-    private  SupplierMapper mapper;
-
+    private final CurrentUserDetailsService currentUserDetailsService;
     @Override
     public Page<SupplierDto> getAllSuppliers(Pageable pageable) {
         return null;
@@ -35,13 +40,15 @@ public class SupplierServiceImpl implements SupplierService {
     public Page<SupplierDto> filter(SupplierFilterDto filterDto) {
         Pageable pageable = PageRequest.of(filterDto.getPage(), filterDto.getSize());
         return supplierRepository.findAll(SupplierRepository.specFrom(filterDto), pageable)
-                .map(mapper::toDto);
+                .map(supplierMapper::toDto);
     }
 
     @Override
+    @Transactional
     public SupplierDto create(SupplierCreateDto dto) {
         var category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Loại nhà cung cấp không tồn tại"));
+        User currentUser = currentUserDetailsService.getCurrentUser();
         Supplier supplier = Supplier.builder()
                 .name(dto.getName())
                 .email(dto.getEmail())
@@ -50,8 +57,9 @@ public class SupplierServiceImpl implements SupplierService {
                 .taxCode(dto.getTaxCode())
                 .category(category)
                 .status(CommonStatus.ACTIVE)
+                .createdBy(currentUser)
                 .build();
-        return mapper.toDto(supplierRepository.save(supplier));
+        return supplierMapper.toDto(supplierRepository.save(supplier));
     }
 
     @Override
@@ -66,7 +74,7 @@ public class SupplierServiceImpl implements SupplierService {
         if (dto.getCategoryId() != null)
             supplier.setCategory(categoryRepository.findById(dto.getCategoryId()).orElse(null));
         if (dto.getStatus() != null) supplier.setStatus(dto.getStatus());
-        return mapper.toDto(supplierRepository.save(supplier));
+        return supplierMapper.toDto(supplierRepository.save(supplier));
     }
 
     @Override
@@ -74,7 +82,7 @@ public class SupplierServiceImpl implements SupplierService {
         var supplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp"));
         supplier.setStatus(CommonStatus.INACTIVE);
-        return mapper.toDto(supplierRepository.save(supplier));
+        return supplierMapper.toDto(supplierRepository.save(supplier));
     }
 
     @Override
@@ -82,7 +90,7 @@ public class SupplierServiceImpl implements SupplierService {
         var supplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp"));
         supplier.setStatus(CommonStatus.ACTIVE);
-        return mapper.toDto(supplierRepository.save(supplier));
+        return supplierMapper.toDto(supplierRepository.save(supplier));
     }
 
     @Override
@@ -113,8 +121,8 @@ public class SupplierServiceImpl implements SupplierService {
         // TODO: implement when PurchaseOrder/Payment module available
         return SupplierStatisticsDto.builder()
                 .totalOrders(0L)
-                .totalDebt(0.0)
-                .totalPaid(0.0)
+                .totalDebt(0L)
+                .totalPaid(0L)
                 .build();
     }
 
