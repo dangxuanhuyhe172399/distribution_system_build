@@ -2,7 +2,10 @@ package com.sep490.bads.distributionsystem.entity;
 
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -33,9 +36,6 @@ public class Invoice extends BaseEntity {
 
     @Column(name = "grand_total", precision = 18, scale = 2)
     private BigDecimal grandTotal;
-
-    @Column(name = "tax_code", length = 50)
-    private String taxCode;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
