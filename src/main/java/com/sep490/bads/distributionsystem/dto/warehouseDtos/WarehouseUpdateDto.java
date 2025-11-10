@@ -1,0 +1,23 @@
+package com.sep490.bads.distributionsystem.dto.warehouseDtos;
+
+import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class WarehouseUpdateDto {
+    @Size(max=20)  private String code;
+    @Size(max=100) private String name;
+    @Size(max=255) private String address;
+    @Size(max=20)  private String phone;
+    @Email @Size(max=100) private String email;
+    private Boolean isActive;
+    private CommonStatus status;
+    private Long managerId;
+}

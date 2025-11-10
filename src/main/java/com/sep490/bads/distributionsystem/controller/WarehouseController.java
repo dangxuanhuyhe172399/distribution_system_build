@@ -1,9 +1,7 @@
 package com.sep490.bads.distributionsystem.controller;
 
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseCreateDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseFilterDto;
-import com.sep490.bads.distributionsystem.dto.warehouseDto.WarehouseUpdateDto;
+import com.sep490.bads.distributionsystem.dto.PickGoodsDtos.PickGoodsDetailDto;
+import com.sep490.bads.distributionsystem.dto.warehouseDtos.*;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.WarehouseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,4 +66,11 @@ public class WarehouseController extends BaseController {
         service.deactivate(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary="Chi tiết lấy hàng theo đơn bán")
+    @GetMapping("/orders/{orderId}")
+    public ResultResponse<PickGoodsDetailDto> get(@PathVariable Long orderId){
+        return ResultResponse.success(service.getPickDetailByOrder(orderId));
+    }
+
 }
