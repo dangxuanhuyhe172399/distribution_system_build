@@ -1,9 +1,9 @@
 package com.sep490.bads.distributionsystem.controller;
 
-import com.sep490.bads.distributionsystem.dto.ProductCreateDto;
-import com.sep490.bads.distributionsystem.dto.ProductDto;
-import com.sep490.bads.distributionsystem.dto.ProductFilterDto;
-import com.sep490.bads.distributionsystem.dto.ProductUpdateDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductCreateDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductFilterDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductUpdateDto;
 import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.ProductService;
@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +22,8 @@ import java.util.List;
 @RequestMapping("v1/public/products")
 @Tag(name = "Product", description = "Quản lý sản phẩm")
 @RequiredArgsConstructor
-@Validated
 public class ProductController extends BaseController {
+
     private final ProductService productService;
 
     @Operation(summary = "them san pham")
@@ -59,18 +58,18 @@ public class ProductController extends BaseController {
         return ResultResponse.success(productService.filterProducts(f));
     }
 
-    @Operation(summary = "lay ra t ca san pham")
+    @Operation(summary = "lay ra tat ca san pham")
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProductDto>>> getAllProducts() {
         return ResponseEntity.ok(
                 ApiResponse.success(productService.getAllProducts())
         );
     }
+
     @PutMapping("/{id}/recover")
     public ResultResponse<ProductDto> recover(@PathVariable @Positive Long id) {
         return ResultResponse.success(productService.recoverProduct(id));
     }
-
 
 }
 

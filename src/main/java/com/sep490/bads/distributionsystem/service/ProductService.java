@@ -1,9 +1,9 @@
 package com.sep490.bads.distributionsystem.service;
 
-import com.sep490.bads.distributionsystem.dto.ProductCreateDto;
-import com.sep490.bads.distributionsystem.dto.ProductDto;
-import com.sep490.bads.distributionsystem.dto.ProductFilterDto;
-import com.sep490.bads.distributionsystem.dto.ProductUpdateDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductCreateDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductFilterDto;
+import com.sep490.bads.distributionsystem.dto.productDtos.ProductUpdateDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -22,5 +22,5 @@ public interface ProductService {
 
     Page<ProductDto> filterProducts(ProductFilterDto filterDto);
 
-    public ProductDto recoverProduct(Long id) ;
+     ProductDto recoverProduct(Long id) ;
 }
