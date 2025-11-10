@@ -3,7 +3,9 @@ package com.sep490.bads.distributionsystem.entity.zalo;
 import com.sep490.bads.distributionsystem.entity.BaseEntity;
 import com.sep490.bads.distributionsystem.entity.type.ZaloEventLogStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

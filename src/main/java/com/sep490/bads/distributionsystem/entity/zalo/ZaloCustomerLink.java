@@ -3,7 +3,9 @@ package com.sep490.bads.distributionsystem.entity.zalo;
 import com.sep490.bads.distributionsystem.entity.BaseEntity;
 import com.sep490.bads.distributionsystem.entity.Customer;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
