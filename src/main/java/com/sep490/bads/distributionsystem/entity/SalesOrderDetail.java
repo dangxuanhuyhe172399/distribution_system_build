@@ -1,9 +1,12 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.SaleOrderDetailStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -15,15 +18,15 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class SalesOrderDetail extends BaseEntity {
+public class SalesOrderDetail  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "saleorder_detail_id")
+    @Column(name = "order_detail_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "saleorder_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false)
     @JsonIgnore
     private SalesOrder order;
 
@@ -48,7 +51,7 @@ public class SalesOrderDetail extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private CommonStatus status;
+    private SaleOrderDetailStatus status;
 
     @Column(name = "note", length = 255)
     private String note;

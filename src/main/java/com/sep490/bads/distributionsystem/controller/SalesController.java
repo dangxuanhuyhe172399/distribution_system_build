@@ -1,70 +1,94 @@
 package com.sep490.bads.distributionsystem.controller;
 
-import com.sep490.bads.distributionsystem.dto.SalesOrderCreateDto;
-import com.sep490.bads.distributionsystem.dto.SalesOrderDto;
-import com.sep490.bads.distributionsystem.dto.SalesOrderFilterDto;
-import com.sep490.bads.distributionsystem.dto.SalesOrderUpdateDto;
-import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
-import com.sep490.bads.distributionsystem.entity.SalesOrder;
+import com.sep490.bads.distributionsystem.dto.salesOrderDtos.*;
 import com.sep490.bads.distributionsystem.response.ResultResponse;
 import com.sep490.bads.distributionsystem.service.SalesOrderService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/v1/public/sales")
-@Tag(name = "SaleOrder", description = "SaleOrder management")
+@Tag(name = "SaleOrder", description = "quản lý đơn hàng và đơn hàng nháp")
 @RequiredArgsConstructor
 @Validated
 public class SalesController extends BaseController {
 
-    private final SalesOrderService salesOrderService;
+    private final SalesOrderService service;
 
-    @PostMapping("/createSaleOrder")
-    public ResultResponse<SalesOrderDto> createSaleOrder(@Valid @RequestBody SalesOrderCreateDto body) {
-        return ResultResponse.created(salesOrderService.createOrder(body));
-    }
-
-    @GetMapping("/{id}")
-    public ResultResponse<SalesOrderDto> getSaleOrderById(@PathVariable @Positive Long id) {
-        SalesOrder order = salesOrderService.findById(id);
-        SalesOrderDto dto = new SalesOrderDto();
-        dto.setId(order.getId());
-        dto.setStatus(String.valueOf(order.getStatus()));
-        dto.setPaymentMethod(order.getPaymentMethod());
-        dto.setNote(order.getNote());
-        return ResultResponse.success(dto);
-    }
-
-    @PutMapping("/{id}")
-    public ResultResponse<Object> updateSaleOrder(@PathVariable @Positive Long id,
-                                         @Valid @RequestBody SalesOrderUpdateDto dto) {
-        salesOrderService.updateOrder(id, dto);
-        return ResultResponse.success("Cập nhật đơn hàng thành công");
-    }
-
-    @DeleteMapping("/{id}")
-    public ResultResponse<Object> softDeleteSaleOrder(@PathVariable @Positive Long id) {
-        salesOrderService.softDeleteOrder(id);
-        return ResultResponse.success("Đơn hàng đã được ẩn");
-    }
+    @Operation(summary = "Tim kiem ")
+    @PreAuthorize("hasAnyRole('admin','accountstaff','warehouseStaff')")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<SalesOrderDto>>> getAllSaleOrders() {
-        return ResponseEntity.ok(ApiResponse.success(salesOrderService.getAllOrders()));
-    }
-    @PostMapping("/filter")
-    public ResultResponse<Page<SalesOrderDto>> filterSaleOrders(
-            @Valid @RequestBody SalesOrderFilterDto filter, Pageable pageable) {
-        return ResultResponse.success(salesOrderService.filterOrders(filter, pageable));
+    public ResultResponse<Page<SalesOrderDto>> searchSales(SalesOrderFilterDto filter, Pageable pageable) {
+        return ResultResponse.success(service.search(pageable, filter));
     }
 
+    @Operation(summary = "Xem chi tiêt đơn hang")
+    @PreAuthorize("hasAnyRole('admin','accountstaff','warehouseStaff')")
+    @GetMapping("/{id}")
+    public ResultResponse<SalesOrderDto> getById(@PathVariable Long id) {
+        return ResultResponse.success(service.get(id));
+    }
+
+    @Operation(summary = "tạo đơn hàng  NHÁP")
+    @PreAuthorize("hasAnyRole('admin','accountstaff','warehouseStaff')")
+    @PostMapping("/draft")
+    public ResultResponse<SalesOrderDto> createDraft(@RequestBody @Valid SalesOrderCreateDto dto,
+                                                     @RequestHeader(value = "X-User-Id") Long createdById) {
+        return ResultResponse.success(service.createDraft(dto, createdById));
+    }
+
+    @Operation(summary = "Cập nhật khi NEW/PENDING (full-replace items)")
+    @PreAuthorize("hasAnyRole('admin','accountstaff','warehouseStaff')")
+    @PutMapping("/{id}")
+    public ResultResponse<SalesOrderDto> updateDraft(@PathVariable Long id,
+                                                     @RequestBody @Valid SalesOrderUpdateDto dto) {
+        return ResultResponse.success(service.updateDraft(id, dto));
+    }
+
+    @Operation(summary = " chuyển sang PENDING (gửi khách xác nhận)")
+    @PreAuthorize("hasAnyRole('admin','accountstaff','warehouseStaff')")
+    @PostMapping("/{id}/submit")
+    public ResultResponse<SalesOrderDto> submit(@PathVariable Long id) {
+        return ResultResponse.success(service.submit(id));
+    }
+
+    @Operation(summary = "khách chốt → CONFIRMED + phát sinh mã đơn")
+    @PreAuthorize("hasAnyRole('admin','accountstaff','warehouseStaff')")
+    @PostMapping("/{id}/confirm")
+    public ResultResponse<SalesOrderDto> confirm(@PathVariable Long id) {
+        return ResultResponse.success(service.confirm(id));
+    }
+
+    @Operation(summary = "huỷ đơn")
+    @PreAuthorize("hasAnyRole('admin','accountstaff','warehouseStaff')")
+    @PostMapping("/{id}/cancel")
+    public ResultResponse<Boolean> cancel(@PathVariable Long id, @RequestParam String reason) {
+        service.cancel(id, reason);
+        return ResultResponse.success(Boolean.TRUE);
+    }
+
+    @Operation(summary = "Xem tiến độ xử lý đơn hàng")
+    @PreAuthorize("hasAnyRole('admin','accountstaff','warehouseStaff')")
+    @GetMapping("/{id}/progress")
+    public ResultResponse<OrderProgressDto> getProgress(@PathVariable Long id) {
+        return ResultResponse.success(service.getProgress(id));
+    }
+
+    // chỉ cho kế toán/kho chỉnh:
+    @Operation(summary = "Cập nhật tiến độ xử lý đơn hàng (Kế toán/Kho)")
+    @PreAuthorize("hasAnyRole('accountstaff','warehouseStaff')")
+    @PutMapping("/{id}/progress")
+    public ResultResponse<OrderProgressDto> updateProgress(
+            @PathVariable Long id,
+            @RequestBody @Valid OrderProgressUpdateDto dto,
+            @RequestHeader("X-User-Id") Long userId) {
+        return ResultResponse.success(service.updateProgress(id, dto, userId));
+    }
 }

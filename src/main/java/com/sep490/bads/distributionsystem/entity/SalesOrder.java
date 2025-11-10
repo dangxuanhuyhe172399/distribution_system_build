@@ -1,9 +1,13 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.ReviewStatus;
 import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -20,7 +24,7 @@ public class SalesOrder extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "saleorder_id")
+    @Column(name = "order_id")
     private Long id;
 
     @Column(name = "saleorder_code", length = 50, unique = true)
@@ -55,13 +59,24 @@ public class SalesOrder extends BaseEntity {
     @JsonIgnore
     private List<SalesOrderDetail> orderDetails;
 
-    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "order")
     @JsonIgnore
     private Invoice invoice;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Request> requests;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "finance_status", length = 20)
+    private ReviewStatus financeStatus;     // PENDING / APPROVED
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "warehouse_status", length = 20)
+    private ReviewStatus warehouseStatus;   // PENDING / APPROVED
+
+    @Column(name = "progress_note", length = 500)
+    private String progressNote;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     @JsonIgnore
