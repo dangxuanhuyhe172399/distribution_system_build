@@ -1,6 +1,5 @@
 package com.sep490.bads.distributionsystem.entity;
 
-import com.sep490.bads.distributionsystem.entity.type.DeliveryStatus;
 import com.sep490.bads.distributionsystem.entity.type.InvoiceStatus;
 import jakarta.persistence.*;
 import lombok.*;
