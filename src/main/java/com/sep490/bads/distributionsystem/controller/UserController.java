@@ -91,6 +91,7 @@ public class UserController extends BaseController {
         var me = getUserDetails(authentication);
         return ResultResponse.success(userService.getProfile(me.getUserId()));
     }
+
     @Operation(summary = "Cập nhật hồ sơ (không upload file)")
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateProfile(

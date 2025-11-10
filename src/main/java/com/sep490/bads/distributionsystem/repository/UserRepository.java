@@ -53,6 +53,9 @@ public interface UserRepository  extends JpaRepository<User, Long>, JpaSpecifica
     @Query("select u from User u left join fetch u.role where u.id = :id")
     Optional<User> findByIdFetchRole(@Param("id") Long id);
 
+    @Query("select u from User u left join fetch u.role where u.username = :username")
+    Optional<User> findByNameFetchRole(@Param("username") String username);
+
     @Query("""
         select u from User u
         left join fetch u.role r

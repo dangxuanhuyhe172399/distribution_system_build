@@ -2,7 +2,10 @@ package com.sep490.bads.distributionsystem.dto;
 
 import com.sep490.bads.distributionsystem.entity.type.UserGender;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
