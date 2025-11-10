@@ -7,7 +7,12 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
-@Data @SuperBuilder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@SuperBuilder
 public class ProductUpdateDto {
     @Size(max = 50)  private String sku;
     @Size(max = 100) private String name;

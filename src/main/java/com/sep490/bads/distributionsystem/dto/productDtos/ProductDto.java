@@ -5,6 +5,10 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 public class ProductDto {
     private Long id;

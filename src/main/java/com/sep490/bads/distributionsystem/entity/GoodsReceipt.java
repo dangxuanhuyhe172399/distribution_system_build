@@ -5,6 +5,7 @@ import com.sep490.bads.distributionsystem.entity.type.StockNoteStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,8 +38,9 @@ public class GoodsReceipt extends BaseEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @CreatedBy
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", nullable = false)
+    @JoinColumn(name = "created_by", updatable = false, nullable = false)
     private User createdBy;
 
     @Column(name = "posted_at")

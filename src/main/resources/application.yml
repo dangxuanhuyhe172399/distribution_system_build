@@ -95,6 +95,10 @@ zalo:
   verify: ${ZALO_VERIFY:true}
   signature-mode: ${ZALO_SIGNATURE_MODE:APP_BODY_TS}
   webhook-path: /v1/public/zalo/webhook
+  access-token: ${ZALO_OA_ACCESS_TOKEN:}
+  refresh-token: ${ZALO_OA_REFRESH_TOKEN:}
+  api:
+      ver: 3.0
 
 logging:
   level:

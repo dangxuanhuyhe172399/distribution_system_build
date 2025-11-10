@@ -50,13 +50,10 @@ public class CustomerServiceImpl implements CustomerService {
             if (f.getStatus() != null) {
                 ps.add(cb.equal(root.get("status"), f.getStatus()));
             }
-            if (f.getCustomerTypeId() != null) {
-                var tp = root.join("type", jakarta.persistence.criteria.JoinType.LEFT);
-                ps.add(cb.equal(tp.get("id"), f.getCustomerTypeId()));
-            }
+            var tp = root.join("type", jakarta.persistence.criteria.JoinType.LEFT);
+            if (f.getCustomerTypeId() != null) ps.add(cb.equal(tp.get("id"), f.getCustomerTypeId()));
             if (StringUtils.hasText(f.getQ())) {
                 String kw = "%" + f.getQ().trim().toLowerCase() + "%";
-                var tp = root.join("type", jakarta.persistence.criteria.JoinType.LEFT);
                 ps.add(cb.or(
                         cb.like(cb.lower(root.get("code")), kw),
                         cb.like(cb.lower(root.get("name")), kw),
@@ -229,11 +226,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private BigDecimal resolvePaidAmount(SalesOrder o) {
-        if (o.getInvoice() != null
-                && (o.getStatus() == SaleOderStatus.COMPLETED || o.getStatus() == SaleOderStatus.DELIVERED)) {
-            return o.getInvoice().getGrandTotal() != null ? o.getInvoice().getGrandTotal() : BigDecimal.ZERO;
-        }
-        return BigDecimal.ZERO;
+        return (o.getInvoice() != null && o.getInvoice().getGrandTotal() != null)
+                ? o.getInvoice().getGrandTotal()
+                : BigDecimal.ZERO;
     }
 
     private static BigDecimal nvl(BigDecimal v, BigDecimal def){ return v==null?def:v; }

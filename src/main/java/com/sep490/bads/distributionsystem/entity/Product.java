@@ -1,14 +1,17 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep490.bads.distributionsystem.entity.type.ProductStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.math.BigDecimal;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "Product", schema = "dbo")
@@ -64,7 +67,8 @@ public class Product extends BaseEntity {
     private Unit unit;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
+    @CreatedBy
+    @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
 
     @Column(name = "p_note", length = 255)

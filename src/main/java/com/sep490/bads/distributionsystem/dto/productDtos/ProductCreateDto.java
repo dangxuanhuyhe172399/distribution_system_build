@@ -7,6 +7,10 @@ import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 public class ProductCreateDto {
     @NotBlank @Size(max = 50)  private String sku;

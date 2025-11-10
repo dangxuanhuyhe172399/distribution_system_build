@@ -13,4 +13,7 @@ public class ZaloProperties {
     private boolean verify = true;
     private String signatureMode = "APP_BODY_TS";
     private String webhookPath = "/v1/public/zalo/webhook";
+    private String accessToken;
+    private String refreshToken;
+
 }

@@ -3,12 +3,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep490.bads.distributionsystem.entity.Customer;
 import com.sep490.bads.distributionsystem.entity.CustomerType;
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import com.sep490.bads.distributionsystem.entity.type.CustomerStatus;
 import com.sep490.bads.distributionsystem.entity.type.ZaloEventLogStatus;
 import com.sep490.bads.distributionsystem.entity.zalo.ZaloCustomerLink;
 import com.sep490.bads.distributionsystem.entity.zalo.ZaloEventLog;
 import com.sep490.bads.distributionsystem.repository.CustomerRepository;
+import com.sep490.bads.distributionsystem.repository.CustomerTypeRepository;
 import com.sep490.bads.distributionsystem.repository.zalo.ZaloCustomerLinkRepository;
 import com.sep490.bads.distributionsystem.repository.zalo.ZaloEventLogRepository;
 import com.sep490.bads.distributionsystem.service.InventoryService;
@@ -28,6 +28,7 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
     private final ZaloEventLogRepository eventLogRepo;
     private final ZaloCustomerLinkRepository zaloCustomerLinkRepo;
     private final CustomerRepository customerRepo;
+    private final CustomerTypeRepository customerTypeRepo;
     private final ObjectMapper om = new ObjectMapper();
     private final SalesOrderService salesOrderService;
     private final InventoryService inventoryService;
@@ -73,6 +74,7 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
                      "user_submit_info"  -> onUserShareInfo(root);
                 case "order_created"  -> onOrderCreated(root);
                 case "order_updated"  -> onOrderUpdated(root);
+                case "oa_send_text" -> onTextMessage(root);
                 default               -> log.info("Unhandled event {}", eventName);
             }
 
@@ -90,6 +92,30 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
             log.error("Handle webhook error", ex);
         }
     }
+    private void onTextMessage(JsonNode root) {
+        String uid = root.path("sender").path("id").asText();
+        if (uid == null || uid.isBlank()) uid = root.path("from").path("id").asText();
+        if (uid == null || uid.isBlank()) return;
+
+        String text = root.path("message").path("text").asText(null);
+
+        String finalUid = uid;
+        var link = zaloCustomerLinkRepo.findById(uid).orElseGet(() -> {
+            var l = new ZaloCustomerLink();
+            l.setZaloUserId(finalUid);
+            l.setFollowStatus("unknown");
+            return l;
+        });
+        // Gợi ý: thêm 2 field vào ZaloCustomerLink
+//         link.setLastMessageAt(LocalDateTime.now());
+        // link.setLastMessageText(text);
+
+        zaloCustomerLinkRepo.save(link);
+
+        // (Tùy chọn) nếu link chưa gắn Customer thì gửi tin nhắn kêu share info
+        // sendAskForShareInfo(uid);
+    }
+
 
     //Xử lý khi người dùng nhấn "Quan tâm" OA.
     private void onFollow(JsonNode root) {
@@ -151,7 +177,7 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
             log.info("Phone {} not found, creating new customer", standardizedPhone);
 
             // Tìm loại khách hàng mặc định
-            CustomerType defaultType = customerRepo.findByName(DEFAULT_CUSTOMER_TYPE_NAME)
+            CustomerType defaultType = customerTypeRepo.findByName(DEFAULT_CUSTOMER_TYPE_NAME)
                     .orElse(null);
 
             if (defaultType == null) {

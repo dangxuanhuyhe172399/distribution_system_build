@@ -4,7 +4,12 @@ import com.sep490.bads.distributionsystem.entity.type.ProductStatus;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Data @SuperBuilder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@SuperBuilder
 public class ProductFilterDto {
     private Long categoryId;
     private String keyword;

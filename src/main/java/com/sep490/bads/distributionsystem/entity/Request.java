@@ -6,6 +6,7 @@ import com.sep490.bads.distributionsystem.entity.type.RequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.util.List;
 
@@ -47,8 +48,9 @@ public class Request extends BaseEntity {
     @Column(name = "reason_detail", length = 255)
     private String reasonDetail;
 
+    @CreatedBy
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "created_by", updatable = false, nullable = false)
     private User createdBy;
 
     @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)

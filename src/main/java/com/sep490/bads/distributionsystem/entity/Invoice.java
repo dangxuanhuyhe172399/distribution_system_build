@@ -1,6 +1,7 @@
 package com.sep490.bads.distributionsystem.entity;
 
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.DeliveryStatus;
+import com.sep490.bads.distributionsystem.entity.type.InvoiceStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -15,7 +16,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @SuperBuilder
 public class Invoice extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "invoice_id")
@@ -36,7 +36,15 @@ public class Invoice extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private CommonStatus status;
+    private InvoiceStatus status;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "supplier_id", nullable = false)
+//    private Supplier supplier;
+//
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "delivery_status", length = 20)
+//    private DeliveryStatus deliveryStatus;
 
     @Column(name = "payment_method", length = 50)
     private String paymentMethod;

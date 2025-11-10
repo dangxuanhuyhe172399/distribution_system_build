@@ -6,6 +6,7 @@ import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -48,8 +49,9 @@ public class SalesOrder extends BaseEntity {
     @Column(name = "status", length = 20)
     private SaleOderStatus status;
 
+    @CreatedBy
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", nullable = false)
+    @JoinColumn(name = "created_by", updatable = false, nullable = false)
     private User createdBy;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
