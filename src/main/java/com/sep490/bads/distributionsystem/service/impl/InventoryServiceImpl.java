@@ -1,11 +1,12 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.dto.inventoryDto.*;
+import com.sep490.bads.distributionsystem.dto.inventoryDtos.*;
 import com.sep490.bads.distributionsystem.entity.Inventory;
 import com.sep490.bads.distributionsystem.entity.Product;
 import com.sep490.bads.distributionsystem.entity.Qrcode;
 import com.sep490.bads.distributionsystem.entity.Warehouse;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.ProductStatus;
 import com.sep490.bads.distributionsystem.exception.BadRequestException;
 import com.sep490.bads.distributionsystem.exception.NotFoundException;
 import com.sep490.bads.distributionsystem.repository.*;
@@ -14,7 +15,10 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,7 +129,7 @@ public class InventoryServiceImpl implements InventoryService {
         dto.setNearestExpiry(inv.getExpiryDate());
 
         boolean discontinued =
-                inv.getProduct().getStatus() != CommonStatus.ACTIVE
+                inv.getProduct().getStatus() != ProductStatus.ACTIVE
                         || inv.getWarehouse().getStatus() != CommonStatus.ACTIVE
                         || Boolean.FALSE.equals(inv.getWarehouse().getIsActive());
 

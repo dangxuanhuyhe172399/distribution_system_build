@@ -1,7 +1,10 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -11,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class GoodsIssuesDetail extends BaseEntity {
+public class GoodsIssuesDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -30,8 +30,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Optional<Inventory> lockLot(@Param("warehouseId") Long warehouseId,
                                 @Param("productId") Long productId,
                                 @Param("qrId") Integer qrId,
-                                @Param("mfg") LocalDate mfg,
-                                @Param("exp") LocalDate exp);
+                                @Param("mfg") LocalDate mfg, //manufacture_date
+                                @Param("exp") LocalDate exp); //expiry_date
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
@@ -57,5 +57,13 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 """)
     List<Inventory> findLotsForDetail(@Param("wid") Long wid, @Param("pid") Long pid);
     Page<Inventory> findAll(Specification<Inventory> inventorySpecification, Pageable pageable);
+
+    @Query("""
+         select coalesce(sum(i.quantity),0)
+         from Inventory i
+         where i.product.id = :pid
+         """)
+    Long sumByProductId(@Param("pid") Long productId);
+
 }
 
