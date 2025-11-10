@@ -3,7 +3,10 @@ package com.sep490.bads.distributionsystem.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -41,7 +44,7 @@ public class Supplier extends BaseEntity {
     private String taxCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "s_category_id")
     private SupplierCategory category;
 
     @Enumerated(EnumType.STRING)
