@@ -2,7 +2,10 @@ package com.sep490.bads.distributionsystem.entity;
 
 import com.sep490.bads.distributionsystem.entity.type.InspectionResultStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -12,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class RequestDetail {
+public class RequestDetail extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +27,7 @@ public class RequestDetail {
     private Request request;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "saleorder_detail_id", nullable = false)
+    @JoinColumn(name = "order_detail_id", nullable = false)
     private SalesOrderDetail orderDetail;
 
     @Column(name = "quantity", nullable = false)

@@ -2,7 +2,8 @@ package com.sep490.bads.distributionsystem.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep490.bads.distributionsystem.response.validator.ObjectError;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public class ResultResponse<T> extends ResponseEntity<ResultResponse.BodyData<T>> {
 

@@ -3,7 +3,10 @@ package com.sep490.bads.distributionsystem.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep490.bads.distributionsystem.entity.type.RequestStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -26,7 +29,7 @@ public class Request extends BaseEntity {
     private String requestCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "saleorder_id")
+    @JoinColumn(name = "order_id")
     private SalesOrder order;
 
     @ManyToOne(fetch = FetchType.LAZY)
