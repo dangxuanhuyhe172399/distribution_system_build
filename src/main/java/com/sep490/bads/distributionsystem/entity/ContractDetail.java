@@ -2,7 +2,10 @@ package com.sep490.bads.distributionsystem.entity;
 
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -15,7 +18,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class ContractDetail extends BaseEntity {
+public class ContractDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

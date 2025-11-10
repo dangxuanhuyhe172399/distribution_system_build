@@ -1,10 +1,13 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.CustomerStatus;
 import com.sep490.bads.distributionsystem.entity.zalo.ZaloCustomerLink;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -48,7 +51,7 @@ public class Customer extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private CommonStatus status;
+    private CustomerStatus status;
 
     @Column(name = "district", length = 100)
     private String district;

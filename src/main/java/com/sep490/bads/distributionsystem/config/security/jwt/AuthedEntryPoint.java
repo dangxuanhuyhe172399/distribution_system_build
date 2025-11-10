@@ -8,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -21,7 +20,6 @@ import java.io.OutputStream;
 
 @Component
 @Log4j2
-@Configuration
 public class AuthedEntryPoint implements AuthenticationEntryPoint, AccessDeniedHandler {
 
     @Override
