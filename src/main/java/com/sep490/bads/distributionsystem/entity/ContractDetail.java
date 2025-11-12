@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class ContractDetail extends BaseEntity {
+public class ContractDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

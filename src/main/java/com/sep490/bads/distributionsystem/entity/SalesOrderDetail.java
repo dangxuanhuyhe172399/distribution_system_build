@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class SalesOrderDetail extends BaseEntity {
+public class SalesOrderDetail  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

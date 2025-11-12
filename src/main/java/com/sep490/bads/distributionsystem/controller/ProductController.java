@@ -58,7 +58,7 @@ public class ProductController extends BaseController {
         return ResultResponse.success(productService.filterProducts(f));
     }
 
-    @Operation(summary = "lay ra t ca san pham")
+    @Operation(summary = "lay ra tat ca san pham")
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProductDto>>> getAllProducts() {
         return ResponseEntity.ok(
@@ -70,6 +70,7 @@ public class ProductController extends BaseController {
         return ResultResponse.success(productService.recoverProduct(id));
     }
 
+    // tối thiếu
 
 }
 

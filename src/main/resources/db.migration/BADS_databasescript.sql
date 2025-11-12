@@ -56,6 +56,7 @@ CREATE TABLE [User] (
                         gender NVARCHAR(16) NULL,
                         address NVARCHAR(255) NULL,
                         created_at DATETIME DEFAULT GETDATE(),
+                        created_by BIGINT NOT NULL ,
                         CONSTRAINT FK_User_Role FOREIGN KEY (role_id) REFERENCES [Role](role_id)
 );
 CREATE INDEX IX_User_role ON [User](role_id);
@@ -74,6 +75,7 @@ CREATE TABLE [Warehouse] (
                              email NVARCHAR(100),
                              is_active BIT DEFAULT 1,
                              created_at DATETIME DEFAULT GETDATE(),
+                             created_by BIGINT NOT NULL,
                              CONSTRAINT FK_Warehouse_Manager FOREIGN KEY (manager_id) REFERENCES [User](user_id)
 );
 
@@ -89,18 +91,15 @@ CREATE TABLE [Product] (
                            min_stock BIGINT DEFAULT 0,
                            max_stock BIGINT DEFAULT 0,
                            [status] NVARCHAR(20) DEFAULT 'ACTIVE',
-                           created_at DATETIME DEFAULT GETDATE(),
-                           created_by BIGINT NOT NULL,
                            category_id BIGINT,
-                           p_note NVARCHAR(255),
+                           note NVARCHAR(255),
                            unit_id BIGINT,
                            reorder_qty BIGINT DEFAULT 0,
-                           CONSTRAINT FK_Product_Category FOREIGN KEY (category_id) REFERENCES [ProductCategory](category_id),
+                           CONSTRAINT FK_Product_Category FOREIGN KEY (category_id) REFERENCES [ProductCategory](p_category_id),
                            CONSTRAINT FK_Product_Unit FOREIGN KEY (unit_id) REFERENCES [Unit](unit_id),
-                           CONSTRAINT FK_Product_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
-CREATE INDEX IX_Product_category ON [Product](category_id);
-CREATE INDEX IX_Product_unit ON [Product](unit_id);
+CREATE INDEX IX_Product_category ON [Product](p_category_id);
+CREATE INDEX IX_Product_unit ON [Product](p_unit_id);
 
 CREATE TABLE [Inventory] (
                              inventory_id BIGINT IDENTITY(1,1) PRIMARY KEY,
@@ -147,7 +146,6 @@ CREATE TABLE [Customer] (
                             note NVARCHAR(255),
                             created_at DATETIME DEFAULT GETDATE(),
                             created_by BIGINT NULL,
-                            updated_at DATETIME NULL,
                             CONSTRAINT FK_Customer_Type FOREIGN KEY (type_id) REFERENCES [CustomerType](type_id),
                             CONSTRAINT FK_Customer_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
@@ -176,12 +174,11 @@ CREATE TABLE [Supplier] (
 -- 6. Sales
 ------------------------------------------------------------
 CREATE TABLE [SalesOrder] (
-                              saleorder_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-                              saleorder_code NVARCHAR(50) UNIQUE,
+                              order_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+                              order_code NVARCHAR(50) UNIQUE,
                               customer_id BIGINT,
                               user_id BIGINT,
                               total_amount DECIMAL(18,2) DEFAULT 0,
-                              note NVARCHAR(255),
                               payment_method NVARCHAR(50),
                               [status] NVARCHAR(20) DEFAULT 'Pending',
                               created_at DATETIME DEFAULT GETDATE(),
@@ -193,41 +190,40 @@ CREATE TABLE [SalesOrder] (
 CREATE INDEX IX_SO_customer ON [SalesOrder](customer_id);
 
 CREATE TABLE [SalesOrderDetail] (
-                                    saleorder_detail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
-                                    saleorder_id BIGINT NOT NULL,
+                                    order_detail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+                                    order_id BIGINT NOT NULL,
                                     product_id BIGINT NOT NULL,
                                     quantity BIGINT NOT NULL,
                                     unit_price DECIMAL(18,2) NOT NULL,
                                     discount DECIMAL(5,2) DEFAULT 0,
                                     vat_amount DECIMAL(18,2),
-                                    total_price AS (CONVERT(DECIMAL(18,2), ROUND((quantity * unit_price) * (1 - discount / 100.0), 2))) PERSISTED,
+                                    total_price AS (CONVERT(DECIMAL(18,2), ROUND((quantity * unit_price) + vat_amount - discount, 2))) PERSISTED,
                                     [status] NVARCHAR(20) DEFAULT 'Draft',
                                     note NVARCHAR(255),
-                                    created_at DATETIME DEFAULT GETDATE(),
-                                    CONSTRAINT FK_SOD_Order FOREIGN KEY (saleorder_id) REFERENCES [SalesOrder](saleorder_id) ON DELETE CASCADE,
+                                    CONSTRAINT FK_SOD_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id) ON DELETE CASCADE,
                                     CONSTRAINT FK_SOD_Product FOREIGN KEY (product_id) REFERENCES [Product](product_id)
 );
-CREATE INDEX IX_SOD_order ON [SalesOrderDetail](saleorder_id);
+CREATE INDEX IX_SOD_order ON [SalesOrderDetail](order_id);
 
 CREATE TABLE [Invoice] (
                            invoice_id BIGINT IDENTITY(1,1) PRIMARY KEY,
                            invoice_code NVARCHAR(50) UNIQUE NOT NULL,
-                           saleorder_id BIGINT UNIQUE NOT NULL,
+                           order_id BIGINT UNIQUE NOT NULL,
                            vat_amount DECIMAL(18,2),
                            grand_total DECIMAL(18,2),
-                           tax_code NVARCHAR(50),
                            [status] NVARCHAR(20) DEFAULT 'Pending',
                            payment_method NVARCHAR(50),
+                           tax_code NVARCHAR(50),
                            created_at DATETIME DEFAULT GETDATE(),
                            created_by BIGINT NOT NULL,
-                           CONSTRAINT FK_Invoice_Order FOREIGN KEY (saleorder_id) REFERENCES [SalesOrder](saleorder_id),
+                           CONSTRAINT FK_Invoice_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id),
                            CONSTRAINT FK_Invoice_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id)
 );
 
 CREATE TABLE [Request] (
                            request_id BIGINT IDENTITY(1,1) PRIMARY KEY,
                            request_code NVARCHAR(50) UNIQUE,
-                           saleorder_id BIGINT,
+                           order_id BIGINT,
                            customer_id BIGINT,
                            request_status NVARCHAR(100),
                            request_type NVARCHAR(20) NOT NULL,
@@ -235,18 +231,18 @@ CREATE TABLE [Request] (
                            reason_detail NVARCHAR(255),
                            created_at DATETIME DEFAULT GETDATE(),
                            created_by BIGINT NULL,
-                           CONSTRAINT FK_Request_Order FOREIGN KEY (saleorder_id) REFERENCES [SalesOrder](saleorder_id),
+                           CONSTRAINT FK_Request_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id),
                            CONSTRAINT FK_Request_Customer FOREIGN KEY (customer_id) REFERENCES [Customer](customer_id)
 );
 
 CREATE TABLE [RequestDetail] (
                                  request_detail_id BIGINT IDENTITY(1,1) PRIMARY KEY,
                                  request_id BIGINT NOT NULL,
-                                 saleorder_detail_id BIGINT NOT NULL,
+                                 order_detail_id BIGINT NOT NULL,
                                  quantity BIGINT NOT NULL,
-                                 reason_for_item NVARCHAR(255),
+--                                  reason_for_item NVARCHAR(255),
                                  CONSTRAINT FK_RequestDetail_Request FOREIGN KEY (request_id) REFERENCES [Request](request_id) ON DELETE CASCADE,
-                                 CONSTRAINT FK_RequestDetail_OrderDetail FOREIGN KEY (saleorder_detail_id) REFERENCES [SalesOrderDetail](saleorder_detail_id)
+                                 CONSTRAINT FK_RequestDetail_OrderDetail FOREIGN KEY (order_detail_id) REFERENCES [SalesOrderDetail](order_detail_id)
 );
 
 ------------------------------------------------------------
@@ -273,7 +269,7 @@ CREATE TABLE [ContractDetail] (
                                   quantity BIGINT NOT NULL,
                                   unit_price DECIMAL(18,2) NOT NULL,
                                   vat_amount DECIMAL(18,2),
-                                  total_price AS (quantity * unit_price) PERSISTED,
+                                  total_price AS (quantity * unit_price) + vat_amount PERSISTED,
                                   [status] NVARCHAR(20) DEFAULT 'Pending',
                                   estimated_delivery_date DATE NULL,
                                   note NVARCHAR(255),
@@ -318,7 +314,7 @@ CREATE TABLE [GoodsIssues] (
                                issue_id BIGINT IDENTITY(1,1) PRIMARY KEY,
                                issue_code NVARCHAR(50) UNIQUE,
                                warehouse_id BIGINT NOT NULL,
-                               saleorder_id BIGINT NULL,
+                               order_id BIGINT NULL,
                                created_at DATETIME DEFAULT GETDATE(),
                                created_by BIGINT NOT NULL,
                                posted_at DATETIME NULL,
@@ -326,7 +322,7 @@ CREATE TABLE [GoodsIssues] (
                                [status] NVARCHAR(20) DEFAULT 'Draft',
                                note NVARCHAR(255),
                                CONSTRAINT FK_GI_Warehouse FOREIGN KEY (warehouse_id) REFERENCES [Warehouse](warehouse_id),
-                               CONSTRAINT FK_GI_Order FOREIGN KEY (saleorder_id) REFERENCES [SalesOrder](saleorder_id),
+                               CONSTRAINT FK_GI_Order FOREIGN KEY (order_id) REFERENCES [SalesOrder](order_id),
                                CONSTRAINT FK_GI_CreatedBy FOREIGN KEY (created_by) REFERENCES [User](user_id),
                                CONSTRAINT FK_GI_PostedBy FOREIGN KEY (posted_by) REFERENCES [User](user_id)
 );

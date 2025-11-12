@@ -4,16 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "CustomerType", schema = "dbo")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-public class CustomerType extends BaseEntity {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class CustomerType  {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "type_id")
     private Long id;
