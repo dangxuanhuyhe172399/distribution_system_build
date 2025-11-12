@@ -6,13 +6,13 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "Unit")
+@Table(name = "Unit", schema = "dbo")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Unit extends BaseEntity{
+public class Unit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "unit_id")
@@ -20,5 +20,7 @@ public class Unit extends BaseEntity{
 
     @Column(name = "unit_name", nullable = false, length = 50)
     private String name;
-
+    @OneToMany(mappedBy = "unit", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Product> products;
 }

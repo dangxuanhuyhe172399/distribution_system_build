@@ -16,28 +16,11 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value =
             "UPDATE Product " +
-                    "SET sku = :sku, " +
-                    "    name = :name, " +
-                    "    cost_price = :costPrice, " +
-                    "    selling_price = :sellingPrice, " +
-                    "    status = :status " +
-                    "WHERE product_id = :id",
-            nativeQuery = true)
-    int updateBasic(@Param("id") Long id,
-                    @Param("sku") String sku,
-                    @Param("name") String name,
-                    @Param("costPrice") Long costPrice,
-                    @Param("sellingPrice") Long sellingPrice,
-                    @Param("status") String status);
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value =
-            "UPDATE Product " +
                     "SET category_id = :categoryId, " +
                     "    unit_id = :unitId " +
                     "WHERE product_id = :id",
             nativeQuery = true)
-    int updateRelations(@Param("id") Long id,
+    void updateRelations(@Param("id") Long id,
                         @Param("categoryId") Long categoryId,
                         @Param("unitId") Long unitId);
 

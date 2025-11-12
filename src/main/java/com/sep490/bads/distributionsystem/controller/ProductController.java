@@ -7,6 +7,8 @@ import com.sep490.bads.distributionsystem.dto.ProductFilterDto;
 import com.sep490.bads.distributionsystem.dto.ProductUpdateDto;
 import com.sep490.bads.distributionsystem.dto.response.ApiResponse;
 import com.sep490.bads.distributionsystem.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -19,38 +21,44 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/public/products")
+@Tag(name = "Product", description = "Quản lý sản phẩm")
 @RequiredArgsConstructor
-@Validated
-public class ProductController {
+public class ProductController extends BaseController {
     private final ProductService productService;
 
+    @Operation(summary = "them san pham")
     @PostMapping
-    public ResultResponse<ProductDto> create(@Valid @RequestBody ProductCreateDto body) {
+    public ResultResponse<ProductDto> createProduct(@Valid @RequestBody ProductCreateDto body) {
         return ResultResponse.created(productService.createProduct(body));
     }
 
+    @Operation(summary = "Lay ra san pham theo Id")
     @GetMapping("/{id}")
-    public ResultResponse<ProductDto> get(@PathVariable @Positive Long id) {
+    public ResultResponse<ProductDto> getProductById(@PathVariable @Positive Long id) {
         return ResultResponse.success(productService.getProductById(id));
     }
 
+    @Operation(summary = "Cap nhat san pham moi")
     @PutMapping("/{id}")
-    public ResultResponse<ProductDto> update(@PathVariable @Positive Long id,
-                                             @Valid @RequestBody ProductUpdateDto body) {
+    public ResultResponse<ProductDto> updateProduct(@PathVariable @Positive Long id,
+                                                    @Valid @RequestBody ProductUpdateDto body) {
         return ResultResponse.success(productService.updateProduct(id, body));
     }
 
+    @Operation(summary = "xoa san pham")
     @DeleteMapping("/{id}")
-    public ResultResponse<Object> delete(@PathVariable @Positive Long id) {
+    public ResultResponse<Object> deleteProduct(@PathVariable @Positive Long id) {
         productService.softDeleteProduct(id);
         return ResultResponse.success(null);
     }
 
+    @Operation(summary = "tim kiem san pham")
     @PostMapping("/filter")
-    public ResultResponse<Page<ProductDto>> filter(@Valid @RequestBody ProductFilterDto f) {
+    public ResultResponse<Page<ProductDto>> filterProduct(@Valid @RequestBody ProductFilterDto f) {
         return ResultResponse.success(productService.filterProducts(f));
     }
 
+    @Operation(summary = "lay ra tat ca san pham")
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProductDto>>> getAllProducts() {
         return ResponseEntity.ok(
@@ -62,6 +70,7 @@ public class ProductController {
         return ResultResponse.success(productService.recoverProduct(id));
     }
 
+    // tối thiếu
 
 }
 

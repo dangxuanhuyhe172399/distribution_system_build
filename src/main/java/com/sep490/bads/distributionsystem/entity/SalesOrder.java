@@ -1,41 +1,81 @@
 package com.sep490.bads.distributionsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.type.ReviewStatus;
+import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+import lombok.experimental.SuperBuilder;
+
+import java.math.BigDecimal;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "SalesOrder")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class SalesOrder extends BaseEntity{
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name = "SalesOrder", schema = "dbo")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class SalesOrder extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private Long id;
 
-    @ManyToOne @JoinColumn(name = "customer_id")
+    @Column(name = "saleorder_code", length = 50, unique = true)
+    private String saleOrderCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "order_date")
-    private LocalDateTime orderDate;
-
-    @Column(name = "status", length = 50)
-    private String status;
-
-    @Column(name = "payment_method", length = 50)
-    private String paymentMethod;
+    @Column(name = "total_amount", precision = 18, scale = 2)
+    private BigDecimal totalAmount;
 
     @Column(name = "note", length = 255)
     private String note;
 
-    @OneToMany(mappedBy = "order")
-    private List<SalesOrderDetail> details;
+    @Column(name = "payment_method", length = 50)
+    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private SaleOderStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<SalesOrderDetail> orderDetails;
 
     @OneToOne(mappedBy = "order")
     @JsonIgnore
     private Invoice invoice;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Request> requests;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "finance_status", length = 20)
+    private ReviewStatus financeStatus;     // PENDING / APPROVED
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "warehouse_status", length = 20)
+    private ReviewStatus warehouseStatus;   // PENDING / APPROVED
+
+    @Column(name = "progress_note", length = 500)
+    private String progressNote;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<GoodsIssues> goodsIssues;
 }

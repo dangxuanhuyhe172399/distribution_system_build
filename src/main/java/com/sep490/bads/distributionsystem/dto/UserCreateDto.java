@@ -1,20 +1,30 @@
 package com.sep490.bads.distributionsystem.dto;
 
-import com.sep490.bads.distributionsystem.entity.User;
 import com.sep490.bads.distributionsystem.entity.type.UserGender;
-import com.sep490.bads.distributionsystem.entity.type.UserStatus;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.hibernate.usertype.UserType;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserCreateDto {
-    private String username;
-    private String password;
-    private String fullName;
-    private UserGender gender;
+    @NotBlank private String username;
+    @NotBlank @Size(min=6) private String password;
+    @NotBlank private String fullName;
+    @Email
     private String email;
-    @NotNull
-    private UserType type;
-
+    private String phone;
+    private Long roleId;
+    private UserGender gender;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate dateOfBirth;
+    private String address;
 }

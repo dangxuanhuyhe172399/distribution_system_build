@@ -10,9 +10,9 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=bads_db;encrypt=true;trustServerCertificate=true;
-    username: sa #username
-    password: 123456 # password
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     hikari:
       connection-timeout: 30000 # Thời gian chờ một kết nối (ms)
       idle-timeout: 600000     # Thời gian một kết nối có thể nhàn rỗi trong pool (ms)
@@ -26,7 +26,9 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      #set to 'none' or 'validate' because Flyway to manage
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
       ddl-auto: none
     properties:
       hibernate:
@@ -36,18 +38,20 @@ spring:
   # Configure Flyway to automatically run database scripts
   flyway:
     enabled: true # turn on Flyway
-  # 'classpath:db.migration' point to the directory 'resources/db.migration'
+    # 'classpath:db.migration' point to the directory 'resources/db.migration'
     locations: classpath:db.migration
     baseline-on-migrate: true
 
-  # Cấu hình Redis
-  cache:
-      type: redis # Kích hoạt Spring Cache sử dụng Redis
-  data:
+    # Cấu hình Redis
+    cache:
+      type: redis
+    data:
       redis:
-        host: localhost
-        port: 6379
-# cấu hình mail
+        host: ${REDIS_HOST:localhost}
+        port: ${REDIS_PORT:6379}
+        #        password: ${REDIS_PASSWORD:}
+        ssl: ${REDIS_SSL:false}
+  # cấu hình mail
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
@@ -73,6 +77,25 @@ jwt:
   expire-time: ${JWT_EXPIRE_TIME:86400} # GIÂY
   expire-time-refreshToken: ${JWT_REFRESH_EXPIRE_TIME:604800} # GIÂY
 
+springdoc:
+  api-docs:
+    path: /v1/doc/api/index.html
+  swagger-ui:
+    path: /v1/doc/index.html
+    display-request-duration: true
+    syntax-highlight:
+      activated: true
+      theme: monokai
+    filter: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+zalo:
+  app-id: ${ZALO_APP_ID:}
+  oa-secret: ${ZALO_OA_SECRET:}
+  verify: ${ZALO_VERIFY:true}
+  signature-mode: ${ZALO_SIGNATURE_MODE:APP_BODY_TS}
+  webhook-path: /v1/public/zalo/webhook
+
 logging:
   level:
     root: info
@@ -82,3 +105,24 @@ logging:
     org.hibernate.type.descriptor.sql: trace
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+    #    chưa dung mail
+    mail:
+      enabled: false
+    redis:
+      enabled: false
+payment:
+  vnPay:
+    url: ${PAY_URL}
+    tmnCode: ${TMN_CODE}
+    secretKey: ${SECRET_KEY}
+    returnUrl: ${RETURN_URL}
+    version: ${VERSION}
+    command: ${COMMAND}
+    orderType: ${ORDER_TYPE}

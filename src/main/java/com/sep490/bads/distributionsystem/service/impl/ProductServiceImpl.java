@@ -16,7 +16,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Log4j2
 public class ProductServiceImpl implements ProductService {
 
@@ -24,18 +23,20 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     @Override
+    @Transactional
     public ProductDto createProduct(ProductCreateDto dto) {
         if (productRepo.existsBySku(dto.getSku())) {
             throw new RuntimeException("SKU đã tồn tại: " + dto.getSku());
         }
-        // tạo entity thủ công (không dùng mapper)
+
         Product p = new Product();
         p.setSku(dto.getSku());
         p.setName(dto.getName());
         p.setCostPrice(dto.getCostPrice());
         p.setSellingPrice(dto.getSellingPrice());
+        p.setMinStock(dto.getMinStock());
+        p.setMaxStock(dto.getMaxStock());
         p.setStatus(CommonStatus.ACTIVE);
-        p.setStockQuantity(0L);
 
         Product saved = productRepo.save(p);
         productRepo.updateRelations(saved.getId(), dto.getCategoryId(), dto.getUnitId());
@@ -53,37 +54,42 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDto updateProduct(Long id, ProductUpdateDto dto) {
         Product p = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
 
-        CommonStatus st = dto.getStatus() != null ? dto.getStatus() : p.getStatus();
-        productRepo.updateBasic(
-                p.getId(),
-                dto.getSku() != null ? dto.getSku() : p.getSku(),
-                dto.getName() != null ? dto.getName() : p.getName(),
-                dto.getCostPrice() != null ? dto.getCostPrice() : p.getCostPrice(),
-                dto.getSellingPrice() != null ? dto.getSellingPrice() : p.getSellingPrice(),
-                st.name()
-        );
-        if (dto.getCategoryId() != null || dto.getUnitId() != null) {
-            productRepo.updateRelations(
-                    p.getId(),
-                    dto.getCategoryId() != null ? dto.getCategoryId() : (p.getCategory()!=null ? p.getCategory().getId() : null),
-                    dto.getUnitId() != null ? dto.getUnitId() : (p.getUnit()!=null ? p.getUnit().getId() : null)
-            );
+        if (dto.getSku()!=null && !dto.getSku().equals(p.getSku()) &&
+                productRepo.existsBySku(dto.getSku())) {
+            throw new RuntimeException("SKU đã tồn tại: " + dto.getSku());
         }
-        Product updated = productRepo.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Không tải lại được sản phẩm sau update"));
+
+        if (dto.getSku()!=null)         p.setSku(dto.getSku());
+        if (dto.getName()!=null)        p.setName(dto.getName());
+        if (dto.getCostPrice()!=null)   p.setCostPrice(dto.getCostPrice());
+        if (dto.getSellingPrice()!=null)p.setSellingPrice(dto.getSellingPrice());
+        if (dto.getStatus()!=null)      p.setStatus(dto.getStatus());
+        if (dto.getMinStock()!=null) p.setMinStock(dto.getMinStock());
+        if (dto.getMaxStock()!=null) p.setMaxStock(dto.getMaxStock());
+
+        if (dto.getCategoryId()!=null || dto.getUnitId()!=null) {
+            Long catId  = dto.getCategoryId()!=null ? dto.getCategoryId()
+                    : (p.getCategory()!=null ? p.getCategory().getId() : null);
+            Long unitId = dto.getUnitId()!=null ? dto.getUnitId()
+                    : (p.getUnit()!=null ? p.getUnit().getId() : null);
+            productRepo.updateRelations(p.getId(), catId, unitId);
+        }
+
+        Product updated = productRepo.save(p);
         return productMapper.toDto(updated);
     }
 
     @Override
     public void softDeleteProduct(Long id) {
         Product p = productRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm: "));
 
-        // Chuyển trạng thái về INACTIVE (ẩn)
+        // Chuyển trạng thái về INACTIVE
         p.setStatus(CommonStatus.INACTIVE);
         productRepo.save(p);
 
@@ -102,10 +108,8 @@ public class ProductServiceImpl implements ProductService {
         p.setStatus(CommonStatus.ACTIVE);
         productRepo.save(p);
 
-        log.info("Khôi phục sản phẩm ID={} về trạng thái ACTIVE", id);
         return productMapper.toDto(p);
     }
-
 
     @Override
     public Page<ProductDto> filterProducts(ProductFilterDto f) {
@@ -122,7 +126,4 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::toDto)
                 .toList();
     }
-
-
-
 }

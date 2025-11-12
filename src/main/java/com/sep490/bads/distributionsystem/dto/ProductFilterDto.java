@@ -2,9 +2,9 @@ package com.sep490.bads.distributionsystem.dto;
 
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import lombok.*;
-import java.math.BigDecimal;
+import lombok.experimental.SuperBuilder;
 
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data @SuperBuilder
 public class ProductFilterDto {
     private Long categoryId;
     private String keyword;

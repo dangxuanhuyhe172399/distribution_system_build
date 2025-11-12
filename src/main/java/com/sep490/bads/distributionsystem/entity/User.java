@@ -4,23 +4,30 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sep490.bads.distributionsystem.entity.type.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "\"User\"", schema = "dbo")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "username", length = 50, nullable = false, unique = true)
+    @Column(name = "user_code", length = 50, unique = true, nullable = false)
+    private String userCode;
+
+    @Column(name = "username", length = 50, unique = true, nullable = false)
     private String username;
 
     @Column(name = "password", length = 255, nullable = false)
@@ -39,15 +46,12 @@ public class User extends BaseEntity {
     @Column(name = "status", length = 20, nullable = false)
     private UserStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
 
     @Column(name = "gender", length = 16)
     private String gender;
-
-    @Column(name = "user_code", length = 50, nullable = false, unique = true)
-    private String userCode;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
@@ -57,4 +61,8 @@ public class User extends BaseEntity {
 
     @Column(name = "address", length = 255)
     private String address;
+
+    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Warehouse> managedWarehouses;
 }

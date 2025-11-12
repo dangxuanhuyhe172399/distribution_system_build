@@ -2,10 +2,10 @@ package com.sep490.bads.distributionsystem.dto;
 
 import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@SuperBuilder
 public class ProductDto {
     private Long id;
     private String sku;

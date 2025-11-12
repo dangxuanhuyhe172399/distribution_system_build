@@ -1,0 +1,28 @@
+package com.sep490.bads.distributionsystem.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+@Table(name = "ProductCategory", schema = "dbo")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ProductCategory extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "p_category_id")
+    private Long id;
+
+    @Column(name = "p_category", length = 100, nullable = false)
+    private String name;
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Product> products;
+}

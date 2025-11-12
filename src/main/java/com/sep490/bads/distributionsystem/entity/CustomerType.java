@@ -6,9 +6,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "CustomerType")
+@Table(name = "CustomerType", schema = "dbo")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class CustomerType extends BaseEntity {
+public class CustomerType  {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "type_id")
     private Long id;
