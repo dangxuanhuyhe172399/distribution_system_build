@@ -35,48 +35,18 @@ public class InvoiceServiceImpl implements InvoiceService {
     public InvoiceDto createFromOrder(Long orderId, Long supplierId, String paymentMethod) {
 //        SalesOrder order = orderRepo.findById(orderId)
 //                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng " + orderId));
-//        Supplier supplier = supplierRepo.findById(supplierId)
-//                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp " + supplierId));
 //
-//        String code = nextInvoiceCode(); // VD: HD-00001
-//
+//        String code = nextInvoiceCode(); // HD-00001...
 //        Invoice inv = Invoice.builder()
 //                .invoiceCode(code)
 //                .order(order)
-//                .supplier(supplier)
+//                .vatAmount(order.getVatAmount())          // nếu có
+//                .grandTotal(order.getGrandTotal())        // hoặc tính lại từ SalesOrderDetail
 //                .status(InvoiceStatus.DRAFT)
-//                .deliveryStatus(DeliveryStatus.CHO_XUAT_KHO)
 //                .paymentMethod(paymentMethod)
-//                .sendCount(0)
+//                .paymentStatus("UNPAID")
+//                .createdBy(currentUser())                 // tuỳ bạn
 //                .build();
-//
-//        // build items từ order items
-//        var items = new ArrayList<InvoiceItem>();
-//        BigDecimal sum = BigDecimal.ZERO;
-//        BigDecimal sumVat = BigDecimal.ZERO;
-//
-//        for (SalesOrderItem oi : order.getItems()) {
-//            BigDecimal amount = oi.getUnitPrice().multiply(BigDecimal.valueOf(oi.getQuantity()));
-//            BigDecimal vatAmt = amount.multiply(BigDecimal.valueOf(oi.getVatRate())).divide(BigDecimal.valueOf(100));
-//
-//            InvoiceItem it = InvoiceItem.builder()
-//                    .invoice(inv)
-//                    .productName(oi.getProduct().getName())
-//                    .unitName(oi.getUnit().getName())
-//                    .quantity(oi.getQuantity())
-//                    .unitPrice(oi.getUnitPrice())
-//                    .amount(amount)
-//                    .vatRate(oi.getVatRate())
-//                    .vatAmount(vatAmt)
-//                    .build();
-//
-//            items.add(it);
-//            sum = sum.add(amount);
-//            sumVat = sumVat.add(vatAmt);
-//        }
-//        inv.setItems(items);
-//        inv.setVatAmount(sumVat);
-//        inv.setGrandTotal(sum.add(sumVat));
 //
 //        invoiceRepo.save(inv);
 //        return mapper.toDto(inv);

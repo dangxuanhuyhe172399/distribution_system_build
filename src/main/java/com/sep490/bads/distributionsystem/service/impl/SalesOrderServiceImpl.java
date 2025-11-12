@@ -127,7 +127,6 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         if (dto.getPaymentMethod() != null) o.setPaymentMethod(dto.getPaymentMethod());
         if (dto.getNote() != null)          o.setNote(dto.getNote());
 
-        // full-replace items cho đơn giản
         detailRepo.deleteAll(detailRepo.findByOrderId(orderId));
 
         BigDecimal total = BigDecimal.ZERO;

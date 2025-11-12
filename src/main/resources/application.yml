@@ -100,6 +100,15 @@ zalo:
   api:
       ver: 3.0
 
+sepay:
+  webhook:
+    apiKey: ${SEPAY_WEBHOOK_API_KEY}
+pay:
+  bank:
+    code: ${PAY_BANK_CODE}
+    account: ${PAY_BANK_ACCOUNT}
+    name: ${PAY_BANK_NAME}
+
 logging:
   level:
     root: info

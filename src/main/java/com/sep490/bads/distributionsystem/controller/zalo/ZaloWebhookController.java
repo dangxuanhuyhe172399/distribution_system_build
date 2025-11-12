@@ -26,15 +26,15 @@ public class ZaloWebhookController extends BaseController {
     public ResponseEntity<String> receive(HttpServletRequest request) {
         try {
             String signature = request.getHeader("X-ZEvent-Signature");
-            String ts = request.getHeader("X-ZEvent-Timestamp"); // nếu Zalo gửi
-            String body = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+            String ts        = request.getHeader("X-ZEvent-Timestamp");
+            String body      = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
 
             if (props.isVerify() && !verify(signature, ts, body)) {
                 log.warn("Invalid signature");
                 return ResponseEntity.status(403).body("invalid signature");
             }
 
-            new Thread(() -> service.handle(body)).start();
+            service.handle(body);
             return ResponseEntity.ok("ok");
         } catch (Exception e) {
             log.error("Webhook error", e);
@@ -44,20 +44,12 @@ public class ZaloWebhookController extends BaseController {
 
     private boolean verify(String headerSig, String ts, String body) {
         if (headerSig == null || headerSig.isBlank()) return false;
-
         String mode = props.getSignatureMode();
-        String base;
-        switch (mode) {
-            case "BODY":
-                base = body;
-                break;
-            case "BODY_TS":
-                base = body + (ts == null ? "" : ts);
-                break;
-            case "APP_BODY_TS":
-            default:
-                base = props.getAppId() + body + (ts == null ? "" : ts);
-        }
+        String base = switch (mode) {
+            case "BODY"    -> body;
+            case "BODY_TS", "APP_BODY_TS" -> body + (ts == null ? "" : ts);
+            default        -> props.getAppId() + body + (ts == null ? "" : ts);
+        };
         String calc = HmacUtils.hmacSha256Hex(props.getOaSecret(), base);
         return headerSig.equalsIgnoreCase(calc);
     }

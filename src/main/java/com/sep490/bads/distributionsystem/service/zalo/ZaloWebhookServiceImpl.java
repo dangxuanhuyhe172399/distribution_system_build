@@ -1,8 +1,10 @@
 package com.sep490.bads.distributionsystem.service.zalo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sep490.bads.distributionsystem.config.zalo.ZaloApiClient;
 import com.sep490.bads.distributionsystem.entity.Customer;
 import com.sep490.bads.distributionsystem.entity.CustomerType;
+import com.sep490.bads.distributionsystem.entity.SalesOrder;
 import com.sep490.bads.distributionsystem.entity.type.CustomerStatus;
 import com.sep490.bads.distributionsystem.entity.type.ZaloEventLogStatus;
 import com.sep490.bads.distributionsystem.entity.zalo.ZaloCustomerLink;
@@ -15,6 +17,7 @@ import com.sep490.bads.distributionsystem.service.InventoryService;
 import com.sep490.bads.distributionsystem.service.SalesOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,43 +27,43 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+
 public class ZaloWebhookServiceImpl implements ZaloWebhookService {
     private final ZaloEventLogRepository eventLogRepo;
     private final ZaloCustomerLinkRepository zaloCustomerLinkRepo;
     private final CustomerRepository customerRepo;
     private final CustomerTypeRepository customerTypeRepo;
-    private final ObjectMapper om = new ObjectMapper();
     private final SalesOrderService salesOrderService;
     private final InventoryService inventoryService;
+    private final ZaloApiClient zaloApiClient;
+
+    private final ObjectMapper om = new ObjectMapper();
 
     /**
-     * Tên của Loại khách hàng mặc định khi tạo mới từ Zalo.
-     * BẠN PHẢI TẠO CustomerType VỚI TÊN NÀY TRONG DATABASE TRƯỚC.
+     * Tên loại KH mặc định khi tạo mới từ Zalo.
+     * Hãy đảm bảo tồn tại trong DB.
      */
     private static final String DEFAULT_CUSTOMER_TYPE_NAME = "Khách lẻ";
 
     @Override
+    @Async("zaloExecutor")
     @Transactional
     public void handle(String body) {
         ZaloEventLog logRow = new ZaloEventLog();
         try {
-            JsonNode root = om.readTree(body);
-            String eventName = root.path("event_name").asText("");
-            String eventId   = root.path("event_id").asText("");
+            JsonNode root     = om.readTree(body);
+            String eventName  = txt(root,"event_name");
+            String eventId    = txt(root,"event_id");
 
-            var existed = (eventId != null && !eventId.isBlank())
-                    ? eventLogRepo.findByEventId(eventId) : java.util.Optional.<ZaloEventLog>empty();
-
-            if (existed.isPresent()) {
-                ZaloEventLog dup = existed.get();
-                dup.setEventName(eventName);
-                dup.setPayload(body);
-                dup.setStatus(ZaloEventLogStatus.DUPLICATE);
-                dup.setProcessedAt(LocalDateTime.now());
-                return;
+            // Idempotent theo event_id (nếu có)
+            if (eventId != null && !eventId.isBlank()) {
+                if (eventLogRepo.findByEventId(eventId).isPresent()) {
+                    log.info("Skip duplicate event {}", eventId);
+                    return;
+                }
             }
 
-            logRow.setEventId(eventId.isBlank() ? null : eventId);
+            logRow.setEventId(isBlank(eventId) ? null : eventId);
             logRow.setEventName(eventName);
             logRow.setPayload(body);
             logRow.setStatus(ZaloEventLogStatus.RECEIVED);
@@ -68,153 +71,183 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
             eventLogRepo.save(logRow);
 
             switch (eventName) {
-                case "follow"         -> onFollow(root);
-                case "unfollow"       -> onUnfollow(root);
+                case "follow"            -> onFollow(root);
+                case "unfollow"          -> onUnfollow(root);
                 case "user_share_info",
                      "user_submit_info"  -> onUserShareInfo(root);
-                case "order_created"  -> onOrderCreated(root);
-                case "order_updated"  -> onOrderUpdated(root);
-                case "oa_send_text" -> onTextMessage(root);
-                default               -> log.info("Unhandled event {}", eventName);
+                case "user_send_text",
+                     "oa_send_text"      -> onTextMessage(root);
+                case "order_created"     -> onOrderCreated(root);
+                case "order_updated"     -> onOrderUpdated(root);
+                default -> log.info("Unhandled event {}", eventName);
             }
 
             logRow.setStatus(ZaloEventLogStatus.PROCESSED);
             logRow.setProcessedAt(LocalDateTime.now());
-
+            eventLogRepo.save(logRow);
         } catch (Exception ex) {
-            ZaloEventLog failed = new ZaloEventLog();
-            failed.setEventName("unknown");
-            failed.setPayload(body);
-            failed.setStatus(ZaloEventLogStatus.FAILED);
-            failed.setReceivedAt(LocalDateTime.now());
-            failed.setProcessedAt(LocalDateTime.now());
-            eventLogRepo.save(failed);
             log.error("Handle webhook error", ex);
+            logRow.setStatus(ZaloEventLogStatus.FAILED);
+            logRow.setProcessedAt(LocalDateTime.now());
+            if (logRow.getReceivedAt() == null) logRow.setReceivedAt(LocalDateTime.now());
+            logRow.setPayload(body);
+            eventLogRepo.save(logRow);
         }
     }
+
+    /* ========== Handlers ========== */
+
     private void onTextMessage(JsonNode root) {
-        String uid = root.path("sender").path("id").asText();
-        if (uid == null || uid.isBlank()) uid = root.path("from").path("id").asText();
-        if (uid == null || uid.isBlank()) return;
+        String uid = txt(root.path("sender"), "id");
+        if (isBlank(uid)) uid = txt(root.path("from"), "id");
+        if (isBlank(uid)) return;
 
-        String text = root.path("message").path("text").asText(null);
+        String text = txt(root.path("message"), "text");
 
+        // cập nhật link tối thiểu
         String finalUid = uid;
-        var link = zaloCustomerLinkRepo.findById(uid).orElseGet(() -> {
+        ZaloCustomerLink  link = zaloCustomerLinkRepo.findById(uid).orElseGet(() -> {
             var l = new ZaloCustomerLink();
             l.setZaloUserId(finalUid);
             l.setFollowStatus("unknown");
             return l;
         });
-        // Gợi ý: thêm 2 field vào ZaloCustomerLink
 //         link.setLastMessageAt(LocalDateTime.now());
         // link.setLastMessageText(text);
-
         zaloCustomerLinkRepo.save(link);
 
-        // (Tùy chọn) nếu link chưa gắn Customer thì gửi tin nhắn kêu share info
-        // sendAskForShareInfo(uid);
+        // Nếu chưa có customer → gợi ý chia sẻ info
+        // if (link.getCustomer() == null) sendAskForShareInfo(uid);
+        log.info("Received text '{}' from {}", text, uid);
     }
 
-
-    //Xử lý khi người dùng nhấn "Quan tâm" OA.
     private void onFollow(JsonNode root) {
-        String zaloUserId = root.path("follower").path("id").asText();
-        if (zaloUserId.isBlank()) return;
+        String zaloUserId = txt(root.path("follower"), "id");
+        if (isBlank(zaloUserId)) zaloUserId = txt(root.path("sender"), "id");
+        if (isBlank(zaloUserId)) return;
 
-        // Tìm hoặc Tạo Mới
-        ZaloCustomerLink link = zaloCustomerLinkRepo.findById(zaloUserId)
-                .orElseGet(ZaloCustomerLink::new);
-
-        link.setZaloUserId(zaloUserId); // Đảm bảo ID được set (cho trường hợp tạo mới)
-        link.setFollowStatus("follow"); // Cập nhật trạng thái
-
+        String finalZaloUserId = zaloUserId;
+        ZaloCustomerLink  link = zaloCustomerLinkRepo.findById(zaloUserId).orElseGet(() -> {
+            ZaloCustomerLink l = new ZaloCustomerLink();
+            l.setZaloUserId(finalZaloUserId);
+            l.setCreatedAt(LocalDateTime.now());
+            return l;
+        });
+        link.setFollowStatus("follow");
         zaloCustomerLinkRepo.save(link);
         log.info("User {} followed OA", zaloUserId);
     }
 
-    //Xử lý khi người dùng nhấn "Bỏ quan tâm" OA.
     private void onUnfollow(JsonNode root) {
-        String zaloUserId = root.path("follower").path("id").asText(); // Zalo gửi là 'follower' thay vì 'user'
-        if (zaloUserId.isBlank()) return;
+        String zaloUserId = txt(root.path("follower"), "id");
+        if (isBlank(zaloUserId)) zaloUserId = txt(root.path("sender"), "id");
+        if (isBlank(zaloUserId)) return;
 
-        // Chỉ cập nhật nếu đã tồn tại
         zaloCustomerLinkRepo.findById(zaloUserId).ifPresent(link -> {
             link.setFollowStatus("unfollow");
             zaloCustomerLinkRepo.save(link);
-            log.info("User {} unfollowed OA", zaloUserId);
         });
+        log.info("User {} unfollowed OA", zaloUserId);
     }
 
-    //Xảy ra khi người dùng đồng ý chia sẻ thông tin (Tên, SĐT, Địa chỉ).
-    @Transactional
-    public void onUserShareInfo(JsonNode root) {
-        String zaloUserId = root.path("sender").path("id").asText();
-        JsonNode info = root.path("info");
+    /**
+     * Người dùng bấm “Chia sẻ thông tin”.
+     * Lưu ý: payload Zalo có thể khác nhau (v2 vs v3). Dưới đây mình đọc linh hoạt:
+     * - user id: sender.id || follower.id
+     * - info   : info.{name,phone,address,email} || user_info.{...}
+     */
+    private void onUserShareInfo(JsonNode root) {
+        String zaloUserId = firstNotBlank(txt(root.path("sender"), "id"), txt(root.path("follower"), "id"));
+        if (isBlank(zaloUserId)) return;
 
-        String phone = info.path("phone").asText(null);
-        String name = info.path("name").asText(null);
-        String address = info.path("address").asText(null);
+        JsonNode info = root.path("info").isMissingNode() ? root.path("user_info") : root.path("info");
 
-        if (zaloUserId.isBlank() || phone == null || phone.isBlank()) {
-            log.warn("User {} shared info but phone is missing", zaloUserId);
+        String rawPhone = firstNotBlank(txt(info, "phone"), txt(info, "mobile"), txt(info, "msisdn"));
+        String name = firstNotBlank(txt(info, "name"), txt(info, "full_name"), txt(info, "username"));
+        String address = txt(info, "address");
+        String email = txt(info, "email");
+        String district = txt(info, "district");
+        String province = txt(info, "province");
+
+        if (isBlank(rawPhone)) {
+            log.warn("user_share_info missing phone for {}", zaloUserId);
             return;
         }
 
-        //SĐT
-        String standardizedPhone = phone.startsWith("+84") ? "0" + phone.substring(3) : phone;
+        String phone = normalizePhoneVN(rawPhone);
 
-        // --- BƯỚC 1: TÌM HOẶC TẠO CUSTOMER ---
-        Optional<Customer> optCustomer = customerRepo.findByPhone(standardizedPhone);
-        Customer customer;
-
-        if (optCustomer.isPresent()) {
-            customer = optCustomer.get();
-            customer.setName(name);
-            customer.setAddress(address);
-            log.info("Customer found with phone {}. Updating info.", standardizedPhone);
-        } else {
-            log.info("Phone {} not found, creating new customer", standardizedPhone);
-
-            // Tìm loại khách hàng mặc định
-            CustomerType defaultType = customerTypeRepo.findByName(DEFAULT_CUSTOMER_TYPE_NAME)
-                    .orElse(null);
-
-            if (defaultType == null) {
-                log.error("CRITICAL: Không thể tạo khách hàng mới. " +
-                        "Không tìm thấy CustomerType mặc định với tên = '{}'. " +
-                        "Vui lòng tạo trong DB.", DEFAULT_CUSTOMER_TYPE_NAME);
-                return;
-            }
-
+        // 1) Upsert Customer (insert or update)
+        Customer customer = customerRepo.findFirstByPhoneOrEmail(phone, email).orElse(null);
+        if (customer == null) {
+            // Create new customer if not found
+            CustomerType type = customerTypeRepo.findByName(DEFAULT_CUSTOMER_TYPE_NAME)
+                    .orElseThrow(() -> new IllegalStateException("Missing CustomerType '" + DEFAULT_CUSTOMER_TYPE_NAME + "'"));
             customer = new Customer();
-            customer.setPhone(standardizedPhone);
-            customer.setName(name);
-            customer.setAddress(address);
+            customer.setType(type);
             customer.setStatus(CustomerStatus.ACTIVE);
-            customer.setType(defaultType);
+            customer.setPhone(phone);
+            customer.setName(nonBlankOr(name, "Khách Zalo"));
+            customer.setEmail(email);
+            customer.setAddress(address);
+            customer.setDistrict(district);
+            customer.setProvince(province);
+        } else {
+            // Update the existing customer with new info
+            if (isBlank(customer.getName()) && !isBlank(name)) customer.setName(name);
+            if (isBlank(customer.getEmail()) && !isBlank(email)) customer.setEmail(email);
+            if (isBlank(customer.getAddress()) && !isBlank(address)) customer.setAddress(address);
+            if (isBlank(customer.getDistrict()) && !isBlank(district)) customer.setDistrict(district);
+            if (isBlank(customer.getProvince()) && !isBlank(province)) customer.setProvince(province);
+            if (isBlank(customer.getPhone())) customer.setPhone(phone);
         }
+        customer = customerRepo.save(customer);  // Save or update the customer
 
-        customer = customerRepo.save(customer);
-
-        // --- BƯỚC 2: TÌM HOẶC TẠO ZALOCUSTOMERLINK ---
-        ZaloCustomerLink link = zaloCustomerLinkRepo.findById(zaloUserId)
-                .orElseGet(ZaloCustomerLink::new);
-        link.setZaloUserId(zaloUserId);
-
-        // --- BƯỚC 3: KẾT NỐI 2 BẢNG ---
-        link.setCustomer(customer); // Đây là bước "kết nối"
+        // 2) Link Zalo to Customer
+        ZaloCustomerLink link = zaloCustomerLinkRepo.findById(zaloUserId).orElseGet(() -> {
+            ZaloCustomerLink l = new ZaloCustomerLink();
+            l.setZaloUserId(zaloUserId);
+            l.setCreatedAt(LocalDateTime.now());
+            return l;
+        });
+        link.setCustomer(customer); // Link customer to Zalo
+        link.setFollowStatus(nonBlankOr(link.getFollowStatus(), "follow"));
         link.setConsentAt(LocalDateTime.now());
-
         zaloCustomerLinkRepo.save(link);
-        log.info("Successfully linked Zalo User {} to Customer ID {}", zaloUserId, customer.getId()); // Dùng .getId()
+
+        // 3) Send a message to the Zalo user (optional)
+        zaloApiClient.sendText(zaloUserId, "Cảm ơn bạn đã chia sẻ thông tin! Bạn muốn xem danh mục và đặt hàng không?").subscribe();
+        log.info("Linked Zalo {} → Customer {}", zaloUserId, customer.getId());
     }
 
+
+    /* Hai sự kiện này để dành cho tích hợp shop của Zalo OA (nếu dùng) */
     private void onOrderCreated(JsonNode root) {
-        // TODO: ánh xạ order -> SalesOrder, tạo nếu chưa có
+        log.info("Zalo order_created: {}", root);
+        // TODO: ánh xạ và tạo SalesOrder nếu bạn dùng Zalo Shop
     }
 
     private void onOrderUpdated(JsonNode root) {
-        // TODO: cập nhật trạng thái đơn, nếu paid -> tạo Invoice
+        log.info("Zalo order_updated: {}", root);
+        // TODO: cập nhật trạng thái đơn/Invoice khi có thay đổi
+    }
+
+    /* ========== Helpers ========== */
+
+    private static String txt(JsonNode node, String field) {
+        JsonNode v = node.path(field);
+        return v.isMissingNode() || v.isNull() ? null : v.asText(null);
+    }
+    private static boolean isBlank(String s){ return s==null || s.isBlank(); }
+    private static String nonBlankOr(String s, String alt){ return isBlank(s) ? alt : s; }
+    private static String firstNotBlank(String... arr){
+        for (String s: arr) if (!isBlank(s)) return s;
+        return null;
+    }
+    private static String normalizePhoneVN(String p){
+        if (p == null) return null;
+        String s = p.replaceAll("[^0-9+]", "");
+        if (s.startsWith("+84")) return "0" + s.substring(3);
+        if (s.startsWith("84") && s.length() >= 10) return "0" + s.substring(2);
+        return s;
     }
 }

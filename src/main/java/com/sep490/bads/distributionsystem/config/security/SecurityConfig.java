@@ -64,6 +64,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v1/public/auth/**",
                                 "/v1/it/**",
+                                "/v1/sepay/hooks/**",
+                                "/v1/public/zalo/**",
                                 "/v1/doc/**",
                                 "/actuator/**",
                                 "/v1/api-docs/**",
