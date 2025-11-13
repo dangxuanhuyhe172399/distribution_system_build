@@ -4,6 +4,8 @@ import com.sep490.bads.distributionsystem.dto.customerDtos.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface CustomerService {
     Page<CustomersDto> search(Pageable pageable, CustomerFilterDto f);
     CustomersDto get(Long id);
@@ -15,4 +17,6 @@ public interface CustomerService {
     void deactivate(Long id);
     void softDelete(Long id);
     CustomerInsightDto getInsight(Long customerId, int limit);
+
+    List<CustomerSuggestionDto> getRecentCustomers(int limit);
 }

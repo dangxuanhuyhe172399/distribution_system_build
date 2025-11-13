@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("v1/public/customers")
 @RequiredArgsConstructor
@@ -71,5 +73,12 @@ public class CustomerController extends BaseController {
     public ResultResponse<CustomerInsightDto> insight(@PathVariable Long id,
                                                       @RequestParam(defaultValue = "10") int limit) {
         return ResultResponse.success(service.getInsight(id, limit));
+    }
+    @Operation(summary = "Top khách hàng mua hàng gần nhất (gợi ý cho tạo đơn)")
+    @GetMapping("/recent")
+    public ResultResponse<List<CustomerSuggestionDto>> recentCustomers(
+            @RequestParam(defaultValue = "5") int limit
+    ) {
+        return ResultResponse.success(service.getRecentCustomers(limit));
     }
 }

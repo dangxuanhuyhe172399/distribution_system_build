@@ -19,8 +19,10 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -207,6 +209,37 @@ public class CustomerServiceImpl implements CustomerService {
                 .currentBalance(c.getCurrentBalance() != null ? c.getCurrentBalance() : BigDecimal.ZERO)
                 .recentOrders(rows)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<CustomerSuggestionDto> getRecentCustomers(int limit) {
+        int size = Math.max(1, limit);
+
+        var page = customerRepo.findRecentCustomers(PageRequest.of(0, size));
+        var fmt  = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        return page.getContent().stream()
+                .map(row -> {
+                    Customer c = (Customer) row[0];
+                    LocalDateTime lastOrderAt = (LocalDateTime) row[1];
+
+                    return CustomerSuggestionDto.builder()
+                            .id(c.getId())
+                            .code(c.getCode())
+                            .name(c.getName())
+                            .phone(c.getPhone())
+                            .address(c.getAddress())
+                            .district(c.getDistrict())
+                            .province(c.getProvince())
+                            .customerTypeName(
+                                    c.getType() != null ? c.getType().getName() : null
+                            )
+                            .currentBalance(nvl(c.getCurrentBalance(), BigDecimal.ZERO))
+                            .lastOrderAt(lastOrderAt != null ? lastOrderAt.format(fmt) : null)
+                            .build();
+                })
+                .toList();
     }
 
     // ---------- helpers ----------
