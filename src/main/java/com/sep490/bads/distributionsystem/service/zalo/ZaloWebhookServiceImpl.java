@@ -22,12 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-
 public class ZaloWebhookServiceImpl implements ZaloWebhookService {
     private final ZaloEventLogRepository eventLogRepo;
     private final ZaloCustomerLinkRepository zaloCustomerLinkRepo;
@@ -157,70 +157,107 @@ public class ZaloWebhookServiceImpl implements ZaloWebhookService {
      * - info   : info.{name,phone,address,email} || user_info.{...}
      */
     private void onUserShareInfo(JsonNode root) {
-        String zaloUserId = firstNotBlank(txt(root.path("sender"), "id"), txt(root.path("follower"), "id"));
-        if (isBlank(zaloUserId)) return;
+            String zaloUserId = firstNotBlank(
+                    txt(root.path("sender"), "id"),
+                    txt(root.path("follower"), "id")
+            );
+            if (isBlank(zaloUserId)) {
+                log.warn("user_share_info but missing zaloUserId");
+                return;
+            }
 
-        JsonNode info = root.path("info").isMissingNode() ? root.path("user_info") : root.path("info");
+            // Lấy node info: tùy version Zalo trả "info" hoặc "user_info"
+            JsonNode info = root.path("info").isMissingNode()
+                    ? root.path("user_info")
+                    : root.path("info");
 
-        String rawPhone = firstNotBlank(txt(info, "phone"), txt(info, "mobile"), txt(info, "msisdn"));
-        String name = firstNotBlank(txt(info, "name"), txt(info, "full_name"), txt(info, "username"));
-        String address = txt(info, "address");
-        String email = txt(info, "email");
-        String district = txt(info, "district");
-        String province = txt(info, "province");
+            String rawPhone  = firstNotBlank(
+                    txt(info, "phone"),
+                    txt(info, "mobile"),
+                    txt(info, "msisdn")
+            );
+            String name      = firstNotBlank(
+                    txt(info, "name"),
+                    txt(info, "full_name"),
+                    txt(info, "username")
+            );
+            String address   = txt(info, "address");
+            String email     = txt(info, "email");
+            String district  = txt(info, "district");
+            String province  = txt(info, "province");
 
-        if (isBlank(rawPhone)) {
-            log.warn("user_share_info missing phone for {}", zaloUserId);
-            return;
+            if (isBlank(rawPhone) && isBlank(email)) {
+                log.warn("user_share_info missing both phone & email for {}", zaloUserId);
+                return;
+            }
+
+            String phone = normalizePhoneVN(rawPhone);
+
+            log.info("user_share_info from {} -> phone={}, name={}, email={}",
+                    zaloUserId, phone, name, email);
+
+            // 0) Thử lấy link theo zaloUserId trước
+            ZaloCustomerLink link = zaloCustomerLinkRepo.findById(zaloUserId).orElse(null);
+            Customer customer = (link != null ? link.getCustomer() : null);
+
+            // 1) Nếu chưa có customer gắn với link, thử tìm theo phone/email
+            if (customer == null && !isBlank(phone)) {
+                customer = customerRepo.findFirstByPhone(phone).orElse(null);
+            }
+            if (customer == null && !isBlank(email)) {
+                customer = customerRepo.findFirstByEmail(email).orElse(null);
+            }
+
+            // 2) Nếu vẫn null => tạo mới
+            if (customer == null) {
+                CustomerType type = customerTypeRepo.findByName(DEFAULT_CUSTOMER_TYPE_NAME)
+                        .orElseThrow(() -> new IllegalStateException(
+                                "Missing CustomerType '" + DEFAULT_CUSTOMER_TYPE_NAME + "'"));
+
+                customer = new Customer();
+                customer.setCode("ZLO-" + UUID.randomUUID().toString().substring(0, 8));
+                customer.setType(type);
+                customer.setStatus(CustomerStatus.ACTIVE);
+                customer.setCreatedAt(LocalDateTime.now());
+            }
+
+            // 3) Luôn update các field nếu Zalo gửi về (không cần chờ blank)
+            if (!isBlank(name))     customer.setName(name);
+            if (!isBlank(phone))    customer.setPhone(phone);
+            if (!isBlank(email))    customer.setEmail(email);
+            if (!isBlank(address))  customer.setAddress(address);
+            if (!isBlank(district)) customer.setDistrict(district);
+            if (!isBlank(province)) customer.setProvince(province);
+
+            customer = customerRepo.save(customer);
+
+            // 4) Cập nhật / tạo link
+            if (link == null) {
+                link = new ZaloCustomerLink();
+                link.setZaloUserId(zaloUserId);
+                link.setCreatedAt(LocalDateTime.now());
+            }
+            link.setCustomer(customer);
+            link.setFollowStatus(nonBlankOr(link.getFollowStatus(), "follow"));
+            link.setConsentAt(LocalDateTime.now());
+            zaloCustomerLinkRepo.save(link);
+
+            log.info("Linked Zalo {} → Customer {} ({}, {})",
+                    zaloUserId, customer.getId(), customer.getName(), customer.getPhone());
+
+            // 5) Gửi cảm ơn (optional)
+            try {
+                zaloApiClient.sendText(zaloUserId,
+                                "Cảm ơn bạn đã chia sẻ thông tin! Hệ thống đã lưu thông tin liên hệ của bạn.")
+                        .subscribe();
+            } catch (Exception e) {
+                log.warn("Send thank-you message failed but data saved: {}", e.getMessage());
+            }
         }
 
-        String phone = normalizePhoneVN(rawPhone);
-
-        // 1) Upsert Customer (insert or update)
-        Customer customer = customerRepo.findFirstByPhoneOrEmail(phone, email).orElse(null);
-        if (customer == null) {
-            // Create new customer if not found
-            CustomerType type = customerTypeRepo.findByName(DEFAULT_CUSTOMER_TYPE_NAME)
-                    .orElseThrow(() -> new IllegalStateException("Missing CustomerType '" + DEFAULT_CUSTOMER_TYPE_NAME + "'"));
-            customer = new Customer();
-            customer.setType(type);
-            customer.setStatus(CustomerStatus.ACTIVE);
-            customer.setPhone(phone);
-            customer.setName(nonBlankOr(name, "Khách Zalo"));
-            customer.setEmail(email);
-            customer.setAddress(address);
-            customer.setDistrict(district);
-            customer.setProvince(province);
-        } else {
-            // Update the existing customer with new info
-            if (isBlank(customer.getName()) && !isBlank(name)) customer.setName(name);
-            if (isBlank(customer.getEmail()) && !isBlank(email)) customer.setEmail(email);
-            if (isBlank(customer.getAddress()) && !isBlank(address)) customer.setAddress(address);
-            if (isBlank(customer.getDistrict()) && !isBlank(district)) customer.setDistrict(district);
-            if (isBlank(customer.getProvince()) && !isBlank(province)) customer.setProvince(province);
-            if (isBlank(customer.getPhone())) customer.setPhone(phone);
-        }
-        customer = customerRepo.save(customer);  // Save or update the customer
-
-        // 2) Link Zalo to Customer
-        ZaloCustomerLink link = zaloCustomerLinkRepo.findById(zaloUserId).orElseGet(() -> {
-            ZaloCustomerLink l = new ZaloCustomerLink();
-            l.setZaloUserId(zaloUserId);
-            l.setCreatedAt(LocalDateTime.now());
-            return l;
-        });
-        link.setCustomer(customer); // Link customer to Zalo
-        link.setFollowStatus(nonBlankOr(link.getFollowStatus(), "follow"));
-        link.setConsentAt(LocalDateTime.now());
-        zaloCustomerLinkRepo.save(link);
-
-        // 3) Send a message to the Zalo user (optional)
-        zaloApiClient.sendText(zaloUserId, "Cảm ơn bạn đã chia sẻ thông tin! Bạn muốn xem danh mục và đặt hàng không?").subscribe();
-        log.info("Linked Zalo {} → Customer {}", zaloUserId, customer.getId());
-    }
 
 
-    /* Hai sự kiện này để dành cho tích hợp shop của Zalo OA (nếu dùng) */
+        /* Hai sự kiện này để dành cho tích hợp shop của Zalo OA (nếu dùng) */
     private void onOrderCreated(JsonNode root) {
         log.info("Zalo order_created: {}", root);
         // TODO: ánh xạ và tạo SalesOrder nếu bạn dùng Zalo Shop

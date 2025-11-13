@@ -1,5 +1,7 @@
 package com.sep490.bads.distributionsystem.controller.zalo;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep490.bads.distributionsystem.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +24,8 @@ public class ZaloAuthController extends BaseController {
     @Value("${zalo.app-id}")
     private String zaloAppId;
 
-    @Value("${zalo.oa-secret}")
-    private String zaloOaSecret;
+    @Value("${zalo.app-secret}")
+    private String zaloAppSecret;
 
     /**
      * Đường dẫn API mới sẽ là: /v1/public/zalo/callback
@@ -37,10 +39,10 @@ public class ZaloAuthController extends BaseController {
 
         // --- (Toàn bộ logic bên trong hàm này giữ nguyên) ---
         RestTemplate restTemplate = new RestTemplate();
-        String tokenUrl = "https://oauth.zaloapp.com/v4/access_token";
+        String tokenUrl = "https://oauth.zaloapp.com/v4/oa/access_token";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.set("secret_key", zaloOaSecret);
+        headers.set("secret_key", zaloAppSecret);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("code", code);
         map.add("app_id", zaloAppId);
@@ -50,9 +52,16 @@ public class ZaloAuthController extends BaseController {
             ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, request, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 String tokenResponse = response.getBody();
-                log.info("-----------------------------------------------------------------");
-                log.info("NHẬN ĐƯỢC TOKEN TỪ ZALO THÀNH CÔNG:");
-                log.info("{}", tokenResponse);
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(tokenResponse);
+                int error = root.path("error").asInt(-1);
+
+                if (root.has("access_token")) {
+                    log.info("NHẬN ĐƯỢC TOKEN TỪ ZALO THÀNH CÔNG:");
+                    log.info("{}", tokenResponse);
+                } else {
+                    log.error("ZALO TRẢ LỖI KHI LẤY TOKEN: {}", tokenResponse);
+                }
                 log.info("HÃY SAO CHÉP VÀ LƯU VÀO FILE .env CỦA BẠN");
                 log.info("-----------------------------------------------------------------");
                 return ResponseEntity.ok("Đã lấy token thành công! Vui lòng kiểm tra log trên server (backend).");

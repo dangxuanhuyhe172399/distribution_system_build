@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -67,6 +68,7 @@ public class ZaloTokenService {
         // ĐỌC STRING + TỰ PARSE → bỏ hẳn bodyToMono(Map...)
         String body = webClient.post()
                 .uri("/v4/oa/access_token")
+                .header("secret_key", props.getAppSecret())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_JSON, new MediaType("text","json"))
                 .bodyValue(form)
@@ -92,7 +94,8 @@ public class ZaloTokenService {
 
         this.accessToken   = String.valueOf(res.get("access_token"));
         this.refreshToken  = (String) res.getOrDefault("refresh_token", this.refreshToken);
-        int expiresIn      = ((Number) res.getOrDefault("expires_in", 3600)).intValue();
+        Object exp = res.getOrDefault("expires_in", 3600);
+        int expiresIn = (exp instanceof Number) ? ((Number) exp).intValue() : Integer.parseInt(String.valueOf(exp));
         this.expiresAtEpoch = now + expiresIn;
 
         log.info("Zalo OA token refreshed. expiresIn={}s", expiresIn);

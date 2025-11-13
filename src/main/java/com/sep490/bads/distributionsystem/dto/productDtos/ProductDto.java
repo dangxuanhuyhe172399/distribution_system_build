@@ -14,7 +14,9 @@ public class ProductDto {
     private Long id;
     private String sku;
     private String name;
-
+    private String description;
+    private String barcode;
+    private String image;
     private Long categoryId;
     private String categoryName;
 
