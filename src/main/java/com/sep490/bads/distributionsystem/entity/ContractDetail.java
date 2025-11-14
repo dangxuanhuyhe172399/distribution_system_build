@@ -1,6 +1,6 @@
 package com.sep490.bads.distributionsystem.entity;
 
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.ContractDetailStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -41,7 +41,7 @@ public class ContractDetail extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private CommonStatus status;
+    private ContractDetailStatus status;
 
     @Column(name = "estimated_delivery_date")
     private LocalDate estimatedDeliveryDate;

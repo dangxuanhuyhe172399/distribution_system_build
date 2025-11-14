@@ -22,6 +22,10 @@ public class Supplier extends BaseEntity {
     @Column(name = "supplier_id")
     private Long id;
 
+    // Mã nhà cung cấp NCC001, NCC002...
+    @Column(name = "supplier_code", length = 50, unique = true)
+    private String code;
+
     @Column(name = "supplier_name", length = 100, nullable = false)
     private String name;
 
@@ -47,6 +51,12 @@ public class Supplier extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
     private SupplierStatus status;
+
+    @Column(name = "payment_term_days")
+    private Integer paymentTermDays; //Hạn thanh toán (ngày).
+
+    @Column(name = "note", length = 255)
+    private String note;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")

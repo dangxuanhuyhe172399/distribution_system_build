@@ -19,4 +19,8 @@ public class Constants {
     public static final String PRODUCT_NOT_FOUND = "Product not found";
     public static final String CANNOT_EDIT_ORDER = "Đơn chỉ được sửa khi NEW/PENDING";
     public static final String CANNOT_CANCEL_ORDER = "Không thể hủy đơn đã giao/hoàn tất";
+    public static final String SUPPLIER_NOT_FOUND = "Supplier not found";
+    public static final String SUPPLIER_CATEGORY_NOT_FOUND = "Supplier category not found";
+    public static final String PURCHASE_ORDER_NOT_FOUND = "Purchase order not found";
+    public static final String CANNOT_EDIT_CONTRACT = "Contract not found";
 }

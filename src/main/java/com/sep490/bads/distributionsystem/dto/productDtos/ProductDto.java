@@ -1,8 +1,15 @@
 package com.sep490.bads.distributionsystem.dto.productDtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.*;
 import com.sep490.bads.distributionsystem.entity.type.ProductStatus;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,9 +27,6 @@ public class ProductDto {
     private Long categoryId;
     private String categoryName;
 
-    private Long unitId;
-    private String unitName;
-
     private Long costPrice;
     private Long sellingPrice;
 
@@ -31,4 +35,11 @@ public class ProductDto {
     private Long maxStock;
 
     private ProductStatus status;
+    private ProductCategory category;
+    private Unit unit;
+    private User createdBy;
+    private String note;
+    private Long reorderQty;
+    private List<Inventory> inventories;
+    private List<Qrcode> qrcodes;
 }

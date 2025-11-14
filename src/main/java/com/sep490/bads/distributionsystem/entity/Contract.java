@@ -1,7 +1,7 @@
 package com.sep490.bads.distributionsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sep490.bads.distributionsystem.entity.type.CommonStatus;
+import com.sep490.bads.distributionsystem.entity.type.ContractStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -35,10 +35,13 @@ public class Contract extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private CommonStatus status;
+    private ContractStatus status;
 
     @Column(name = "note", length = 255)
     private String note;
+
+    @Column(name = "archived", nullable = false)
+    private Boolean archived = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)

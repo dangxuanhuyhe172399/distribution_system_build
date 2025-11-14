@@ -19,9 +19,5 @@ public class WarehouseDto {
     private String email;
     private Boolean isActive;
     private CommonStatus status;
-
-    private Long managerId;
-    private String managerName;
-
     private LocalDateTime createdAt;
 }
