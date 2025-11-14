@@ -421,7 +421,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                         d.getUnitPrice(),
                         d.getVatAmount(),
                         lineTotal,
-                        d.getEstimatedDeliveryDate()
+                        d.getEstimatedDeliveryDate(),
+                        Boolean.FALSE
                 );
                 itemDtos.add(itemDto);
             }

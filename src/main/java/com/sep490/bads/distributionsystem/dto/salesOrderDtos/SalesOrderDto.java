@@ -1,7 +1,12 @@
 package com.sep490.bads.distributionsystem.dto.salesOrderDtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sep490.bads.distributionsystem.entity.*;
+import com.sep490.bads.distributionsystem.entity.type.ReviewStatus;
 import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
+import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -27,4 +32,15 @@ public class SalesOrderDto {
     private BigDecimal discountTotal;
     private BigDecimal grandTotal;
     private List<SalesOrderItemDto> items;
+    private Customer customer;
+    private User user;
+    private BigDecimal totalAmount;
+    private User createdBy;
+    private List<SalesOrderDetail> orderDetails;
+    private Invoice invoice;
+    private List<Request> requests;
+    private ReviewStatus financeStatus;     // PENDING / APPROVED
+    private ReviewStatus warehouseStatus;   // PENDING / APPROVED
+    private String progressNote;
+    private List<GoodsIssues> goodsIssues;
 }
