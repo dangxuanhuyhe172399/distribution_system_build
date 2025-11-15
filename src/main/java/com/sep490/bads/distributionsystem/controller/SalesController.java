@@ -23,21 +23,18 @@ public class SalesController extends BaseController {
     private final SalesOrderService service;
 
     @Operation(summary = "Tim kiem ")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public ResultResponse<Page<SalesOrderDto>> searchSales(SalesOrderFilterDto filter, Pageable pageable) {
         return ResultResponse.success(service.search(pageable, filter));
     }
 
     @Operation(summary = "Xem chi tiêt đơn hang")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{id}")
     public ResultResponse<SalesOrderDto> getById(@PathVariable Long id) {
         return ResultResponse.success(service.get(id));
     }
 
     @Operation(summary = "tạo đơn hàng  NHÁP")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/draft")
     public ResultResponse<SalesOrderDto> createDraft(@RequestBody @Valid SalesOrderCreateDto dto,
                                                      @RequestHeader(value = "X-User-Id") Long createdById) {
@@ -45,7 +42,6 @@ public class SalesController extends BaseController {
     }
 
     @Operation(summary = "Cập nhật khi NEW/PENDING (full-replace items)")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
     public ResultResponse<SalesOrderDto> updateDraft(@PathVariable Long id,
                                                      @RequestBody @Valid SalesOrderUpdateDto dto) {
@@ -53,21 +49,18 @@ public class SalesController extends BaseController {
     }
 
     @Operation(summary = " chuyển sang PENDING (gửi khách xác nhận)")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/{id}/submit")
     public ResultResponse<SalesOrderDto> submit(@PathVariable Long id) {
         return ResultResponse.success(service.submit(id));
     }
 
     @Operation(summary = "khách chốt → CONFIRMED + phát sinh mã đơn")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/{id}/confirm")
     public ResultResponse<SalesOrderDto> confirm(@PathVariable Long id) {
         return ResultResponse.success(service.confirm(id));
     }
 
     @Operation(summary = "huỷ đơn")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/{id}/cancel")
     public ResultResponse<Boolean> cancel(@PathVariable Long id, @RequestParam String reason) {
         service.cancel(id, reason);
@@ -75,7 +68,6 @@ public class SalesController extends BaseController {
     }
 
     @Operation(summary = "Xem tiến độ xử lý đơn hàng")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{id}/progress")
     public ResultResponse<OrderProgressDto> getProgress(@PathVariable Long id) {
         return ResultResponse.success(service.getProgress(id));
@@ -83,7 +75,6 @@ public class SalesController extends BaseController {
 
     // chỉ cho kế toán/kho chỉnh:
     @Operation(summary = "Cập nhật tiến độ xử lý đơn hàng (Kế toán/Kho)")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}/progress")
     public ResultResponse<OrderProgressDto> updateProgress(
             @PathVariable Long id,
@@ -93,14 +84,12 @@ public class SalesController extends BaseController {
     }
 
     @Operation(summary = "Thống kê tổng quan đơn hàng")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/dashboard-summary")
     public ResultResponse<SalesOrderSummaryDto> getDashboardSummary() {
         return ResultResponse.success(service.getDashboardSummary());
     }
 
     @Operation(summary = "Thống kê tổng quan đơn hàng nháp")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/starcard-summary-draff")
     public ResultResponse<SalesOrderSummaryDraffDto> getDashboardSummaryDraff() {
         return ResultResponse.success(service.getDashboardDraffSummary());
