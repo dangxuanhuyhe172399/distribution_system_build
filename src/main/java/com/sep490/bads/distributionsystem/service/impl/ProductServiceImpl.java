@@ -57,9 +57,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepo.save(p);
 
-        ProductDto out = productMapper.toDto(p);
-        out.setStockQuantity(inventoryRepo.sumByProductId(p.getId())); // tồn hiện tại
-        return out;
+        return toDtoWithExtra(p);
     }
 
     @Override
@@ -67,9 +65,7 @@ public class ProductServiceImpl implements ProductService {
         Product p = productRepo.findByIdWithDetails(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
 
-        ProductDto out = productMapper.toDto(p);
-        out.setStockQuantity(inventoryRepo.sumByProductId(id));
-        return out;
+        return toDtoWithExtra(p);
     }
 
     @Override
@@ -78,8 +74,8 @@ public class ProductServiceImpl implements ProductService {
         Product p = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
 
-        if (dto.getSku()!=null && !dto.getSku().equals(p.getSku()) &&
-                productRepo.existsBySku(dto.getSku())) {
+        if (dto.getSku()!=null && !dto.getSku().equals(p.getSku())
+                && productRepo.existsBySku(dto.getSku())) {
             throw new RuntimeException("SKU đã tồn tại: " + dto.getSku());
         }
 
@@ -90,19 +86,18 @@ public class ProductServiceImpl implements ProductService {
         if (dto.getMinStock()!=null)     p.setMinStock(dto.getMinStock());
         if (dto.getMaxStock()!=null)     p.setMaxStock(dto.getMaxStock());
         if (dto.getStatus()!=null)       p.setStatus(dto.getStatus());
-        if (dto.getDescription() != null) p.setDescription(dto.getDescription());
-        if (dto.getBarcode() != null)    p.setBarcode(dto.getBarcode());
-        if (dto.getImage() != null)      p.setImage(dto.getImage());
-        if (dto.getNote() != null)       p.setNote(dto.getNote());
-        if (dto.getReorderQty() != null) p.setReorderQty(dto.getReorderQty());
+        if (dto.getDescription()!=null)  p.setDescription(dto.getDescription());
+        if (dto.getBarcode()!=null)      p.setBarcode(dto.getBarcode());
+        if (dto.getImage()!=null)        p.setImage(dto.getImage());
+        if (dto.getNote()!=null)         p.setNote(dto.getNote());
+        if (dto.getReorderQty()!=null)   p.setReorderQty(dto.getReorderQty());
 
-        if (dto.getCategoryId()!=null) p.setCategory(categoryRepo.getReferenceById(dto.getCategoryId()));
-        if (dto.getUnitId()!=null)     p.setUnit(unitRepo.getReferenceById(dto.getUnitId()));
+        if (dto.getCategoryId()!=null)   p.setCategory(categoryRepo.getReferenceById(dto.getCategoryId()));
+        if (dto.getUnitId()!=null)       p.setUnit(unitRepo.getReferenceById(dto.getUnitId()));
 
-        ProductDto out = productMapper.toDto(p);
-        out.setStockQuantity(inventoryRepo.sumByProductId(p.getId()));
-        return out;
+        return toDtoWithExtra(p);
     }
+
 
     @Override
     @Transactional
@@ -127,16 +122,19 @@ public class ProductServiceImpl implements ProductService {
         p.setStatus(ProductStatus.ACTIVE);
         productRepo.save(p);
 
-        return productMapper.toDto(p);
+        return toDtoWithExtra(p);
     }
+
 
     @Override
     @Transactional
     public Page<ProductDto> filterProducts(ProductFilterDto f) {
-        Sort.Direction dir = "DESC".equalsIgnoreCase(f.getDirection()) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort.Direction dir = "DESC".equalsIgnoreCase(f.getDirection())
+                ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(f.getPage(), f.getSize(), Sort.by(dir, f.getSortBy()));
+
         return productRepo.findAll(ProductRepository.specFrom(f), pageable)
-                .map(productMapper::toDto);
+                .map(this::toDtoWithExtra);
     }
 
     @Override
@@ -144,7 +142,27 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> getAllProducts() {
         return productRepo.findAll()
                 .stream()
-                .map(productMapper::toDto)
+                .map(this::toDtoWithExtra)
                 .toList();
+    }
+
+    private ProductDto toDtoWithExtra(Product p) {
+        ProductDto dto = productMapper.toDto(p);
+
+        if (p.getCategory() != null) {
+            dto.setCategoryId(p.getCategory().getId());
+            dto.setCategoryName(p.getCategory().getName());
+        }
+
+        if (p.getUnit() != null) {
+            dto.setUnitId(p.getUnit().getId());
+            dto.setUnitName(p.getUnit().getName());
+        }
+
+        if (p.getId() != null) {
+            dto.setStockQuantity(inventoryRepo.sumByProductId(p.getId()));
+        }
+
+        return dto;
     }
 }

@@ -4,6 +4,8 @@ import com.sep490.bads.distributionsystem.entity.type.ProductStatus;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,10 +16,10 @@ public class ProductFilterDto {
     private Long categoryId;
     private String keyword;
     private ProductStatus status;
-    private Long priceFrom;
-    private Long priceTo;
+    private BigDecimal priceFrom;
+    private BigDecimal priceTo;
 
-     //paging
+    // paging
     private int page = 0;
     private int size = 10;
 

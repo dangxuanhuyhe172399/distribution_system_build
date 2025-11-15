@@ -24,6 +24,5 @@ public class ZaloCustomerLink extends BaseEntity {
 
     @Column(name = "consent_at")
     private LocalDateTime consentAt;
-
 }
 
