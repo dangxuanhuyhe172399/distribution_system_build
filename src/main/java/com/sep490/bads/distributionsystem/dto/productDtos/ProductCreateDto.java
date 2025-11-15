@@ -21,4 +21,9 @@ public class ProductCreateDto {
     @DecimalMin("0") @Digits(integer=18, fraction=2) private BigDecimal sellingPrice;
     @Min(0) private Long minStock;
     @Min(0) private Long maxStock;
+    private String description;   // Mô tả sản phẩm
+    private String barcode;       // Mã vạch
+    private String image;         // URL ảnh (nếu front upload riêng thì để link ở đây)
+    private Long reorderQty;      // Số lượng đặt lại (nếu dùng)
+    private String note;          // Ghi chú
 }

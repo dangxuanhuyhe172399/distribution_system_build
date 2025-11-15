@@ -46,6 +46,11 @@ public class ProductServiceImpl implements ProductService {
         p.setMinStock(dto.getMinStock());
         p.setMaxStock(dto.getMaxStock());
         p.setStatus(ProductStatus.ACTIVE);
+        p.setDescription(dto.getDescription());
+        p.setBarcode(dto.getBarcode());
+        p.setImage(dto.getImage());
+        p.setNote(dto.getNote());
+        p.setReorderQty(dto.getReorderQty());
 
         p.setCategory(categoryRepo.getReferenceById(dto.getCategoryId()));
         p.setUnit(unitRepo.getReferenceById(dto.getUnitId()));
@@ -84,6 +89,11 @@ public class ProductServiceImpl implements ProductService {
         if (dto.getMinStock()!=null)     p.setMinStock(dto.getMinStock());
         if (dto.getMaxStock()!=null)     p.setMaxStock(dto.getMaxStock());
         if (dto.getStatus()!=null)       p.setStatus(dto.getStatus());
+        if (dto.getDescription() != null) p.setDescription(dto.getDescription());
+        if (dto.getBarcode() != null)    p.setBarcode(dto.getBarcode());
+        if (dto.getImage() != null)      p.setImage(dto.getImage());
+        if (dto.getNote() != null)       p.setNote(dto.getNote());
+        if (dto.getReorderQty() != null) p.setReorderQty(dto.getReorderQty());
 
         if (dto.getCategoryId()!=null) p.setCategory(categoryRepo.getReferenceById(dto.getCategoryId()));
         if (dto.getUnitId()!=null)     p.setUnit(unitRepo.getReferenceById(dto.getUnitId()));

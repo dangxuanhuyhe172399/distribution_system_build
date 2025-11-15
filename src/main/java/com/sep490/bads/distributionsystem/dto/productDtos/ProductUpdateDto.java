@@ -23,4 +23,14 @@ public class ProductUpdateDto {
     @Min(0) private Long minStock;
     @Min(0) private Long maxStock;
     private ProductStatus status;
+    @Size(max = 255)
+    private String description;      // Mô tả sản phẩm
+    @Size(max = 64)
+    private String barcode;          // Mã vạch
+    @Size(max = 255)
+    private String image;            // URL ảnh
+    @Size(max = 255)
+    private String note;             // Ghi chú
+    @Min(0)
+    private Long reorderQty;         // Số lượng đặt lại
 }
