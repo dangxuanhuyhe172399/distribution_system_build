@@ -1,6 +1,5 @@
 package com.sep490.bads.distributionsystem.service.impl;
 
-import com.sep490.bads.distributionsystem.config.security.service.UserDetailsImpl;
 import com.sep490.bads.distributionsystem.dto.productDtos.ProductCreateDto;
 import com.sep490.bads.distributionsystem.dto.productDtos.ProductDto;
 import com.sep490.bads.distributionsystem.dto.productDtos.ProductFilterDto;
@@ -16,7 +15,6 @@ import com.sep490.bads.distributionsystem.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
