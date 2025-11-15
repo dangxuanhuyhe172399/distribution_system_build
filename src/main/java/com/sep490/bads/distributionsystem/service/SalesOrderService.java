@@ -22,4 +22,5 @@ public interface SalesOrderService {
     OrderProgressDto getProgress(Long orderId);
     OrderProgressDto updateProgress(Long orderId, OrderProgressUpdateDto dto, Long userId);
 
+    SalesOrderSummaryDto getDashboardSummary();
 }

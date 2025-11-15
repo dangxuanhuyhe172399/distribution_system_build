@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
     private final CustomerRepository customerRepo;
     private final ProductRepository productRepo;
     private final UserRepository userRepo;
+    private final RequestRepository requestRepo;
 
     // ===================== SEARCH =====================
     @Transactional(readOnly = true)
@@ -323,5 +325,35 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         return getProgress(orderId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public SalesOrderSummaryDto getDashboardSummary() {
 
+        long totalOrders = orderRepo.count();
+
+        // Chờ xử lý = NEW + PENDING
+        long pendingOrders = orderRepo.countByStatusIn(
+                List.of(SaleOderStatus.NEW, SaleOderStatus.PENDING)
+        );
+
+        // Đang giao = SHIPPED + DELIVERED
+        long shippingOrders = orderRepo.countByStatusIn(
+                List.of(SaleOderStatus.SHIPPED, SaleOderStatus.DELIVERED)
+        );
+
+        long completedOrders = orderRepo.countByStatus(SaleOderStatus.COMPLETED);
+
+        // Đổi / Hoàn hàng từ bảng Request
+        long returnRequests   = requestRepo.countByRequestType("RETURN");   // Hoàn hàng
+        long exchangeRequests = requestRepo.countByRequestType("EXCHANGE"); // Đổi hàng
+
+        return SalesOrderSummaryDto.builder()
+                .totalOrders(totalOrders)
+                .pendingOrders(pendingOrders)
+                .shippingOrders(shippingOrders)
+                .completedOrders(completedOrders)
+                .returnRequests(returnRequests)
+                .exchangeRequests(exchangeRequests)
+                .build();
+    }
 }

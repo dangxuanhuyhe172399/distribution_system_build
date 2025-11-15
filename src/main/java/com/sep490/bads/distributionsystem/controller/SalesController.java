@@ -91,4 +91,11 @@ public class SalesController extends BaseController {
             @RequestHeader("X-User-Id") Long userId) {
         return ResultResponse.success(service.updateProgress(id, dto, userId));
     }
+
+    @Operation(summary = "Thống kê tổng quan đơn hàng")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/dashboard-summary")
+    public ResultResponse<SalesOrderSummaryDto> getDashboardSummary() {
+        return ResultResponse.success(service.getDashboardSummary());
+    }
 }

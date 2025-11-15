@@ -1,6 +1,7 @@
 package com.sep490.bads.distributionsystem.repository;
 
 import com.sep490.bads.distributionsystem.entity.SalesOrder;
+import com.sep490.bads.distributionsystem.entity.type.SaleOderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -52,4 +54,7 @@ public interface SalesOrderRepository extends JpaRepository<SalesOrder, Long>, J
 //    //Đã thanh toán
 //    @Query("select coalesce(sum(p.amount),0) from Payment p where p.order.id=:orderId and p.status='CONFIRMED'")
 //    BigDecimal sumPaidByOrder(@Param("orderId") Long orderId);
+
+    long countByStatus(SaleOderStatus status);
+    long countByStatusIn(Collection<SaleOderStatus> statuses);
 }
