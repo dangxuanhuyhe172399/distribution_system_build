@@ -21,7 +21,10 @@ import org.springframework.util.StringUtils;
 
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -356,4 +359,103 @@ public class SalesOrderServiceImpl implements SalesOrderService {
                 .exchangeRequests(exchangeRequests)
                 .build();
     }
+
+    @Override
+    public SalesOrderSummaryDraffDto getDashboardDraffSummary() {
+        LocalDate today = LocalDate.now();
+        YearMonth thisMonth = YearMonth.from(today);
+        YearMonth lastMonth = thisMonth.minusMonths(1);
+
+        // khoảng thời gian cho tháng này / tháng trước
+        LocalDateTime thisMonthStart = thisMonth.atDay(1).atStartOfDay();
+        LocalDateTime nextMonthStart = thisMonth.plusMonths(1).atDay(1).atStartOfDay();
+
+        LocalDateTime lastMonthStart = lastMonth.atDay(1).atStartOfDay();
+        LocalDateTime thisMonthStartDT = thisMonthStart;
+
+        // Đã chốt: tạm coi là CONFIRMED + Completed
+        List<SaleOderStatus> closedStatuses = List.of(SaleOderStatus.CONFIRMED, SaleOderStatus.COMPLETED);
+        // Đã huỷ
+        List<SaleOderStatus> cancelledStatuses = List.of(SaleOderStatus.CANCELLED);
+        // Chờ xác nhận
+        List<SaleOderStatus> waitingStatuses = List.of(SaleOderStatus.PENDING);
+
+        // Thống kê theo tháng
+        long closedThisMonth = orderRepo
+                .countByStatusInAndCreatedAtBetween(closedStatuses, thisMonthStart, nextMonthStart);
+        long closedLastMonth = orderRepo
+                .countByStatusInAndCreatedAtBetween(closedStatuses, lastMonthStart, thisMonthStartDT);
+
+        long cancelledThisMonth = orderRepo
+                .countByStatusInAndCreatedAtBetween(cancelledStatuses, thisMonthStart, nextMonthStart);
+        long cancelledLastMonth = orderRepo
+                .countByStatusInAndCreatedAtBetween(cancelledStatuses, lastMonthStart, thisMonthStartDT);
+
+        BigDecimal closeRateThisMonth = calcCloseRate(closedThisMonth, cancelledThisMonth);
+        BigDecimal closeRateLastMonth = calcCloseRate(closedLastMonth, cancelledLastMonth);
+
+        BigDecimal closedChangePercent = calcChangePercent(closedThisMonth, closedLastMonth);
+        BigDecimal cancelledChangePercent = calcChangePercent(cancelledThisMonth, cancelledLastMonth);
+        BigDecimal closeRateChangePercent = calcChangePercent(closeRateThisMonth, closeRateLastMonth);
+
+        //Thống kê theo ngày cho "Chờ xác nhận"
+        LocalDateTime todayStart = today.atStartOfDay();
+        LocalDateTime tomorrowStart = today.plusDays(1).atStartOfDay();
+        LocalDateTime yesterdayStart = today.minusDays(1).atStartOfDay();
+
+        long waitingToday = orderRepo
+                .countByStatusInAndCreatedAtBetween(waitingStatuses, todayStart, tomorrowStart);
+        long waitingYesterday = orderRepo
+                .countByStatusInAndCreatedAtBetween(waitingStatuses, yesterdayStart, todayStart);
+        long waitingDiff = waitingToday - waitingYesterday;
+
+        return SalesOrderSummaryDraffDto.builder()
+                .closedThisMonth(closedThisMonth)
+                .closedLastMonth(closedLastMonth)
+                .closedChangePercent(closedChangePercent)
+                .cancelledThisMonth(cancelledThisMonth)
+                .cancelledLastMonth(cancelledLastMonth)
+                .cancelledChangePercent(cancelledChangePercent)
+                .closeRateThisMonth(closeRateThisMonth)
+                .closeRateLastMonth(closeRateLastMonth)
+                .closeRateChangePercent(closeRateChangePercent)
+                .waitingConfirmToday(waitingToday)
+                .waitingConfirmYesterday(waitingYesterday)
+                .waitingConfirmDiff(waitingDiff)
+                .build();
+    }
+
+    private BigDecimal calcCloseRate(long closed, long cancelled) {
+        long total = closed + cancelled;
+        if (total == 0) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimal.valueOf(closed)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(total), 1, RoundingMode.HALF_UP); // 1 chữ số thập phân
+    }
+
+    private BigDecimal calcChangePercent(long current, long previous) {
+        if (previous == 0) {
+            if (current == 0) return BigDecimal.ZERO;
+            // tuỳ em, có thể trả 100 hoặc 0; ở đây return 100%
+            return BigDecimal.valueOf(100);
+        }
+        BigDecimal diff = BigDecimal.valueOf(current - previous);
+        return diff.multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(previous), 1, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calcChangePercent(BigDecimal current, BigDecimal previous) {
+        if (previous == null || previous.compareTo(BigDecimal.ZERO) == 0) {
+            if (current == null || current.compareTo(BigDecimal.ZERO) == 0) {
+                return BigDecimal.ZERO;
+            }
+            return BigDecimal.valueOf(100);
+        }
+        BigDecimal diff = current.subtract(previous);
+        return diff.multiply(BigDecimal.valueOf(100))
+                .divide(previous, 1, RoundingMode.HALF_UP);
+    }
 }
+

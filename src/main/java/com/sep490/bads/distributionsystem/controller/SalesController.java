@@ -98,4 +98,11 @@ public class SalesController extends BaseController {
     public ResultResponse<SalesOrderSummaryDto> getDashboardSummary() {
         return ResultResponse.success(service.getDashboardSummary());
     }
+
+    @Operation(summary = "Thống kê tổng quan đơn hàng nháp")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/starcard-summary-draff")
+    public ResultResponse<SalesOrderSummaryDraffDto> getDashboardSummaryDraff() {
+        return ResultResponse.success(service.getDashboardDraffSummary());
+    }
 }

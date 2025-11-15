@@ -23,4 +23,6 @@ public interface SalesOrderService {
     OrderProgressDto updateProgress(Long orderId, OrderProgressUpdateDto dto, Long userId);
 
     SalesOrderSummaryDto getDashboardSummary();
+
+    SalesOrderSummaryDraffDto getDashboardDraffSummary();
 }

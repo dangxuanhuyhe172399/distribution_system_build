@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -57,4 +58,15 @@ public interface SalesOrderRepository extends JpaRepository<SalesOrder, Long>, J
 
     long countByStatus(SaleOderStatus status);
     long countByStatusIn(Collection<SaleOderStatus> statuses);
+    long countByStatusAndCreatedAtBetween(
+            SaleOderStatus status,
+            LocalDateTime from,
+            LocalDateTime to
+    );
+
+    long countByStatusInAndCreatedAtBetween(
+            List<SaleOderStatus> statuses,
+            LocalDateTime from,
+            LocalDateTime to
+    );
 }
