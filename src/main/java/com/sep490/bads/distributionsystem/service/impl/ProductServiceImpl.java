@@ -64,8 +64,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getProductById(Long id) {
-        Product p = productRepo.findById(id)
+        Product p = productRepo.findByIdWithDetails(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
+
         ProductDto out = productMapper.toDto(p);
         out.setStockQuantity(inventoryRepo.sumByProductId(id));
         return out;
@@ -114,6 +115,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDto recoverProduct(Long id) {
         Product p = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + id));
@@ -129,6 +131,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public Page<ProductDto> filterProducts(ProductFilterDto f) {
         Sort.Direction dir = "DESC".equalsIgnoreCase(f.getDirection()) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(f.getPage(), f.getSize(), Sort.by(dir, f.getSortBy()));
@@ -137,6 +140,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public List<ProductDto> getAllProducts() {
         return productRepo.findAll()
                 .stream()

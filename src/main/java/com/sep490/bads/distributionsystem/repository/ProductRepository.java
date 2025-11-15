@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
@@ -25,6 +26,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     void updateRelations(@Param("id") Long id,
                          @Param("categoryId") Long categoryId,
                          @Param("unitId") Long unitId);
+
+    @Query("SELECT p FROM Product p " +
+            "LEFT JOIN FETCH p.inventories " +
+            "LEFT JOIN FETCH p.qrcodes " +
+            "WHERE p.id = :id")
+    Optional<Product> findByIdWithDetails(@Param("id") Long id);
 
     static Specification<Product> specFrom(ProductFilterDto f) {
         return (root, q, cb) -> {
